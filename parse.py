@@ -40,7 +40,7 @@ def scrape(args):
           searchString.append("{}_{}".format(k, args.__dict__[k]))
   cleanSearchString='+'.join(searchString)
   cleanSearchString=re.sub("[^A-Za-z0-9+_%-]","", cleanSearchString)
-  print("Output filename: {}-{}-#inscriptions.tsv".format(datetime.date.today().isoformat(), cleanSearchString))
+  #print("Output filename: {}-{}-#inscriptions.tsv".format(datetime.date.today().isoformat(), cleanSearchString))
   
   #print("Searching for: \"%s\"." %  (searchTerm, primaryResult))
 
@@ -255,7 +255,8 @@ def scrape(args):
   #print(resultsSoup)
 
   inscriptions=re.search("inscriptions found[^0-9]+0([0-9]+)", str(inscriptionsFound)).group(1)
-  print(inscriptions)
+  print("{} inscriptions found.".format(inscriptions))
+
 
   # tree = etree.parse(resultsSoup, etree.HTMLParser())
 
@@ -293,8 +294,8 @@ def scrape(args):
     writer.writeheader()
     writer.writerows(output)
   
-  print("Done!")
-  return "{}-{}-#inscriptions.tsv".format(datetime.date.today().isoformat(), cleanSearchString)
+  #print("Done!")
+  return(os.path.join("output", "{}-{}-{}.tsv").format(datetime.date.today().isoformat().replace(":",""), cleanSearchString, inscriptions))
 
   # pprint(output)
 
