@@ -95,11 +95,15 @@ def makeScrapeInterface():
         description='and not:'
     ) 
     
+    inscription_genus.layout.display='none'
+    and_not_inscription_genus.layout.display='none'
+
             
-    
+    genus_button = widgets.Button(description="Inscription Genus...")
+
     button = widgets.Button(description="Scrape!")
     
-    display(HTML("<h1>Scraper</h1>"), term1, operator, term2, EDCS,publication, place, dating_from, dating_to, HTML("<div>Shift or Control click to select multiple in these lists</div>"),province, inscription_genus, and_not_inscription_genus, button)
+    display(HTML("<h1>Scraper</h1>"), term1, operator, term2, EDCS,publication, place, dating_from, dating_to, HTML("<div>Shift or Control click to select multiple in these lists</div>"),province, genus_button, inscription_genus, and_not_inscription_genus, button)
     
     
     
@@ -149,5 +153,10 @@ def makeScrapeInterface():
         display(HTML("<a href='/tree/output/' target='_blank'>Full File List</a>"))
         display(FileLink(filename))
         
-        
+    def genusbutton(on_button_clicked):
+        genus_button.layout.display='none'
+        inscription_genus.layout.display='flex'
+        and_not_inscription_genus.layout.display='flex'
+    
+    genus_button.on_click(genusbutton) 
     button.on_click(on_button_clicked)
