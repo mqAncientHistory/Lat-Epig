@@ -1,9 +1,11 @@
+args==0.1.0
 attrs==19.1.0
 backcall==0.1.0
 beautifulsoup4==4.7.1
 bleach==3.1.0
 certifi==2019.3.9
 chardet==3.0.4
+clint==0.5.1
 decorator==4.4.0
 defusedxml==0.6.0
 entrypoints==0.3
@@ -30,7 +32,6 @@ pandocfilters==1.4.2
 parso==0.4.0
 pexpect==4.7.0
 pickleshare==0.7.5
-pkg-resources==0.0.0
 prometheus-client==0.6.0
 prompt-toolkit==2.0.9
 ptyprocess==0.6.0

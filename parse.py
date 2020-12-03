@@ -20,8 +20,9 @@ from pprint import pprint
 import datetime
 import os
 import codecs
+from clint.textui import progress
 
-COLUMNORDER = ["EDCS-ID", "publication", "province", "place", "dating from", "dating to", "status", "inscription", "Links", "Latitude", "Longitude", "TM Place", "language", "photo"]
+COLUMNORDER = ["EDCS-ID", "publication", "province", "place", "dating from", "dating to", "status", "inscription", "Material", "Comment", "Links", "Latitude", "Longitude", "TM Place", "language", "photo"]
 
 
 def scrape(args):
@@ -122,7 +123,9 @@ def scrape(args):
              "place:": "place",
              "EDCS-ID:": "EDCS-ID",
              "province:":"province",
-             "inscription genus / personal status:": "status"
+             "inscription genus / personal status:": "status",
+             "material:": "Material",
+             "comment:": "Comment"
              }
 
 
@@ -133,8 +136,14 @@ def scrape(args):
 
     pub=bs.find(text=re.compile("dating:"))
     if pub:
-      item['dating from']=pub.parent.next_sibling.strip()
-      item['dating to']=pub.parent.next_sibling.next_sibling.next_sibling.strip()
+      try:
+        item['dating from']=pub.parent.next_sibling.strip()
+      except:
+        item['dating from']="parse failed"
+      try:
+        item['dating to']=pub.parent.next_sibling.next_sibling.next_sibling.strip()
+      except:
+        item['dating to']="parse failed"
       
       pub.parent.next_sibling.next_sibling.next_sibling.extract()
       pub.parent.next_sibling.next_sibling.extract()
@@ -282,9 +291,8 @@ def scrape(args):
         break
 
       result.append(foo)
-
     output.append(parseItem(result))
-
+    
 
   
   os.makedirs("output", exist_ok=True)
@@ -319,47 +327,48 @@ def scrape(args):
 
 
 def main():
-  parser = argparse.ArgumentParser(description="Scraping of http://db.edcs.eu/epigr/epi.php?s_sprache=en")
+    print("Launch the Jupyter notebook.")
+#   parser = argparse.ArgumentParser(description="Scraping of http://db.edcs.eu/epigr/epi.php?s_sprache=en")
 
 
-  # EDCS-ID: 
-  # publication: 
-  # province: 
-  # place: 
-  # search text 1: 
-  #    and       or       and not    
-  # search text 2: 
-  # dating from: 
-  #    to:    
-  # inscription genus /
-  # personal status: 
-  # and not 
-  # sorting: 
-  #  publication       province    
-  # advice
-  # abbreviations
-  # submit corrections
-  # or new inscriptions
+#   # EDCS-ID: 
+#   # publication: 
+#   # province: 
+#   # place: 
+#   # search text 1: 
+#   #    and       or       and not    
+#   # search text 2: 
+#   # dating from: 
+#   #    to:    
+#   # inscription genus /
+#   # personal status: 
+#   # and not 
+#   # sorting: 
+#   #  publication       province    
+#   # advice
+#   # abbreviations
+#   # submit corrections
+#   # or new inscriptions
   
-  parser.add_argument('-e',   "--EDCS")
-  parser.add_argument('-p',   "--publication", action='append', help="to include more than one publication, use -p more than once")  
-  parser.add_argument('-v',   "--province", action='append', help='To include more than one province, use -v more than once')  
-  parser.add_argument('-l',   "--place")  
-  parser.add_argument('-o',   "--operator", default='and', help="Default: and. Term Operator: and, or, not", choices=["and", "or", "not"])    
-  parser.add_argument('-t',  "--term2")
-  parser.add_argument('-df',  "--dating-from")
-  parser.add_argument('-dt',  "--dating-to")
-  parser.add_argument('-ig',  "--inscription-genus", action='append', help="To include more than one genus, -ig more than once.")
-  parser.add_argument('-!ig',  "--and-not-inscription-genus")
-  parser.add_argument("--to-file", help="save the search results as a webpage on the machine. Debug tool")
-  parser.add_argument("--from-file", help="use the saved webpage instead of going to the manfred claus server. Debug.")
-  parser.add_argument("--debug", action='store_true', help='Add the primary result debug column. Default (false)')
+#   parser.add_argument('-e',   "--EDCS")
+#   parser.add_argument('-p',   "--publication", action='append', help="to include more than one publication, use -p more than once")  
+#   parser.add_argument('-v',   "--province", action='append', help='To include more than one province, use -v more than once')  
+#   parser.add_argument('-l',   "--place")  
+#   parser.add_argument('-o',   "--operator", default='and', help="Default: and. Term Operator: and, or, not", choices=["and", "or", "not"])    
+#   parser.add_argument('-t',  "--term2")
+#   parser.add_argument('-df',  "--dating-from")
+#   parser.add_argument('-dt',  "--dating-to")
+#   parser.add_argument('-ig',  "--inscription-genus", action='append', help="To include more than one genus, -ig more than once.")
+#   parser.add_argument('-!ig',  "--and-not-inscription-genus")
+#   parser.add_argument("--to-file", help="save the search results as a webpage on the machine. Debug tool")
+#   parser.add_argument("--from-file", help="use the saved webpage instead of going to the manfred claus server. Debug.")
+#   parser.add_argument("--debug", action='store_true', help='Add the primary result debug column. Default (false)')
   
-  parser.add_argument("term1", help="Search term, no flag is required. \n For phrases wrap them in \"\". For example, a one word search: platea. \nFor example, to search for Caesar divi Nervae, you write: ./parse.py \"Caesar divi Nervae\" to have Caesar... in the first search term. To have sophisticated wildcard matching (For example Caesar (anything) Nervae), ask Brian, or look at http://db.edcs.eu/epigr/hinweise/hinweis-en.html")
+#   parser.add_argument("term1", help="Search term, no flag is required. \n For phrases wrap them in \"\". For example, a one word search: platea. \nFor example, to search for Caesar divi Nervae, you write: ./parse.py \"Caesar divi Nervae\" to have Caesar... in the first search term. To have sophisticated wildcard matching (For example Caesar (anything) Nervae), ask Brian, or look at http://db.edcs.eu/epigr/hinweise/hinweis-en.html")
 
-  args = parser.parse_args() #"platea"
+#   args = parser.parse_args() #"platea"
   
     
-  scrape(args)
+#   scrape(args)
 if __name__ == "__main__":
   main()
