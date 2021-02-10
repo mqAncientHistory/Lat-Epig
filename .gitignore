@@ -1,5 +1,8 @@
 .direnv/
 
+already_mapped_data/
+output_maps/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
