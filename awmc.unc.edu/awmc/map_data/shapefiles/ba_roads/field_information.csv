@@ -1,0 +1,6 @@
+"Field Name","Type","Definition"
+"Major_or_"M,"boolean","Importance of the road. 1 is Major; 0 is Minor."
+"Known_or_a","boolean","Accuracy of the linework. 1 is relatively close; 0 is very approximate."
+"Name","varchar","Pleiades Name"
+"timeperiod","varchar","String for the time period of the road. A = Archaic; C = Classical; H = Hellenistic; R = Roman; L = Late"
+"pid","varchar","Pleiades ID"
