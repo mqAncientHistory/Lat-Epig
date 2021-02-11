@@ -12,8 +12,6 @@ venv/
 
 
 output/*.tsv
-*.tsv
-*.csv
 
 # C extensions
 *.so
