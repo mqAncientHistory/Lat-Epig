@@ -145,13 +145,14 @@ def makeScrapeInterface():
             args.term2=term2.value
 
 
+        with widgets.Output(layout={'border': '1px solid black'}) as out:
 
-        print("Starting Scrape. This may take a few minutes, depending on the number of search results.")
+            display("Starting Scrape. This may take a few minutes, depending on the number of search results.")
 
-        filename=parse.scrape(args)
-        #print(filename)
-        display(HTML("<a href='/tree/output/' target='_blank'>Full File List</a>"))
-        display(FileLink(filename))
+            filename=parse.scrape(args)
+            #print(filename)
+            display(HTML("<a href='/tree/output/' target='_blank'>Full File List</a>"))
+            display(FileLink(filename))
         
     def genusbutton(on_button_clicked):
         genus_button.layout.display='none'
