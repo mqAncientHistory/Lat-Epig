@@ -1,5 +1,12 @@
 # EpigraphyScraperNotebook
 
+To run the notebook on mybinder:
+
+Click here: [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/mqAncientHistory/EpigraphyScraperNotebook/HEAD?filepath=EpigraphyScraper.ipynb)
+
+When it starts, click the fast-forward button, or choose the Kernel menu and choose "Restart & Run All"
+
+
 ** MAKE SURE TO RUN THIS IN A VIRUTAL ENVIRONMENT**
 
 Deploy [direnv](https://direnv.net/docs/installation.html) and [pyenv](https://github.com/direnv/direnv/wiki/Python#pyenv). 
