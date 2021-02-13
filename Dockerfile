@@ -154,11 +154,12 @@ RUN jupyter trust EpigraphyScraper.ipynb
 EXPOSE 8888
 
 
-CMD ["voila", "--enable_nbextensions=True", \
-     "--no-browser", \
-     "--port=8888", \
-     "--VoilaConfiguration.file_whitelist=['.*']",\
-     "EpigraphyScraper.ipynb"]
+CMD ["jupyter", "lab", "--no-browser", "/home/jovyan/EpigraphyScraper.ipynb"]
+# CMD ["voila", "--enable_nbextensions=True", \
+#      "--no-browser", \
+#      "--port=8888", \
+#      "--VoilaConfiguration.file_whitelist=['.*']",\
+#      "EpigraphyScraper.ipynb"]
 # CMD ["jhsingle-native-proxy", "--destport", "8505", \
 # 	 "voila", "/home/jovyan/EpigraphyScraper.ipynb", \
 #      "{--}Voila.enable_nbextensions=True", "{--}VoilaConfiguration.file_whitelist=\"['.*']\"", \
