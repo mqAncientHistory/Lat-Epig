@@ -21,10 +21,11 @@ import datetime
 import os
 import codecs
 from clint.textui import progress
+from yaspin import yaspin
 
 COLUMNORDER = ["EDCS-ID", "publication", "province", "place", "dating from", "dating to", "status", "inscription", "Material", "Comment", "Links", "Latitude", "Longitude", "TM Place", "language", "photo"]
 
-
+@yaspin(text="Scraping site...")
 def scrape(args):
   searchTerm = args.term1
   #print("Searching for:")

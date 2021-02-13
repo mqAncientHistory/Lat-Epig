@@ -13,6 +13,8 @@ ARG DEBIAN_FRONTEND=noninteractive
 # Update Ubuntu Software repository
 # https://askubuntu.com/a/769429
 RUN sed -i '/^#\sdeb-src /s/^#//' "/etc/apt/sources.list"
+
+
 RUN apt-get update
 RUN apt-get install -y --no-install-recommends \
 apt-transport-https \
@@ -21,7 +23,6 @@ build-essential \
 ca-certificates \
 curl \
 git \
-jupyter-nbextension-jupyter-js-widgets \
 libbz2-dev \
 libffi-dev \
 libgeos++-dev \
@@ -39,10 +40,25 @@ proj-data \
 python3-pip \
 wget \
 zlib1g-dev \
-libgeos-dev
+libgeos-dev \
+libxml2-dev \
+libxslt-dev \
+python-dev \
+libc6 \
+libgcc-s1 \
+libgeos-c1v5 \
+libproj15 \
+libstdc++6 \
+libpython3.8-dev \
+python3.8 \
+python3.8-tk
+
+RUN update-ca-certificates
 
 RUN curl -fsSL https://deb.nodesource.com/setup_15.x | bash -
-RUN apt-get install -y --no-install-recommends nodejs
+RUN apt-get install -y --no-install-recommends  nodejs
+
+
 
 # jupyter-notebook \
 # python3-bs4 \
@@ -63,9 +79,8 @@ RUN apt-get install -y --no-install-recommends nodejs
 # jupyter-core \
 # jupyter-client \
 
-RUN apt-get build-dep python3-cartopy python3-lxml jupyter-notebook -y 
+#RUN apt-get build-dep python3-cartopy python3-lxml jupyter-notebook -y 
 
-RUN update-ca-certificates
 
 # RUN git clone https://github.com/pyenv/pyenv.git ~/.pyenv && \
 # 	cd ~/.pyenv && \
@@ -92,15 +107,10 @@ RUN update-ca-certificates
 USER root
 
 ARG NB_USER=jovyan
-ARG NB_UID=1001
 
-RUN adduser --disabled-password \
-    --gecos "Default user" \
-    --uid ${NB_UID} \
-    ${NB_USER}
+RUN useradd -m ${NB_USER}
 
 ENV USER ${NB_USER}
-ENV NB_UID ${NB_UID}
 ENV HOME /home/${NB_USER}
 
 COPY . ${HOME}
@@ -119,10 +129,13 @@ ENTRYPOINT ["/usr/bin/tini", "--"]
 # https://github.com/jupyter-widgets/ipywidgets/issues/1683#issuecomment-328952119
 
 
-RUN pip3 install --no-cache-dir numpy cython wheel shapely
-RUN pip3 install --no-cache-dir -r requirements.txt && jupyter nbextension enable --py widgetsnbextension --sys-prefix && jupyter labextension install @jupyter-widgets/jupyterlab-manager
+RUN pip3 install --no-cache-dir numpy==1.20.1 cython wheel
+# jhsingle-native-proxy>=0.0.10
+RUN pip3 install --no-cache-dir -r requirements.txt 
+RUN jupyter nbextension enable --py widgetsnbextension --sys-prefix && jupyter labextension install @jupyter-widgets/jupyterlab-manager && jupyter labextension install @voila-dashboards/jupyterlab-preview && jupyter serverextension enable voila --sys-prefix
 
-RUN chown -R ${NB_UID} ${HOME}
+
+RUN chown -R ${NB_USER} ${HOME}
 USER ${NB_USER}
 
 #RUN pip3 install --upgrade frictionless geoplot jupyterlab jupyter_client pandas geopandas && jupyter nbextension enable --py widgetsnbextension --sys-prefix && jupyter labextension install @jupyter-widgets/jupyterlab-manager
@@ -132,6 +145,24 @@ USER ${NB_USER}
 
 ENV JUPYTER_ENABLE_LAB=yes
 
+RUN jupyter trust EpigraphyScraper.ipynb 
 
-CMD ["jupyter", "lab", "--port=8888", "--no-browser", "--ip=0.0.0.0", "--allow-root", "Epigraphy Scraper.ipynb"]
+#CMD ["jupyter", "lab", "--port=8888", "--no-browser", "--ip=0.0.0.0", "--allow-root", "Epigraphy Scraper.ipynb"]
+#voila --enable_nbextensions=True  --VoilaConfiguration.file_whitelist="['.*']" EpigraphyScraper.ipynb 
+
+#https://github.com/ideonate/jhsingle-native-proxy/blob/master/docker-examples/jupyterhub-singleuser-voila-native/Dockerfile
+EXPOSE 8888
+
+
+CMD ["voila", "--enable_nbextensions=True", \
+     "--no-browser", \
+     "--port=8888", \
+     "--VoilaConfiguration.file_whitelist=['.*']",\
+     "EpigraphyScraper.ipynb"]
+# CMD ["jhsingle-native-proxy", "--destport", "8505", \
+# 	 "voila", "/home/jovyan/EpigraphyScraper.ipynb", \
+#      "{--}Voila.enable_nbextensions=True", "{--}VoilaConfiguration.file_whitelist=\"['.*']\"", \
+# 	 "{--}port={port}", "{--}no-browser", \
+# 	 "{--}Voila.base_url={base_url}/", "{--}Voila.server_url=/"]
+
 # CMD ["start.sh"]

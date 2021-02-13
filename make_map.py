@@ -19,6 +19,9 @@ import glob
 from shapely.geometry import Point
 # https://geopandas.org/gallery/plotting_basemap_background.html#sphx-glr-gallery-plotting-basemap-background-py
 import contextily as ctx
+
+from yaspin import yaspin
+
 #https://geopython.github.io/OWSLib/#wms
 #from owslib.wms import WebMapService
 #from owslib.wfs import WebFeatureService
@@ -93,7 +96,7 @@ CITIES_DATA     = Path("cities") / "Hanson2016_Cities_OxREP.csv"
 #     world, projection=geoplot.crs.Orthographic(), figsize=(10, 10)
 # )
 # ax.outline_patch.set_visible(True)
-
+@yaspin(text="Making maps...")
 def makeMap(data_file, roads_3857, provinces_3857, cities_geodataframe_3857, provinces=True, roads=True, cities=True):
 
   # pprint(WMS_LAYERS)
