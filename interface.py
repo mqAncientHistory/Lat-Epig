@@ -3,6 +3,8 @@ from ipywidgets import interact, interactive, fixed, interact_manual
 import ipywidgets as widgets
 from IPython.core.display import display, HTML
 from IPython.display import FileLink, FileLinks
+import threading
+import glob
 
 class Parseargs:
     
@@ -103,57 +105,63 @@ def makeScrapeInterface():
 
     button = widgets.Button(description="Scrape!")
     
-    display(HTML("<h1>Scraper</h1>"), term1, operator, term2, EDCS,publication, place, dating_from, dating_to, HTML("<div>Shift or Control click to select multiple in these lists</div>"),province, genus_button, inscription_genus, and_not_inscription_genus, button)
+    out = widgets.Output(layout={'border': '1px solid black'})
+
+    display(HTML("<h1>Scraper</h1>"), term1, operator, term2, EDCS,publication, place, dating_from, dating_to, HTML("<div>Shift or Control click to select multiple in these lists</div>"),province, genus_button, inscription_genus, and_not_inscription_genus, button, out)
     
     
     
     def on_button_clicked(b):
-        if and_not_inscription_genus.value:
-            args.and_not_inscription_genus=and_not_inscription_genus.value
+        with out:
+            if and_not_inscription_genus.value:
+                args.and_not_inscription_genus=and_not_inscription_genus.value
 
-        if dating_from.value:
-            args.dating_from=dating_from.value
+            if dating_from.value:
+                args.dating_from=dating_from.value
 
-        if dating_to.value:
-            args.dating_to=dating_to.value
+            if dating_to.value:
+                args.dating_to=dating_to.value
 
-        if EDCS.value:
-            args.EDCS=EDCS.value
+            if EDCS.value:
+                args.EDCS=EDCS.value
 
-        if inscription_genus.value:
-            args.inscription_genus=inscription_genus.value
+            if inscription_genus.value:
+                args.inscription_genus=inscription_genus.value
 
-        if operator.value:
-            args.operator=operator.value
+            if operator.value:
+                args.operator=operator.value
 
-        if place.value:
-            args.place=place.value
+            if place.value:
+                args.place=place.value
 
-        if province.value:
-            args.province=province.value
+            if province.value:
+                args.province=province.value
 
-        if province.value:
-            args.province=province.value
+            if province.value:
+                args.province=province.value
 
-        if publication.value:
-            args.publication=[publication.value]
+            if publication.value:
+                args.publication=[publication.value]
 
-        if term1.value:
-            args.term1=term1.value
+            if term1.value:
+                args.term1=term1.value
 
-        if term2.value:
-            args.term2=term2.value
+            if term2.value:
+                args.term2=term2.value
 
 
-        with widgets.Output(layout={'border': '1px solid black'}) as out:
+         #   with widgets.Output(layout={'border': '1px solid black'}) as out:
 
-            display("Starting Scrape. This may take a few minutes, depending on the number of search results.")
+            display(HTML("<p>Starting Scrape. This may take a few minutes, depending on the number of search results.</p>"))
 
             filename=parse.scrape(args)
             #print(filename)
-            display(HTML("<a href='/tree/output/' target='_blank'>Full File List</a>"))
-            display(FileLink(filename))
-        
+            # display(HTML("<a href='/tree/output/' target='_blank'>Full File List</a>"))
+            display(HTML("<ul>"))
+            for zipfile in glob.glob("output/*.tsv"):
+                display(HTML(f"<li><a href='{zipfile}'>{zipfile}</a></li>"))
+            display(HTML("</ul>"))
+    
     def genusbutton(on_button_clicked):
         genus_button.layout.display='none'
         inscription_genus.layout.display='flex'
