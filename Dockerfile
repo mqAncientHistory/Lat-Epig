@@ -132,7 +132,11 @@ ENTRYPOINT ["/usr/bin/tini", "--"]
 RUN pip3 install --no-cache-dir numpy==1.20.1 cython wheel
 # jhsingle-native-proxy>=0.0.10
 RUN pip3 install --no-cache-dir -r requirements.txt 
-RUN jupyter nbextension enable --py widgetsnbextension --sys-prefix && jupyter labextension install @jupyter-widgets/jupyterlab-manager && jupyter labextension install @voila-dashboards/jupyterlab-preview && jupyter serverextension enable voila --sys-prefix
+RUN jupyter nbextension enable --py widgetsnbextension --sys-prefix && \
+	jupyter labextension install @jupyter-widgets/jupyterlab-manager && \
+	jupyter labextension install @voila-dashboards/jupyterlab-preview && \
+	jupyter serverextension enable voila --sys-prefix && \
+	jupyter contrib nbextension install --sys-prefix
 
 
 RUN chown -R ${NB_USER} ${HOME}
@@ -154,7 +158,11 @@ RUN jupyter trust EpigraphyScraper.ipynb
 EXPOSE 8888
 
 
-CMD ["jupyter", "lab", "--no-browser", "/home/jovyan/EpigraphyScraper.ipynb"]
+CMD ["jupyter", "lab", "--no-browser"]
+# , \     
+# 	 "--VoilaConfiguration.base_url={base_url}/", \
+# 	 "--VoilaConfiguration.server_url=/"]
+
 # CMD ["voila", "--enable_nbextensions=True", \
 #      "--no-browser", \
 #      "--port=8888", \
@@ -162,8 +170,5 @@ CMD ["jupyter", "lab", "--no-browser", "/home/jovyan/EpigraphyScraper.ipynb"]
 #      "EpigraphyScraper.ipynb"]
 # CMD ["jhsingle-native-proxy", "--destport", "8505", \
 # 	 "voila", "/home/jovyan/EpigraphyScraper.ipynb", \
-#      "{--}Voila.enable_nbextensions=True", "{--}VoilaConfiguration.file_whitelist=\"['.*']\"", \
-# 	 "{--}port={port}", "{--}no-browser", \
-# 	 "{--}Voila.base_url={base_url}/", "{--}Voila.server_url=/"]
 
 # CMD ["start.sh"]

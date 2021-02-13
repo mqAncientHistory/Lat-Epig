@@ -10,7 +10,7 @@ EDCS)[http://db.edcs.eu/epigr/epi.php?s_sprache=en] by Manfred Clauss / Anne Kol
 
 ## To run the notebook on myBinder:
 
-Click here: [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/mqAncientHistory/EpigraphyScraperNotebook/HEAD)
+Click here: [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/mqAncientHistory/EpigraphyScraperNotebook/HEAD?urlpath=lab/tree/EpigraphyScraper.ipynb)
 
 When it starts, click the fast-forward button, or choose the Kernel menu and choose "Restart & Run All"
 
