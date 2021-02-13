@@ -1,6 +1,9 @@
 {
   "VoilaConfiguration": {
-    "enable_nbextensions": "True",
-    "file_whitelist":"['.*']"
+    "enable_nbextensions": true,
+    "file_whitelist":[".*"],
+    "base_url":"{base_url}/",
+    "server_url":"/",
+    "port": "8866"
   }
 }

@@ -158,9 +158,9 @@ RUN jupyter trust EpigraphyScraper.ipynb
 
 #https://github.com/ideonate/jhsingle-native-proxy/blob/master/docker-examples/jupyterhub-singleuser-voila-native/Dockerfile
 EXPOSE 8888
+EXPOSE 8866
 
-
-CMD ["jupyter", "lab", "--no-browser"]
+CMD ["jupyter", "notebook", "--ip='*'", "--NotebookApp.token=''", "--NotebookApp.password=''",  "--no-browser"]
 # , \     
 # 	 "--VoilaConfiguration.base_url={base_url}/", \
 # 	 "--VoilaConfiguration.server_url=/"]
