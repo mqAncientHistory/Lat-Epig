@@ -136,7 +136,9 @@ RUN jupyter nbextension enable --py widgetsnbextension --sys-prefix && \
 	jupyter labextension install @jupyter-widgets/jupyterlab-manager && \
 	jupyter labextension install @voila-dashboards/jupyterlab-preview && \
 	jupyter serverextension enable voila --sys-prefix && \
-	jupyter contrib nbextension install --sys-prefix
+	jupyter contrib nbextension install --sys-prefix && \
+	jupyter nbextension enable init_cell/main
+
 
 
 RUN chown -R ${NB_USER} ${HOME}
