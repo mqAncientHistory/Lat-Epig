@@ -90,7 +90,7 @@ parso==0.8.1
 petl==1.7.2
 pexpect==4.8.0
 pickleshare==0.7.5
-Pillow==8.1.0
+Pillow==8.1.1
 pip-review==1.1.0
 proj==0.2.0
 prometheus-client==0.9.0
