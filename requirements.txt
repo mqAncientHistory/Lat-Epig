@@ -65,7 +65,7 @@ jupyterlab-server==2.2.0
 jupyterlab-widgets==1.0.0
 kiwisolver==1.3.1
 linear-tsv==1.1.0
-lxml==4.6.2
+lxml==4.6.3
 mapclassify==2.4.2
 MarkupSafe==1.1.1
 matplotlib==3.3.4
