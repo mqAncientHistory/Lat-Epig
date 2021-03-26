@@ -70,6 +70,6 @@ threadpoolctl==2.1.0
 tqdm==4.54.0
 typer==0.3.2
 unicodecsv==0.14.1
-urllib3==1.26.2
+urllib3==1.26.3
 validators==0.18.1
 xlrd==1.2.0
