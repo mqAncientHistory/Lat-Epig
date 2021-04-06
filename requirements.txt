@@ -123,6 +123,7 @@ PyYAML==5.4.1
 pyzmq==22.0.3
 qtconsole==5.0.3
 QtPy==1.9.0
+randomcolor==0.4.4.5
 rasterio==1.2.1
 requests==2.25.1
 requests-file==1.5.1

@@ -22,11 +22,11 @@ class Parseargs:
 def make_map_interface():
     args = Parseargs()
     map_button = widgets.Button(description="Generate New Maps!")
-    map_button_interactive = widgets.Button(description="Reload Interactive!")
+    #     map_button_interactive = widgets.Button(description="Reload Interactive!")
     out = widgets.Output(layout={'border': '1px solid black'})
-    display(HTML("<h1>Interactive Map</h1>"))
-    display(HTML("<h2>Choose datafiles to plot</h2>"))
-    display(HTML("<h2>Map viewer</h2>"), map_button_interactive)
+#     display(HTML("<h1>Interactive Map</h1>"))
+#     display(HTML("<h2>Choose datafiles to plot</h2>"))
+#     display(HTML("<h2>Map viewer</h2>"), map_button_interactive)
     
     def interactive_refresh(b):
         # https://stackoverflow.com/a/38797877
@@ -62,4 +62,4 @@ def make_map_interface():
                 display(HTML(f"<li><a href='{zipfile}'>{zipfile}</a></li>"))
             display(HTML("</ul>"))
     map_button.on_click(map_on_button_clicked)
-    map_button_interactive.on_click(interactive_refresh)
+#     map_button_interactive.on_click(interactive_refresh)
