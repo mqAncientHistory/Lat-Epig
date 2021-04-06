@@ -129,7 +129,7 @@ ENTRYPOINT ["/usr/bin/tini", "--"]
 # https://github.com/jupyter-widgets/ipywidgets/issues/1683#issuecomment-328952119
 
 
-# RUN pip3 install --no-cache-dir numpy==1.20.1 cython wheel
+RUN pip3 install --no-cache-dir numpy==1.20.2 cython wheel
 # jhsingle-native-proxy>=0.0.10
 RUN pip3 install --no-cache-dir -r requirements.txt 
 RUN jupyter nbextension enable --py widgetsnbextension --sys-prefix && \
