@@ -56,12 +56,13 @@
 7	3	partner.php?s_language=en&param=CO0033057;HD032685;m|ce|1916;de-c0122;1ae1901-42;1ae1901-43
 10	3	partner.php?s_language=en&param=CO0047872;CO0073938;HD001007;CO0094956;1ae1931-08;1ae1931-09;1ae1931-10;1ae1931-11;1ae1931-12
 10	3	partner.php?s_language=en&param=CO0094881;CO0090302;HD026359;CO0091578;1ae1924-16;1ae1924-28;1ae1924-29;1ae1927-41;1ae1940-52
-16	3	partner.php?s_language=en&param=HD026001;CO0022124;CO0091577;1ae1916-12;1ae1916-13;1ae1917-01;1ae1917-02;1ae1919-09;1ae1919-21;1ae1921-08;1ae1922-43;1ae1924-28;1ae1924-29;1ae1926-36;1ae1927-41
+19	3	partner.php?s_language=en&param=HD026001;CO0022124;CO0091577;1ae1916-12;1ae1916-13;1ae1917-01;1ae1917-02;1ae1919-09;1ae1919-21;1ae1921-08;1ae1922-43;1ae1924-28;1ae1924-29;1ae1926-36;1ae1927-41;1ae1946-11;1ae1946-69;1ae1950-74
+3	2	partner.php?s_language=en&param=HD020451;1ae1942-10
 3	2	partner.php?s_language=en&param=HD023483;1ae1907-16
 3	2	partner.php?s_language=en&param=CO0011486;de-b0197
 6	3	partner.php?s_language=en&param=CO0020417;HD033466;1ae1890-28;1ae1891-47;1ae1891-48
-3	2	partner.php?s_language=en&param=CO0024334;de-b0671
-8	2	partner.php?s_language=en&param=HD025392;1ae1931-17;1ae1933-47;1ae1936-51;1ae1938-35;1ae1938-36;1ae1941-49
+4	2	partner.php?s_language=en&param=CO0024334;de-b0671;1ae1946-13
+9	2	partner.php?s_language=en&param=HD025392;1ae1931-17;1ae1933-47;1ae1936-51;1ae1938-35;1ae1938-36;1ae1941-49;1ae1948-41
 3	2	partner.php?s_language=en&param=HD026518;1ae1924-37
 4	2	partner.php?s_language=en&param=HD023517;lu_10584;1ae1937-72
 5	3	partner.php?s_language=en&param=CO0035719;HD031897;lu_4050;m|ce|0820
@@ -74,7 +75,7 @@
 2	1	partner.php?s_language=en&param=er_23286
 2	1	partner.php?s_language=en&param=A26083
 2	1	partner.php?s_language=en&param=er_3257
-3	2	partner.php?s_language=en&param=HD058557;lu_6464
+4	3	partner.php?s_language=en&param=CO0127939;HD058557;lu_6464
 3	2	partner.php?s_language=en&param=HD072612;lu_10350
 3	2	partner.php?s_language=en&param=HD057686;lu_6971
 4	3	partner.php?s_language=en&param=CO0047978;HD060242;lu_12093
