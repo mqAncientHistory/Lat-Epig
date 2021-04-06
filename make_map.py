@@ -96,9 +96,9 @@ CITIES_DATA     = Path("cities") / "Hanson2016_Cities_OxREP.csv"
 #     world, projection=geoplot.crs.Orthographic(), figsize=(10, 10)
 # )
 # ax.outline_patch.set_visible(True)
-@yaspin(text="Making maps...")
-def makeMap(data_file, roads_3857, provinces_3857, cities_geodataframe_3857, provinces=True, roads=True, cities=True):
 
+def makeDataframe(data_file, epsg=3857):
+    
   # pprint(WMS_LAYERS)
   # pprint([op.name for op in wms.operations])
 
@@ -120,7 +120,12 @@ def makeMap(data_file, roads_3857, provinces_3857, cities_geodataframe_3857, pro
   if DEBUG:
     pprint(point_geodataframe)
 
-  point_geodataframe_3857 = point_geodataframe.to_crs(epsg=3857)
+  point_geodataframe_3857 = point_geodataframe.to_crs(epsg=epsg)
+  return point_geodataframe_3857
+
+@yaspin(text="Making maps...")
+def makeMap(data_file, roads_3857, provinces_3857, cities_geodataframe_3857, provinces=True, roads=True, cities=True):
+  point_dataframe_3857 = makeDataframe(data_file)
 
 
   fig, ax = plt.subplots()
