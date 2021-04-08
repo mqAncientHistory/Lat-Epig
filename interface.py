@@ -11,7 +11,7 @@ class Parseargs:
     EDCS = None
     publication = None
     province = []
-    provincelist = [None, "Achaia", "Aegyptus", "Africa proconsularis", "Alpes Cottiae",  "Alpes Graiae", "Alpes Maritimae", "Alpes Poeninae", "Apulia et Calabria / Regio II", "Arabia", "Armenia", "Asia", "Baetica", "Barbaricum", "Belgica", "Britannia", "Bruttium et Lucania / Regio III", "Cappadocia", "Cilicia", "Corsica", "Creta et Cyrenaica", "Cyprus", "Dacia", "Dalmatia", "Etruria / Regio VII", "Galatia", "Gallia Narbonensis", "Germania inferior", "Germania superior", "Hispania citerior", "Italia", "Latium et Campania / Regio I", "Liguria / Regio IX", "Lugudunensis", "Lusitania", "Lycia et Pamphylia", "Macedonia", "Mauretania Caesariensis", "Mauretania Tingitana", "Mesopotamia", "Moesia inferior", "Moesia superior", "Noricum", "Numidia", "Palaestina", "Pannonia inferior", "Pannonia superior", "Picenum / Regio V", "Pontus et Bithynia", "Provincia incerta", "Raetia", "Regnum Bospori", "Roma Aemilia / Regio VIII", "Samnium / Regio IV", "Sardinia", "Sicilia", "Syria", "Thracia", "Transpadana / Regio XI", "Umbria / Regio VI Aquitani(c)a", "Venetia et Histria / Regio X" ]
+    provincelist = [None, "Achaia", "Aegyptus", "Africa Proconsularis", "Alpes Cottiae",  "Alpes Graiae", "Alpes Maritimae", "Alpes Poeninae", "Apulia et Calabria / Regio II", "Arabia", "Armenia", "Asia", "Baetica", "Barbaricum", "Belgica", "Britannia", "Bruttium et Lucania / Regio III", "Cappadocia", "Cilicia", "Corsica", "Creta et Cyrenaica", "Cyprus", "Dacia", "Dalmatia", "Etruria / Regio VII", "Galatia", "Gallia Narbonensis", "Germania Inferior", "Germania Superior", "Hispania Citerior", "Italia", "Latium et Campania / Regio I", "Liguria / Regio IX", "Lugudunensis", "Lusitania", "Lycia et Pamphylia", "Macedonia", "Mauretania Caesariensis", "Mauretania Tingitana", "Mesopotamia", "Moesia Inferior", "Moesia Superior", "Noricum", "Numidia", "Palaestina", "Pannonia inferior", "Pannonia Superior", "Picenum / Regio V", "Pontus et Bithynia", "Provincia incerta", "Raetia", "Regnum Bospori", "Roma Aemilia / Regio VIII", "Samnium / Regio IV", "Sardinia", "Sicilia", "Syria", "Thracia", "Transpadana / Regio XI", "Umbria / Regio VI Aquitani(c)a", "Venetia et Histria / Regio X" ]
     place = None
     term1 = None
     operator = "and"
@@ -24,7 +24,41 @@ class Parseargs:
     debug = False
     from_file = None
     to_file = None
-    genus_list = [None, "carmina", "sigilla impressa", "Augusti/Augustae", "praenomen et nomen defixiones", "signacula medicorum", "liberti/libertae", "reges diplomata",  "militaria", "termini", "milites", "sacerdotes christiani", "inscriptiones christianae", "tituli fabricationis", "mulieres", "sacerdotes pagani", "leges", "tituli honorarii", "nomen singulare", "servi/servae", "litterae erasae", "tituli operum", "officium/professio", "seviri Augustales",  "litterae in litura", "tituli possessionis", "ordo decurionum", "tria nomina miliaria", "tituli sacri", "ordo equester", "viri senatus consulta", "tituli sepulcrales", "ordo senatorius", "miliaria"]
+    genus_list = [None, 
+"Augusti/Augustae",
+"carmina", 
+"inscriptiones christianae", 
+"leges",
+"liberti/libertae", 
+"litterae erasae", 
+"litterae in litura", 
+"miliaria",
+"militaria", 
+"milites",
+"mulieres", 
+"nomen singulare",
+"officium/professio",
+"ordo decurionum", 
+"ordo equester", 
+"ordo senatorius", 
+"praenomen et nomen defixiones",
+"reges diplomata",  
+"sacerdotes christiani",
+"sacerdotes pagani",
+"servi/servae", 
+"seviri Augustales",
+"sigilla impressa",
+"signacula medicorum", 
+"termini",
+"tituli fabricationis", 
+"tituli honorarii",
+"tituli operum", 
+"tituli possessionis", 
+"tituli sacri",
+"tituli sepulcrales",
+"tria nomina miliaria",
+"viri senatus consulta"
+]
 
 def makeScrapeInterface():
 
