@@ -9,7 +9,7 @@
 
 ## Description 
 
-This  programe extracts the output of a search query from (Epigraphik-Datenbank  Clauss / Slaby (EDCS))[http://www.manfredclauss.de/] in a reproducible manner and saves it as a CSV file. The output can be also plotted the output to a map of the Roman Empire, along with the system of Roman Provinces, roads, and cities. 
+This  programe extracts the output of a search query from the [Epigraphik-Datenbank  Clauss / Slaby (EDCS)](http://www.manfredclauss.de/) in a reproducible manner and saves it as a CSV file. The output can be also plotted the output to a map of the Roman Empire, along with the system of Roman Provinces, roads, and cities. 
 
 
 ## Data Sources
