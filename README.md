@@ -15,7 +15,7 @@ This  programe extracts the output of a search query from the [Epigraphik-Datenb
 ## Data Sources
 ### Inscriptions
 
-The (Epigraphik-Datenbank  Clauss / Slaby (EDCS))[http://www.manfredclauss.de/] is a digital collection of more than 500,000 Latin inscriptions, created by Prof. Manfred Clauss, Anne Kolb, Wolfgang A. Slaby, Barbara Woitas, and hosted by the Universitat Zurich and Katolische Universitat Eichstat-Ingoldstadt.
+The [Epigraphik-Datenbank  Clauss / Slaby (EDCS)](http://www.manfredclauss.de/) is a digital collection of more than 500,000 Latin inscriptions, created by Prof. Manfred Clauss, Anne Kolb, Wolfgang A. Slaby, Barbara Woitas, and hosted by the Universitat Zurich and Katolische Universitat Eichstat-Ingoldstadt.
 
 ### Map
 
