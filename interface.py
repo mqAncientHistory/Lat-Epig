@@ -83,7 +83,8 @@ def makeScrapeInterface():
 
     
     EDCS=widgets.Text(
-        description='EDCS-ID:'
+        description='EDCS-ID:',
+        value='74800023'
     ) 
     
     publication=widgets.Text(

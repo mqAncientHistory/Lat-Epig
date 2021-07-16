@@ -23,7 +23,7 @@ import codecs
 from clint.textui import progress
 from yaspin import yaspin
 
-COLUMNORDER = ["EDCS-ID", "publication", "province", "place", "dating from", "dating to", "status", "inscription", "Material", "Comment", "Links", "Latitude", "Longitude", "TM Place", "language", "photo"]
+COLUMNORDER = ["EDCS-ID", "publication", "province", "place", "dating", "status", "inscription", "Material", "Comment", "Links", "Latitude", "Longitude", "TM Place", "language", "photo", "extra_text", "extra_html"]
 
 @yaspin(text="Scraping site...")
 def scrape(args):
@@ -50,11 +50,14 @@ def scrape(args):
   # logger.addHandler(logging.StreamHandler(sys.stdout))
   # logger.setLevel(logging.DEBUG)
   def parseItem(result):
+    
+    
     item={}
     for c in COLUMNORDER:
       item[c]=None
     for r in result:
-      
+
+
       if type(r) == bs4.element.Tag:
         partner = r.find(href=re.compile("partner.php.*"))
         if partner:
@@ -66,12 +69,16 @@ def scrape(args):
           links=["http://db.edcs.eu/epigr/{}".format(partner['href'])]
           if hd:
             links.append("https://edh-www.adw.uni-heidelberg.de/edh/inschrift/{}".format(hd.group(1)))
+            partner.extract()
           if t:
             links.append("https://www.trismegistos.org/text/{}".format(t.group(1)))
+            partner.extract()
           if co:
             links.append("http://cil.bbaw.de/dateien/cil_view.php?KO=KO{}".format(co.group(1)))
+            partner.extract()
           if n:
             links.append("http://www.edr-edr.it/edr_programmi/res_complex_comune.php?do=book&id_nr=EDR{}&partId=1".format(n.group(1)))
+            partner.extract()
           if links:
             item['Links']=' | '.join(links)
           numlinks=partner['href'].count(';')+2
@@ -103,30 +110,62 @@ def scrape(args):
           item['photo']="http://db.edcs.eu/epigr/bilder.php?{}".format(pubPhoto['href'])
           pubPhoto.extract()
 
+    
     html = ""
     for r in result:
       html="{} {}".format(html, str(r))
+    
+    
+    
+    html = re.sub(u'\xa0', ' ', html)
+    if not item.get("publication"):
+        html = re.sub(r"<b>publication:</b>[ \n]*(.*)<b>dating",r"<div class='publication'>\1</div><b>dating", html)
+        html = re.sub(r"<b>publication:</b>[ \n]*(.*)<b>EDCS",r"<div class='publication'>\1</div><b>EDCS", html) 
+    else:
+        html = re.sub(r"<b>publication:</b>",r"", html) 
+    html = re.sub(r"<b>dating:</b>(.*)<b>EDCS-ID",r"<div class='dating'>\1</div><b>EDCS-ID", html)
+    html = re.sub(r"<br/>\n([^<]*)<br/>",r"<div class='inscription'>\1</div>", html)
+    html = re.sub(r"<br/>\n([^<]*)</p>",r"<div class='inscription'>\1</div></p>", html)
+    html = re.sub(r"\n"," ", html)
+    
+    html = re.sub(r"<b>EDCS-ID:</b>([^<]*)",r"<div class='EDCS-ID'>\1</div>", html)
+    html = re.sub(r"<b>province:</b>([^<]*)",r"<div class='province'>\1</div>", html)
+    
+    html = re.sub(r"<b>place:</b>[ \n]*(.*)</noscript>",r"<div class='place'>\1</noscript></div>", html)
+    html = re.sub(r"<b>place:</b>[ \n]*(.*)<div",r"<div class='place'>\1</div><div", html)
+    html = re.sub(r"<b>province:</b>([^<]*)",r"<div class='province'>\1</div>", html)
+    html = re.sub(r"<b>inscription genus / personal status:</b>([^<]*)",r"<div class='status'>\1</div>", html)
+    html = re.sub(r"<b>material:</b>([^<]*)",r"<div class='Material'>\1</div>", html)
+    html = re.sub(r"<b>comment:</b>(.*)</p>",r"<div class='Comment'>\1</div>", html)
+  
+    
     bs = bs4.BeautifulSoup(html, 'lxml')
-
-
+  
     def itemExtract(bs, searchterm, key, item):
-      pub=bs.find(text=searchterm)
-      if pub and pub.parent:
-        if pub.parent.next_sibling.strip():
-          item[key]=re.sub("\xa0+"," ",pub.parent.next_sibling.strip())
-          pub.parent.next_sibling.extract()
-        pub.extract()
+      pub=bs.find(class_=key)
+      if pub:
+          #print(key, pub.get_text())
+          item[key]=pub.get_text().strip()
+          pub.extract()
+        
+#       if pub and pub.parent:
+#         if pub.parent.next_sibling.strip():
+#           item[key]=re.sub("\xa0+"," ",pub.parent.next_sibling.strip())
+#           pub.parent.next_sibling.extract()
+#         pub.extract()
 
       return (bs, item)
 
 
     terms = {"publication:":"publication",
+             "dating":"dating",
              "place:": "place",
              "EDCS-ID:": "EDCS-ID",
              "province:":"province",
              "inscription genus / personal status:": "status",
              "material:": "Material",
-             "comment:": "Comment"
+             "comment:": "Comment",
+             "text:": "inscription",
              }
 
 
@@ -134,46 +173,33 @@ def scrape(args):
     for key in terms:             
       bs, item = itemExtract(bs, key, terms[key], item)
     
+    item['extra_html'] = str(bs)
+    item['extra_text'] = bs.get_text()
+    
 
-    pub=bs.find(text=re.compile("dating:"))
-    if pub:
-      try:
-        item['dating from']=pub.parent.next_sibling.strip()
-      except:
-        item['dating from']="parse failed"
-      try:
-        item['dating to']=pub.parent.next_sibling.next_sibling.next_sibling.strip()
-      except:
-        item['dating to']="parse failed"
-      
-      pub.parent.next_sibling.next_sibling.next_sibling.extract()
-      pub.parent.next_sibling.next_sibling.extract()
-      pub.parent.next_sibling.extract()
-      pub.parent.extract()
+#     pub=bs.find(text="place:")
 
-    pub=bs.find(text="place:")
+#     if pub:
+#       pub.extract()
+#     pub=bs.find("noscript")
 
-    if pub:
-      pub.extract()
-    pub=bs.find("noscript")
-
-    if pub:
-      pub.extract()
+#     if pub:
+#       pub.extract()
 
     
 
         
-    pub=bs.find(text=re.compile("\"[A-Z]+\""))
-    languages=[]
-    while pub:    
-      lang=re.search("\"([A-Z]+)\"", pub)
-      if lang:
-        languages.append(lang.group(1))
-        pub.replace_with(re.sub("\"{}\"".format(lang.group(1)),"", pub))
-      pub=bs.find(text=re.compile("\"[A-Z]+\""))
+#     pub=bs.find(text=re.compile("\"[A-Z]+\""))
+#     languages=[]
+#     while pub:    
+#       lang=re.search("\"([A-Z]+)\"", pub)
+#       if lang:
+#         languages.append(lang.group(1))
+#         pub.replace_with(re.sub("\"{}\"".format(lang.group(1)),"", pub))
+#       pub=bs.find(text=re.compile("\"[A-Z]+\""))
 
-    item['language']=', '.join(languages)
-    item['inscription']=bs.text.strip()
+#     item['language']=', '.join(languages)
+#     item['inscription']=bs.text.strip()
     return item
 
 
@@ -294,11 +320,16 @@ def scrape(args):
       result.append(foo)
     output.append(parseItem(result))
     
-
-  
+  to_del=[]
+  for i, item in enumerate(output):
+    if not item.get('EDCS-ID'):
+        to_del.append(i)
+        
+  for i in to_del:
+    del output[i]
   os.makedirs("output", exist_ok=True)
   
-  with codecs.open(os.path.join("output", "{}-{}-{}.tsv").format(datetime.date.today().isoformat().replace(":",""), cleanSearchString, inscriptions,"utf-8-sig"), 'w', encoding='utf-8') as tsvfile:
+  with codecs.open(os.path.join("output", "{}-{}-{}.tsv").format(datetime.date.today().isoformat().replace(":",""), cleanSearchString, len(output),"utf-8-sig"), 'w', encoding='utf-8') as tsvfile:
     writer = csv.DictWriter(tsvfile, fieldnames=COLUMNORDER, delimiter="\t")
     writer.writeheader()
     writer.writerows(output)
