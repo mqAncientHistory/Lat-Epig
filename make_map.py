@@ -128,9 +128,10 @@ def makeDataframe(data_file, epsg=3857):
   return point_geodataframe_3857
 
 @yaspin(text="Making maps...")
-def makeMap(data_file, roads_3857, provinces_3857, cities_geodataframe_3857, provinces=True, roads=True, cities=True):
+def makeMap(data_file, map_title_text, roads_3857, provinces_3857, cities_geodataframe_3857, provinces=True, roads=True, cities=True):
   point_dataframe_3857 = makeDataframe(data_file)
 
+  pprint(point_dataframe_3857[["geometry", "Longitude", "Latitude" ]])
   print(f"Making {data_file}\n\troads: {roads}\n\tprovinces: {provinces}\n\tcities: {cities}\n")
 
   fig, ax = plt.subplots()
@@ -143,16 +144,14 @@ def makeMap(data_file, roads_3857, provinces_3857, cities_geodataframe_3857, pro
   #     #projection=geoplot.crs.Orthographic(), 
   #     figsize=(8, 4)
   # )
+  if map_title_text:
+    print(f"making map with title {map_title_text}")
+  else:
+    map_title_text = data_file.replace("-"," ").replace("_"," ").replace(".tsv","")
+  
+  print(f"making map with title {map_title_text}")
+  plt.title(map_title_text)
 
-  plt.title(data_file.replace("-"," ").replace("_"," ").replace(".tsv",""))
-
-  ax.add_artist(ScaleBar(1))
-
-  x, y, arrow_length = 0.95, 0.95, 0.05
-  ax.annotate('N', xy=(x, y), xytext=(x, y-arrow_length),
-              arrowprops=dict(facecolor='black', width=5, headwidth=15),
-              ha='center', va='center', fontsize=20,
-              xycoords=ax.transAxes)
 
   #https://gis.stackexchange.com/a/266833
   xmin, ymin, xmax, ymax = point_dataframe_3857.total_bounds
@@ -169,6 +168,8 @@ def makeMap(data_file, roads_3857, provinces_3857, cities_geodataframe_3857, pro
   point_dataframe_3857.plot(ax=ax, marker="^", linewidth=0.2, markersize=2, alpha=0.5, color='red', edgecolor='k', zorder=4)
   #ctx.add_basemap(ax, source=ctx.providers.Stamen.TerrainBackground)
 
+
+
   # for layer in WMS_LAYERS:
   #   print("foo")
   #   current_layer = WMS_LAYERS[layer]['wms']
@@ -183,7 +184,15 @@ def makeMap(data_file, roads_3857, provinces_3857, cities_geodataframe_3857, pro
 
   plt.axis('off')
 
-  #point_geodataframe.plot(ax=ax, color='red')
+
+  ax.add_artist(ScaleBar(1, units="km", length_fraction=0.15, location="lower left", font_properties={"size": "xx-small"}))
+
+  x, y, arrow_length = 0.975, 0.025, 0.05
+  ax.annotate('N', xy=(x, y), xytext=(x, y-arrow_length),
+              arrowprops=dict(facecolor='black', width=.05, headwidth=3),
+              ha='center', va='center', fontsize=5,
+              xycoords=ax.transAxes)
+  # point_geodataframe.plot(ax=ax, color='red')
   #https://stackoverflow.com/a/53735672
 
   datafile_base_name = data_file.replace("output/","").replace('.tsv','')
@@ -193,7 +202,7 @@ def makeMap(data_file, roads_3857, provinces_3857, cities_geodataframe_3857, pro
   #subprocess.call(["xdg-open", MAP_FILENAME])
   plt.close()
 
-def main():
+def main(map_title_text):
 
   cities_rows = extract(CITIES_DATA)
   cities_dataframe = pandas.DataFrame(cities_rows)
@@ -222,27 +231,27 @@ def main():
   # # objects.append(row)
   # # geometry.append(Point())
 
-  try:
-    shutil.move("output_maps/*", "old_maps")
-  except:
-    print("No old maps to move from output_maps to old_maps.")
+  # try:
+  #   shutil.move("output_maps/*", "old_maps")
+  # except:
+  #   print("No old maps to move from output_maps to old_maps.")
 
 
-  try:
-    os.mkdir("output_maps")
-  except:
-    pass
+  # try:
+  #   os.mkdir("output_maps")
+  # except:
+  #   pass
 
-  try:
-    os.makedirs("already_mapped_data/output/", exist_ok=True)
-  except FileExistsError:
-    pass
+  # try:
+  #   os.makedirs("already_mapped_data/output/", exist_ok=True)
+  # except FileExistsError:
+  #   pass
 
   for file in glob.glob(f"{DATA_DIR}/*.tsv"):
     print(f"Rendering: {file}")
-    makeMap(file, roads_3857, provinces_3857, cities_geodataframe_3857)
-    makeMap(file, roads_3857, provinces_3857, cities_geodataframe_3857, cities=False, roads=False)
-    shutil.move(file, f"already_mapped_data/{file}")
+    makeMap(file, map_title_text,roads_3857, provinces_3857, cities_geodataframe_3857)
+    makeMap(file, map_title_text,roads_3857, provinces_3857, cities_geodataframe_3857, cities=False, roads=False)
+    # shutil.move(file, f"already_mapped_data/{file}")
 
   print("Done Rendering maps.")
 
