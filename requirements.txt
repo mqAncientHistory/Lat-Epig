@@ -74,6 +74,7 @@ mapclassify==2.4.2
 MarkupSafe==1.1.1
 matplotlib==3.4.2
 matplotlib-inline==0.1.2
+matplotlib-scalebar==0.7.2
 MechanicalSoup==1.1.0
 mercantile==1.2.1
 mistune==0.8.4
@@ -129,6 +130,7 @@ Send2Trash==1.7.1
 Shapely==1.7.1
 shellingham==1.4.0
 simpleeval==0.9.10
+simplejson==3.17.3
 six==1.16.0
 sniffio==1.2.0
 snuggs==1.4.7
