@@ -22,6 +22,11 @@ import contextily as ctx
 
 from yaspin import yaspin
 
+
+# https://github.com/geopandas/geopandas/issues/1597
+from matplotlib_scalebar.scalebar import ScaleBar
+
+
 #https://geopython.github.io/OWSLib/#wms
 #from owslib.wms import WebMapService
 #from owslib.wfs import WebFeatureService
@@ -140,6 +145,14 @@ def makeMap(data_file, roads_3857, provinces_3857, cities_geodataframe_3857, pro
   # )
 
   plt.title(data_file.replace("-"," ").replace("_"," ").replace(".tsv",""))
+
+  ax.add_artist(ScaleBar(1))
+
+  x, y, arrow_length = 0.95, 0.95, 0.05
+  ax.annotate('N', xy=(x, y), xytext=(x, y-arrow_length),
+              arrowprops=dict(facecolor='black', width=5, headwidth=15),
+              ha='center', va='center', fontsize=20,
+              xycoords=ax.transAxes)
 
   #https://gis.stackexchange.com/a/266833
   xmin, ymin, xmax, ymax = point_dataframe_3857.total_bounds
