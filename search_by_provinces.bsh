@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+for province in "Acahaia" "Baetica"
+
+#"Achaia" "Baetica" "Galatia" "Mauretania Tingitana" "Regnum Bospori" "Aegyptus" "Barbaricum" "Gallia Narbonensis" "Mesopotamia" "Roma" "Aemilia / Regio VIII" "Belgica" "Germania inferior" "Moesia inferior" "Samnium / Regio IV" "Africa proconsularis" "Britannia" "Germania superior" "Moesia superior" "Sardinia" "Alpes Cottiae" "Bruttium et Lucania / Regio III" "Hispania citerior" "Noricum" "Sicilia" "Alpes Graiae" "Cappadocia" "Italia" "Numidia" "Syria" "Alpes Maritimae" "Cilicia" "Latium et Campania / Regio I" "Palaestina" "Thracia" "Alpes Poeninae" "Corsica" "Liguria / Regio IX" "Pannonia inferior" "Transpadana / Regio XI" "Apulia et Calabria / Regio II" "Creta et Cyrenaica" "Lugudunensis" "Pannonia superior" "Umbria / Regio VI" "Aquitani(c)a" "Cyprus" "Lusitania" "Picenum / Regio V" "Venetia et Histria / Regio X" "Arabia" "Dacia" "Lycia et Pamphylia" "Pontus et Bithynia" "Armenia" "Dalmatia" "Macedonia" "Provincia incerta" "Asia" "Etruria / Regio VII" "Mauretania Caesariensis" "Raetia"
+	do
+		echo "Scraping:" $province
+		python3 parse.py "%" -v "$province" --debug
+		
+done
