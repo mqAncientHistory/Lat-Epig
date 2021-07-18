@@ -105,7 +105,6 @@ def makeDataframe(data_file, epsg=3857):
   # https://frictionlessdata.io/tooling/python/extracting-data/
   # Handles multiline columns cleanly.
   data_filename = os.path.basename(data_file)
-  print(f"Making {data_filename}\n\troads: {roads}\n\tprovinces: {provinces}\n\tcities: {cities}\n")
   import_rows = extract(data_file)
   import_dataframe = pandas.DataFrame(import_rows)
 
@@ -127,6 +126,7 @@ def makeDataframe(data_file, epsg=3857):
 def makeMap(data_file, roads_3857, provinces_3857, cities_geodataframe_3857, provinces=True, roads=True, cities=True):
   point_dataframe_3857 = makeDataframe(data_file)
 
+  print(f"Making {data_file}\n\troads: {roads}\n\tprovinces: {provinces}\n\tcities: {cities}\n")
 
   fig, ax = plt.subplots()
 
@@ -139,10 +139,10 @@ def makeMap(data_file, roads_3857, provinces_3857, cities_geodataframe_3857, pro
   #     figsize=(8, 4)
   # )
 
-  plt.title(data_filename.replace("-"," ").replace("_"," ").replace(".tsv",""))
+  plt.title(data_file.replace("-"," ").replace("_"," ").replace(".tsv",""))
 
   #https://gis.stackexchange.com/a/266833
-  xmin, ymin, xmax, ymax = point_geodataframe_3857.total_bounds
+  xmin, ymin, xmax, ymax = point_dataframe_3857.total_bounds
 
   if provinces:
     bounded_prov = provinces_3857.cx[xmin:xmax, ymin:ymax]
@@ -153,7 +153,7 @@ def makeMap(data_file, roads_3857, provinces_3857, cities_geodataframe_3857, pro
   if cities:
     bounded_cities = cities_geodataframe_3857.cx[xmin:xmax, ymin:ymax]
     bounded_cities.plot(ax=ax, marker="s", markersize=0.1, linewidth=0.25, alpha=0.5,  color='black', zorder=3)
-  point_geodataframe_3857.plot(ax=ax, marker="^", linewidth=0.2, markersize=2, alpha=0.5, color='red', edgecolor='k', zorder=4)
+  point_dataframe_3857.plot(ax=ax, marker="^", linewidth=0.2, markersize=2, alpha=0.5, color='red', edgecolor='k', zorder=4)
   #ctx.add_basemap(ax, source=ctx.providers.Stamen.TerrainBackground)
 
   # for layer in WMS_LAYERS:
@@ -172,7 +172,7 @@ def makeMap(data_file, roads_3857, provinces_3857, cities_geodataframe_3857, pro
 
   #point_geodataframe.plot(ax=ax, color='red')
   #https://stackoverflow.com/a/53735672
-  map_filename=f"output_maps/{data_filename.replace('.tsv','')}{'-withProvinces' if provinces else ''}{'-withCities' if cities else ''}{'-withRoads' if roads else ''}"
+  map_filename=f"output_maps/{data_file.replace("output/","").replace('.tsv','')}{'-withProvinces' if provinces else ''}{'-withCities' if cities else ''}{'-withRoads' if roads else ''}"
   plt.savefig(f"{map_filename}.pdf", dpi=1200,bbox_inches='tight')
   #plt.savefig(f"{map_filename}.png", dpi=1200,bbox_inches='tight')
   #subprocess.call(["xdg-open", MAP_FILENAME])
