@@ -172,7 +172,9 @@ def makeMap(data_file, roads_3857, provinces_3857, cities_geodataframe_3857, pro
 
   #point_geodataframe.plot(ax=ax, color='red')
   #https://stackoverflow.com/a/53735672
-  map_filename=f"output_maps/{data_file.replace("output/","").replace('.tsv','')}{'-withProvinces' if provinces else ''}{'-withCities' if cities else ''}{'-withRoads' if roads else ''}"
+
+  datafile_base_name = data_file.replace("output/","").replace('.tsv','')
+  map_filename=f"output_maps/{datafile_base_name}{'-withProvinces' if provinces else ''}{'-withCities' if cities else ''}{'-withRoads' if roads else ''}"
   plt.savefig(f"{map_filename}.pdf", dpi=1200,bbox_inches='tight')
   #plt.savefig(f"{map_filename}.png", dpi=1200,bbox_inches='tight')
   #subprocess.call(["xdg-open", MAP_FILENAME])
