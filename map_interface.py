@@ -41,14 +41,24 @@ def make_map_interface():
         display(m)
         
     
+
+    map_title=widgets.Text(
+        description='Map Title:'
+    ) 
     
-    display(HTML("<h1>Generate PDF Map</h1>"), map_button, out)
+    display(HTML("<h1>Generate PDF Map</h1>"), map_title, map_button, out)
     def map_on_button_clicked(b):
+
+        if map_title.value:
+            map_title_text=map_title.value
+        else:
+            map_title_text=None
+
         with out:
             display(HTML("<p>Starting Map Generation</p>"))
             
         with out:           
-            make_map.main()
+            make_map.main(map_title_text)
             datestring=datetime.datetime.now().strftime("%Y%m%d")
             output_filename=f"epigraphy_scraper_maps_output_{datestring}"
             shutil.make_archive(output_filename, 'zip', "output_maps/")
