@@ -24,6 +24,7 @@ from clint.textui import progress
 from yaspin import yaspin
 
 COLUMNORDER = ["EDCS-ID", "publication", "province", "place", "dating", "status", "inscription", "Material", "Comment", "Links", "Latitude", "Longitude", "TM Place", "language", "photo", "extra_text", "extra_html"]
+SUPPRESS_FILTER = "Link zurueck zur Suchseite"
 
 @yaspin(text="Scraping site...")
 def scrape(args):
@@ -328,7 +329,9 @@ def scrape(args):
   # for i in to_del:
   #   del output[i]
 
-  bad_output = output = [item for item in output if not item.get('EDCS-ID')]
+  output = [item for item in output if SUPPRESS_FILTER not in item.get('extra_html')]
+
+  bad_output = [item for item in output if not item.get('EDCS-ID')]
   if bad_output:
     print("Some rows have been filtered")
     pprint(bad_output, indent=2)
@@ -372,7 +375,6 @@ def main():
     parser = argparse.ArgumentParser(description="Scraping of http://db.edcs.eu/epigr/epi.php?s_sprache=en")
 
 
-    # EDCS-ID: 
     # publication: 
     # province: 
     # place: 
