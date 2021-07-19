@@ -320,13 +320,22 @@ def scrape(args):
       result.append(foo)
     output.append(parseItem(result))
     
-  to_del=[]
-  for i, item in enumerate(output):
-    if not item.get('EDCS-ID'):
-        to_del.append(i)
+  # to_del=[]
+  # for i, item in enumerate(output):
+  #   if not item.get('EDCS-ID'):
+  #       to_del.append(i)
         
-  for i in to_del:
-    del output[i]
+  # for i in to_del:
+  #   del output[i]
+
+  bad_output = output = [item for item in output if not item.get('EDCS-ID')]
+  if bad_output:
+    print("Some rows have been filtered")
+    pprint(bad_output, indent=2)
+
+  output = [item for item in output if item.get('EDCS-ID')]
+  #output = filter()
+
   os.makedirs("output", exist_ok=True)
   
   with codecs.open(os.path.join("output", "{}-{}-{}.tsv").format(datetime.date.today().isoformat().replace(":",""), cleanSearchString, len(output),"utf-8-sig"), 'w', encoding='utf-8') as tsvfile:
@@ -360,47 +369,47 @@ def scrape(args):
 
 def main():
     print("Launch the Jupyter notebook.")
-#   parser = argparse.ArgumentParser(description="Scraping of http://db.edcs.eu/epigr/epi.php?s_sprache=en")
+    parser = argparse.ArgumentParser(description="Scraping of http://db.edcs.eu/epigr/epi.php?s_sprache=en")
 
 
-#   # EDCS-ID: 
-#   # publication: 
-#   # province: 
-#   # place: 
-#   # search text 1: 
-#   #    and       or       and not    
-#   # search text 2: 
-#   # dating from: 
-#   #    to:    
-#   # inscription genus /
-#   # personal status: 
-#   # and not 
-#   # sorting: 
-#   #  publication       province    
-#   # advice
-#   # abbreviations
-#   # submit corrections
-#   # or new inscriptions
-  
-#   parser.add_argument('-e',   "--EDCS")
-#   parser.add_argument('-p',   "--publication", action='append', help="to include more than one publication, use -p more than once")  
-#   parser.add_argument('-v',   "--province", action='append', help='To include more than one province, use -v more than once')  
-#   parser.add_argument('-l',   "--place")  
-#   parser.add_argument('-o',   "--operator", default='and', help="Default: and. Term Operator: and, or, not", choices=["and", "or", "not"])    
-#   parser.add_argument('-t',  "--term2")
-#   parser.add_argument('-df',  "--dating-from")
-#   parser.add_argument('-dt',  "--dating-to")
-#   parser.add_argument('-ig',  "--inscription-genus", action='append', help="To include more than one genus, -ig more than once.")
-#   parser.add_argument('-!ig',  "--and-not-inscription-genus")
-#   parser.add_argument("--to-file", help="save the search results as a webpage on the machine. Debug tool")
-#   parser.add_argument("--from-file", help="use the saved webpage instead of going to the manfred claus server. Debug.")
-#   parser.add_argument("--debug", action='store_true', help='Add the primary result debug column. Default (false)')
-  
-#   parser.add_argument("term1", help="Search term, no flag is required. \n For phrases wrap them in \"\". For example, a one word search: platea. \nFor example, to search for Caesar divi Nervae, you write: ./parse.py \"Caesar divi Nervae\" to have Caesar... in the first search term. To have sophisticated wildcard matching (For example Caesar (anything) Nervae), ask Brian, or look at http://db.edcs.eu/epigr/hinweise/hinweis-en.html")
-
-#   args = parser.parse_args() #"platea"
-  
+    # EDCS-ID: 
+    # publication: 
+    # province: 
+    # place: 
+    # search text 1: 
+    #    and       or       and not    
+    # search text 2: 
+    # dating from: 
+    #    to:    
+    # inscription genus /
+    # personal status: 
+    # and not 
+    # sorting: 
+    #  publication       province    
+    # advice
+    # abbreviations
+    # submit corrections
+    # or new inscriptions
     
-#   scrape(args)
+    parser.add_argument('-e',   "--EDCS")
+    parser.add_argument('-p',   "--publication", action='append', help="to include more than one publication, use -p more than once")  
+    parser.add_argument('-v',   "--province", action='append', help='To include more than one province, use -v more than once')  
+    parser.add_argument('-l',   "--place")  
+    parser.add_argument('-o',   "--operator", default='and', help="Default: and. Term Operator: and, or, not", choices=["and", "or", "not"])    
+    parser.add_argument('-t',  "--term2")
+    parser.add_argument('-df',  "--dating-from")
+    parser.add_argument('-dt',  "--dating-to")
+    parser.add_argument('-ig',  "--inscription-genus", action='append', help="To include more than one genus, -ig more than once.")
+    parser.add_argument('-!ig',  "--and-not-inscription-genus")
+    parser.add_argument("--to-file", help="save the search results as a webpage on the machine. Debug tool")
+    parser.add_argument("--from-file", help="use the saved webpage instead of going to the manfred claus server. Debug.")
+    parser.add_argument("--debug", action='store_true', help='Add the primary result debug column. Default (false)')
+    
+    parser.add_argument("term1", help="Search term, no flag is required. \n For phrases wrap them in \"\". For example, a one word search: platea. \nFor example, to search for Caesar divi Nervae, you write: ./parse.py \"Caesar divi Nervae\" to have Caesar... in the first search term. To have sophisticated wildcard matching (For example Caesar (anything) Nervae), ask Brian, or look at http://db.edcs.eu/epigr/hinweise/hinweis-en.html")
+
+    args = parser.parse_args() #"platea"
+    
+      
+    scrape(args)
 if __name__ == "__main__":
   main()
