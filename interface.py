@@ -11,7 +11,69 @@ class Parseargs:
     EDCS = None
     publication = None
     province = []
-    provincelist = [None, "Achaia", "Aegyptus", "Africa Proconsularis", "Alpes Cottiae",  "Alpes Graiae", "Alpes Maritimae", "Alpes Poeninae", "Apulia et Calabria / Regio II", "Arabia", "Armenia", "Asia", "Baetica", "Barbaricum", "Belgica", "Britannia", "Bruttium et Lucania / Regio III", "Cappadocia", "Cilicia", "Corsica", "Creta et Cyrenaica", "Cyprus", "Dacia", "Dalmatia", "Etruria / Regio VII", "Galatia", "Gallia Narbonensis", "Germania Inferior", "Germania Superior", "Hispania Citerior", "Italia", "Latium et Campania / Regio I", "Liguria / Regio IX", "Lugudunensis", "Lusitania", "Lycia et Pamphylia", "Macedonia", "Mauretania Caesariensis", "Mauretania Tingitana", "Mesopotamia", "Moesia Inferior", "Moesia Superior", "Noricum", "Numidia", "Palaestina", "Pannonia inferior", "Pannonia Superior", "Picenum / Regio V", "Pontus et Bithynia", "Provincia incerta", "Raetia", "Regnum Bospori", "Roma Aemilia / Regio VIII", "Samnium / Regio IV", "Sardinia", "Sicilia", "Syria", "Thracia", "Transpadana / Regio XI", "Umbria / Regio VI Aquitani(c)a", "Venetia et Histria / Regio X" ]
+    provincelist = [None, 
+"Achaia",
+"Aegyptus", 
+"Africa proconsularis", 
+"Alpes Cottiae",  
+"Alpes Graiae", 
+"Alpes Maritimae", 
+"Alpes Poeninae", 
+"Apulia et Calabria / Regio II", 
+"Aquitani(c)a",
+"Arabia", 
+"Armenia", 
+"Asia", 
+"Baetica", 
+"Barbaricum", 
+"Belgica", 
+"Britannia", 
+"Bruttium et Lucania / Regio III", 
+"Cappadocia", 
+"Cilicia", 
+"Corsica", 
+"Creta et Cyrenaica", 
+"Cyprus", 
+"Dacia", 
+"Dalmatia", 
+"Etruria / Regio VII", 
+"Galatia", 
+"Gallia Narbonensis", 
+"Germania inferior", 
+"Germania superior", 
+"Hispania citerior", 
+"Italia", 
+"Latium et Campania / Regio I", 
+"Liguria / Regio IX", 
+"Lugudunensis", 
+"Lusitania", 
+"Lycia et Pamphylia", 
+"Macedonia", 
+"Mauretania Caesariensis", 
+"Mauretania Tingitana", 
+"Mesopotamia", 
+"Moesia inferior", 
+"Moesia superior", 
+"Noricum", 
+"Numidia", 
+"Palaestina", 
+"Pannonia inferior", 
+"Pannonia superior", 
+"Picenum / Regio V", 
+"Pontus et Bithynia", 
+"Provincia incerta",
+"Raetia", 
+"Regnum Bospori", 
+"Roma", 
+"Aemilia / Regio VIII", 
+"Samnium / Regio IV", 
+"Sardinia", 
+"Sicilia", 
+"Syria", 
+"Thracia", 
+"Transpadana / Regio XI", 
+"Umbria / Regio VI", 
+"Venetia et Histria / Regio X" ]
     place = None
     term1 = None
     operator = "and"
@@ -197,20 +259,20 @@ def makeScrapeInterface():
     
 
     dating_from=widgets.Text(
-        description='dating from:'
+        description='Dating from:'
     ) 
     
     
     
     dating_to=widgets.Text(
-        description='dating to:'
+        description='Dating to:'
     ) 
     
 
     inscription_genus=widgets.SelectMultiple(
         options=Parseargs.genus_list,
         rows=10,
-        description='inscription genus / personal status:'
+        description='Inscription genus / personal status:'
     ) 
     
 
@@ -226,11 +288,11 @@ def makeScrapeInterface():
             
     genus_button = widgets.Button(description="Inscription Genus...")
 
-    button = widgets.Button(description="Scrape!")
+    button = widgets.Button(description="Get inscriptions!")
     
     out = widgets.Output(layout={'border': '1px solid black'})
 
-    display(HTML("<h1>Scraper</h1>"), term1, operator, term2, EDCS,publication, place, dating_from, dating_to, HTML("<div>Shift or Control click to select multiple in these lists</div>"),province, genus_button, inscription_genus, and_not_inscription_genus, button, out)
+    display(HTML("<h1>Lat Epig 2.0</h1>"), term1, operator, term2, EDCS,publication, place, dating_from, dating_to, HTML("<div>Shift or Control click to select multiple items in the following lists</div>"),province, genus_button, inscription_genus, and_not_inscription_genus, button, out)
     
     
     
@@ -275,7 +337,7 @@ def makeScrapeInterface():
 
          #   with widgets.Output(layout={'border': '1px solid black'}) as out:
 
-            display(HTML("<p>Starting Scrape. This may take a few minutes, depending on the number of search results.</p>"))
+            display(HTML("<p>Getting the inscriptions. This may take a few minutes (or hours), depending on the number of search results.</p>"))
 
             filename=parse.scrape(args)
             #print(filename)
