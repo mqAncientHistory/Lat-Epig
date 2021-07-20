@@ -174,8 +174,20 @@ def scrape(args):
     for key in terms:             
       bs, item = itemExtract(bs, key, terms[key], item)
     
-    item['extra_html'] = str(bs)
-    item['extra_text'] = bs.get_text()
+    if pub := bs.find("details"):
+      print("details found")
+      pprint(pub.get_text())
+      item['Comment'] = pub.get_text().replace('<br/>','\\n').strip()
+      pub.extract()
+
+
+
+
+    item['extra_text'] = bs.get_text().strip()
+    if item['extra_text']:
+      item['extra_html'] = str(bs)
+    else:
+      item['extra_html'] = ""
     
 
 #     pub=bs.find(text="place:")
@@ -190,17 +202,26 @@ def scrape(args):
     
 
         
-#     pub=bs.find(text=re.compile("\"[A-Z]+\""))
-#     languages=[]
-#     while pub:    
-#       lang=re.search("\"([A-Z]+)\"", pub)
-#       if lang:
-#         languages.append(lang.group(1))
-#         pub.replace_with(re.sub("\"{}\"".format(lang.group(1)),"", pub))
-#       pub=bs.find(text=re.compile("\"[A-Z]+\""))
+    # pub=bs.find(text=re.compile("\"[A-Z]+\""))
+    languages=[]
 
-#     item['language']=', '.join(languages)
-#     item['inscription']=bs.text.strip()
+    def pop_language(matchobj, languages=languages):
+      languages.append(matchobj.group(1))
+      return ''
+
+
+    language_pattern = r"\"([A-Z]+)\""
+    if re.search(language_pattern, item['inscription']):
+      item['inscription'] = re.sub(language_pattern, pop_language, item['inscription'])
+    # while pub:    
+    #   lang=re.search("\"([A-Z]+)\"", pub)
+    #   if lang:
+    #     languages.append(lang.group(1))
+    #     pub.replace_with(re.sub("\"{}\"".format(lang.group(1)),"", pub))
+    #   pub=bs.find(text=re.compile("\"[A-Z]+\""))
+
+    item['language']=', '.join(languages)
+    # item['inscription']=bs.text.strip()
     return item
 
 
@@ -332,7 +353,13 @@ def scrape(args):
   output = [item for item in output if SUPPRESS_FILTER not in item.get('extra_html')]
 
   bad_output = [item for item in output if not item.get('EDCS-ID')]
+  dump_bad = False
   if bad_output:
+    for out in bad_output:
+      if out['inscription'] or out['extra_html']:
+        dump_bad = True
+  
+  if dump_bad:
     print("Some rows have been filtered")
     pprint(bad_output, indent=2)
 
