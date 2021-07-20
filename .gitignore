@@ -1,3 +1,4 @@
+output/
 .direnv/
 index.html?.*
 already_mapped_data/
