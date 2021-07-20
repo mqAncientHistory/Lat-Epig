@@ -227,7 +227,7 @@ def scrape(args):
 
 
     language_pattern = r"\"([A-Z]+)\""
-    if re.search(language_pattern, item['inscription']):
+    if type(item['inscription']) == str and re.search(language_pattern, item['inscription']):
       item['inscription'] = re.sub(language_pattern, pop_language, item['inscription'])
     # while pub:    
     #   lang=re.search("\"([A-Z]+)\"", pub)
