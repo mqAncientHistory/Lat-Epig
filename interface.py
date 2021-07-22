@@ -300,39 +300,48 @@ def makeScrapeInterface():
         with out:
             if and_not_inscription_genus.value:
                 args.and_not_inscription_genus=and_not_inscription_genus.value
+                and_not_inscription_genus.value=""
 
             if dating_from.value:
                 args.dating_from=dating_from.value
+                dating_from.value=""
 
             if dating_to.value:
                 args.dating_to=dating_to.value
+                dating_to.value=""
 
             if EDCS.value:
                 args.EDCS=EDCS.value
+                EDCS.value=""
 
             if inscription_genus.value:
                 args.inscription_genus=inscription_genus.value
+                inscription_genus.value=""
 
             if operator.value:
                 args.operator=operator.value
 
+
             if place.value:
                 args.place=place.value
+                place.value=""
 
             if province.value:
                 args.province=province.value
+                province.value=""
 
-            if province.value:
-                args.province=province.value
 
             if publication.value:
                 args.publication=[publication.value]
+                publication.value=[]
 
             if term1.value:
                 args.term1=term1.value
+                term1.value=""
 
             if term2.value:
                 args.term2=term2.value
+                term2.value=""
 
 
          #   with widgets.Output(layout={'border': '1px solid black'}) as out:

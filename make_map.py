@@ -2,7 +2,7 @@
 # GPL v3 Brian Ballsun-Stanton
 # Taken from https://automating-gis-processes.github.io/2016/Lesson5-static-maps.html
 
-
+import datetime
 import geopandas
 import matplotlib.pyplot as plt
 from frictionless import extract
@@ -21,10 +21,14 @@ from shapely.geometry import Point
 import contextily as ctx
 
 from yaspin import yaspin
+from scalebar import scale_bar
 
+import cartopy.crs as ccrs
 
 # https://github.com/geopandas/geopandas/issues/1597
 from matplotlib_scalebar.scalebar import ScaleBar
+
+from cartopy.mpl.gridliner import LONGITUDE_FORMATTER, LATITUDE_FORMATTER
 
 
 #https://geopython.github.io/OWSLib/#wms
@@ -128,14 +132,21 @@ def makeDataframe(data_file, epsg=3857):
   return point_geodataframe_3857
 
 @yaspin(text="Making maps...")
-def makeMap(data_file, map_title_text, roads_3857, provinces_3857, cities_geodataframe_3857, provinces=True, roads=True, cities=True):
+def makeMap(data_file, map_title_text, roads_3857, provinces_3857, cities_geodataframe_3857, searchterm="", provinces=True, roads=True, cities=True):
   point_dataframe_3857 = makeDataframe(data_file)
 
   pprint(point_dataframe_3857[["geometry", "Longitude", "Latitude" ]])
   print(f"Making {data_file}\n\troads: {roads}\n\tprovinces: {provinces}\n\tcities: {cities}\n")
 
-  fig, ax = plt.subplots()
+  fig = plt.figure()
 
+ 
+  ax = fig.add_subplot(1,1,1, projection=ccrs.Mercator.GOOGLE, frameon=False)
+
+  ax = plt.axes(projection=ccrs.Mercator.GOOGLE)
+ 
+  ax.axis('off')
+  ax.coastlines(resolution='10m', linewidth=0.05)
 
   #https://geopandas.org/gallery/plotting_with_geoplot.html
   world = geopandas.read_file(geopandas.datasets.get_path('naturalearth_lowres'))
@@ -149,8 +160,19 @@ def makeMap(data_file, map_title_text, roads_3857, provinces_3857, cities_geodat
   else:
     map_title_text = data_file.replace("-"," ").replace("_"," ").replace(".tsv","")
   
+  map_metadata_list=data_file.replace("output/","").replace(".tsv","").split("-")
+  search_params = map_metadata_list[3].replace("_"," ").replace("term1","Term 1 =").replace("term2","Term 2 =").replace("%","All").replace("+","; ").replace(r" +"," ")
+
+  map_metadata = f"""Search Parameters: {search_params}
+Results: {map_metadata_list[4]} Date scraped: {map_metadata_list[0]}-{map_metadata_list[1]}-{map_metadata_list[2]}
+Data from Epigraphik-Datenbank Clauss / Slaby"""
+  
+
   print(f"making map with title {map_title_text}")
-  plt.title(map_title_text)
+  print(f"making map with metadata {map_metadata_list} rendered as \n{map_metadata}")
+  plt.tight_layout()
+  plt.suptitle(map_metadata, fontsize=6, y=0.10)
+  plt.title(map_title_text, fontsize=12, y=1)
 
 
   #https://gis.stackexchange.com/a/266833
@@ -158,16 +180,21 @@ def makeMap(data_file, map_title_text, roads_3857, provinces_3857, cities_geodat
 
   if provinces:
     bounded_prov = provinces_3857.cx[xmin:xmax, ymin:ymax]
-    bounded_prov.plot(ax=ax, linewidth=1, alpha=0.1,  cmap=plt.get_cmap("prism"), zorder=1)
+    bounded_prov.plot(ax=ax, linewidth=1, alpha=0.1,  cmap=plt.get_cmap("prism"), zorder=1, label="Provinces")
   if roads:
     bounded_roads = roads_3857.cx[xmin:xmax, ymin:ymax]
-    bounded_roads.plot(ax=ax, linewidth=0.2, alpha=1,  color='gray', zorder=2)
+    bounded_roads.plot(ax=ax, linewidth=0.2, alpha=1,  color='gray', zorder=2, label="Roads")
   if cities:
     bounded_cities = cities_geodataframe_3857.cx[xmin:xmax, ymin:ymax]
-    bounded_cities.plot(ax=ax, marker="s", markersize=0.1, linewidth=0.25, alpha=0.5,  color='black', zorder=3)
-  point_dataframe_3857.plot(ax=ax, marker="^", linewidth=0.2, markersize=2, alpha=0.5, color='red', edgecolor='k', zorder=4)
+    bounded_cities.plot(ax=ax, marker="+", markersize=3, linewidth=0.25, alpha=0.5,  color='black', zorder=3, label="Cities")
+  if searchterm:
+    searchterm = f"Inscription:\n{searchterm}"
+  else:
+    searchterm = "Inscription"
+  point_dataframe_3857.plot(ax=ax, marker=".", linewidth=0.2, markersize=5, alpha=0.5, color='red', edgecolor='k', zorder=4, label=f"{searchterm}")
   #ctx.add_basemap(ax, source=ctx.providers.Stamen.TerrainBackground)
 
+  ax.legend(fontsize='small')
 
 
   # for layer in WMS_LAYERS:
@@ -185,21 +212,38 @@ def makeMap(data_file, map_title_text, roads_3857, provinces_3857, cities_geodat
   plt.axis('off')
 
 
-  ax.add_artist(ScaleBar(1, units="km", length_fraction=0.15, location="lower left", font_properties={"size": "xx-small"}))
+  # ax.add_artist(ScaleBar(1, 
+  #                        units="km", 
+  #                        length_fraction=0.15, 
+  #                        location="lower left", 
+  #                        font_properties={"size": "xx-small"}))
 
-  x, y, arrow_length = 0.975, 0.025, 0.05
+  x, y, arrow_length = 0.025, 0.1, 0.075
   ax.annotate('N', xy=(x, y), xytext=(x, y-arrow_length),
-              arrowprops=dict(facecolor='black', width=.05, headwidth=3),
+              arrowprops=dict(facecolor='black', arrowstyle='->'),#width=.05, headwidth=2),
               ha='center', va='center', fontsize=5,
               xycoords=ax.transAxes)
   # point_geodataframe.plot(ax=ax, color='red')
   #https://stackoverflow.com/a/53735672
+  scale_bar(ax, (0.05, 0.05), 1_000)
+  ax.xaxis.set_visible(False)
+  ax.set_xticks([0]) 
 
+  ax.autoscale_view(tight=True)
   datafile_base_name = data_file.replace("output/","").replace('.tsv','')
   map_filename=f"output_maps/{datafile_base_name}{'-withProvinces' if provinces else ''}{'-withCities' if cities else ''}{'-withRoads' if roads else ''}"
+  
+  
+  ax.spines['geo'].set_visible(False)
+
+  
+  #ax.get_tightbbox()
+  #ax.outline_patch.set_visible(False)
   plt.savefig(f"{map_filename}.pdf", dpi=1200,bbox_inches='tight')
-  #plt.savefig(f"{map_filename}.png", dpi=1200,bbox_inches='tight')
+  plt.savefig(f"{map_filename}.png", dpi=1200,bbox_inches='tight')
   #subprocess.call(["xdg-open", MAP_FILENAME])
+
+
   plt.close()
 
 def main(map_title_text):
@@ -256,4 +300,4 @@ def main(map_title_text):
   print("Done Rendering maps.")
 
 if __name__ == "__main__":
-  main()
+  main(map_title_text=str(datetime.datetime.now()))
