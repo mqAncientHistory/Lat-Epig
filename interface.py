@@ -175,7 +175,7 @@ class Parseargs:
                         "replace":r""},
 "inscription_end_line": {"patt":r"\n",
                         "replace":r" "},
-"inscription_extra_blank": {"patt":r"[ ]+",
+"inscription_extra_blank": {"patt":r"[ ]+",edcs_number_three_both
                         "replace":r" "},
 "inscription_multi_whitespace": {"patt":r"\s+",
                         "replace":r" "},
