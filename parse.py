@@ -23,14 +23,18 @@ import codecs
 from clint.textui import progress
 from yaspin import yaspin
 
-COLUMNORDER = ["EDCS-ID", "publication", "province", "place", "dating", "status", "inscription", "Material", "Comment", "Latitude", "Longitude", "TM Place", "language", "photo", "partner_link", "extra_text", "extra_html"]
+COLUMNORDER = ["EDCS-ID", "publication", "province", "place", "dating from", "dating to", "date not before", "date not after", "status", "inscription", "inscription conservative cleaning", "inscription interpretive cleaning", "Material", "Comment", "Latitude", "Longitude", "TM Place", "language", "photo", "partner_link", "extra_text", "extra_html", "raw dating"]
 SUPPRESS_FILTER = "Link zurueck zur Suchseite"
 
 @yaspin(text="Scraping site...")
-def scrape(args):
+def scrape(args, prevent_write=False):
   searchTerm = args.term1
   #print("Searching for:")
-  #pprint(args)
+  if "debug" in args and args.__dict__['debug']:
+    pprint(args)
+    debug = True
+  else:
+    debug = False
 
   searchString = []
 
@@ -53,6 +57,51 @@ def scrape(args):
 
 
 
+  def clean_conservative(text):
+    if debug:
+      print(f"\n\n***\n\nconservative cleaning: {text}\n\n***\n\n")
+    rules = {"inscription_expanded_abbreviations_conservative": {"patt":r"\([^(]*\)",
+                        "replace":r""},
+             "inscription_suppresion_superscripts_conservative": {"patt":r"{[^}]*}[⁰¹²³⁴⁵⁶⁷⁸⁹]+",
+                                     "replace":r""},
+             "inscription_suppresion_conservative": {"patt":r"[\{*\}]",
+                                     "replace":r""},
+             "inscription_restoration_conservative": {"patt":r"\[[^[]*\]",
+                                     "replace":r""},
+             "inscription_substitution_conservative": {"patt":r"\<[^<]*\>",
+                                     "replace":r""},
+             "inscription_substitution_edh_conservative": {"patt":r"([α-ωΑ-Ωa-zA-Z])=([α-ωΑ-Ωa-zA-Z])",
+                                     "replace":r"\2"}}
+    for rule in rules:
+      patt = rules[rule]["patt"]
+      repl = rules[rule]["replace"]
+      if debug:
+        print(f"\n-------\ncons rule: {rule}\nc\tpatt:{patt}\nc\trepl:{repl}\nc\tbefore:{text}\n")
+      text = re.sub(patt, repl, text)
+      if debug:
+        print(f"\tAfter: {text}")
+    if debug:
+      print(f"\n\n***\n\nconservative cleaned: {text}")
+
+    return text
+
+  def clean_interpretive(text):
+    rules={"inscription_expanded_abbreviations_interpretive": {"patt":r"[\(*\)]",
+                        "replace":r""},}
+    if debug:
+      print(f"\n\n***\n\ninterpretive cleaning: {text}\n\n***\n\n")
+    for rule in rules:
+      patt = rules[rule]["patt"]
+      repl = rules[rule]["replace"]
+      if debug:
+        print(f"\n-------\ninterp rule: {rule}\ni\tpatt:{patt}\ni\trepl:{repl}\ni\tbefore:{text}\n")
+      text = re.sub(patt, repl, text)
+      if debug:
+        print(f"\tAfter: {text}")
+
+    if debug:
+      print(f"\n\n***\n\ninterpretive cleaned: {text}\n\n***\n\n")
+    return text
 
   def parseItem(result):
     
@@ -140,7 +189,7 @@ def scrape(args):
         html = re.sub(r"<b>publication:</b>[ \n]*(.*)<b>EDCS",r"<div class='publication'>\1</div><b>EDCS", html) 
     else:
         html = re.sub(r"<b>publication:</b>",r"", html) 
-    html = re.sub(r"<b>dating:</b>(.*)<b>EDCS-ID",r"<div class='dating'>\1</div><b>EDCS-ID", html)
+    html = re.sub(r"<b>dating:</b>(.*)<b>EDCS-ID",r"<div class='raw dating'>\1</div><b>EDCS-ID", html)
     html = re.sub(r"<br/>\n([^<]*)<br/>",r"<div class='inscription'>\1</div>", html)
     html = re.sub(r"<br/>\n([^<]*)</p>",r"<div class='inscription'>\1</div></p>", html)
     html = re.sub(r"\n"," ", html)
@@ -175,7 +224,7 @@ def scrape(args):
 
 
     terms = {"publication:":"publication",
-             "dating":"dating",
+             "raw dating":"raw dating",
              "place:": "place",
              "EDCS-ID:": "EDCS-ID",
              "province:":"province",
@@ -186,10 +235,88 @@ def scrape(args):
              }
 
 
-        #COLUMNORDER = ["EDCS-ID", "publication", "province", "place", "dating from", "dating to", "inscription status", "inscription", "Links", "Latitude", "Longitude", "TM Place"]
+        #COLUMNORDER = ["EDCS-ID", "publication", "province", "place", "dating not before", "dating not after", "inscription status", "inscription", "Links", "Latitude", "Longitude", "TM Place"]
     for key in terms:             
       bs, item = itemExtract(bs, key, terms[key], item)
     
+
+
+    def date_min(old, new):
+      if old and new:
+        return min(int(old), int(new))
+      elif old:
+        return old
+      else:
+        return new
+
+    def date_max(old, new):
+      if old and new:
+        return max(int(old), int(new))
+      elif old:
+        return old
+      else:
+        return new
+
+    # dating possibilities -100 to -1;  -70 to -31
+    # dating ID: 72200182
+    if item["raw dating"]:
+      if dates := re.findall(r" *(?![a-z1-9]+:)? *([0-9-]*(?!:))( to )?([0-9-]*(?!:));?", item["raw dating"]):
+        # this is a multi-valued date because someone dislikes us...
+        # dating:  a:  196 to 196;   b:  198 to 200;   c:  171 to 300;   d:  208 to 218;   e:  180 to 222;   f:  228 to 228;   g:  234 to 234;   h:  297 to 297;   i:  171 to 300;   j:  171 to 300;   k:  171 to 300         
+        # EDCS-ID: EDCS-72200182
+        # from: 196, to: 196, not-before: 196, not after: 300
+        # dating:  a:  ;   b:  71 to 100;   c:  ;   d:           EDCS-ID: EDCS-32001032
+        # from: 71 (I hate petra), to: 100, not-before 71, not-after 100 
+        # 24900077 a:  276 to 276;   b:  276 to 282
+        # EDCS-75100087 3:  ;  -27 to 37
+        #print("multi-valued dates")
+        #pprint(dates)
+        
+          
+
+        for date in dates:
+          if date[0]:
+            date_from = date[0]
+            date_to = date[2]
+            if not item['dating from']:
+              item['dating from'] = int(date_from)
+              item['date not before'] = int(date_from)
+            if not item['dating to']:
+              item['dating to'] = int(date_to)
+              item['date not after'] = int(date_to)
+            if debug:
+              print(date, date_from, date_to, item.get('date not before', -9999), item['date not after'])
+            item['date not before'] = date_min(date_from, item['date not before'])
+            item['date not after'] = date_max(date_to, item['date not after'])
+            #print(date, item['date not before'], item['date not after'])
+
+            # if not item['date not before'] or date_from > item.get("date not before", -9999):
+            #   item['date not before'] = date_from
+            # if not item['date not after'] or date_to < item.get("date not after", 9999):
+            #   item['date not after'] = date_to
+
+
+      elif dates := re.findall(r"^ *([0-9-]+) to ([0-9-]+) *$", item["raw dating"]):
+        # dating: -68 to -68         EDCS-ID: EDCS-24900077
+        #print("single valued datespan")
+        item['date not before'], item['date not after'] = dates[0]
+        item['dating from'], item['dating to'] = dates[0]
+      elif dates := re.findall(r"^ *([0-9-]+) *$", item["raw dating"]):
+        # dating: -20         EDCS-ID: EDCS-41200809
+        #print("single date")
+        #pprint(dates)
+        item['date not before'] = item['date not after'] = item['dating from'] = item['dating to'] = dates[0]        
+      else:
+        print(f"No date matched {item['EDCS-ID']}")
+        if item["raw dating"]:
+          pprint(item["raw dating"])
+        item['dating from'] = item['dating to'] = item['date not before'] = item['date not after'] = ''
+      if debug:
+        pprint(item)
+    else:
+      item['dating from'] = item['dating to'] = item['date not before'] = item['date not after'] = ''
+
+
     if pub := bs.find("details"):
       print("details found")
       pprint(pub.get_text())
@@ -229,6 +356,11 @@ def scrape(args):
     language_pattern = r"\"([A-Z]+)\""
     if type(item['inscription']) == str and re.search(language_pattern, item['inscription']):
       item['inscription'] = re.sub(language_pattern, pop_language, item['inscription'])
+
+    if item['inscription']:
+      pprint(item['inscription'])
+      item['inscription conservative cleaning'] = clean_conservative(item['inscription'])
+      item['inscription interpretive cleaning'] = clean_interpretive(item['inscription'])
     # while pub:    
     #   lang=re.search("\"([A-Z]+)\"", pub)
     #   if lang:
@@ -383,14 +515,18 @@ def scrape(args):
   #output = filter()
 
   os.makedirs("output", exist_ok=True)
+  if not prevent_write:
+    with codecs.open(os.path.join("output", "{}-{}-{}.tsv").format(datetime.date.today().isoformat().replace(":",""), cleanSearchString, len(output),"utf-8-sig"), 'w', encoding='utf-8') as tsvfile:
+      writer = csv.DictWriter(tsvfile, fieldnames=COLUMNORDER, delimiter="\t")
+      writer.writeheader()
+      writer.writerows(output)
+    
+    #print("Done!")
+    return(os.path.join("output", "{}-{}-{}.tsv").format(datetime.date.today().isoformat().replace(":",""), cleanSearchString, inscriptions))
   
-  with codecs.open(os.path.join("output", "{}-{}-{}.tsv").format(datetime.date.today().isoformat().replace(":",""), cleanSearchString, len(output),"utf-8-sig"), 'w', encoding='utf-8') as tsvfile:
-    writer = csv.DictWriter(tsvfile, fieldnames=COLUMNORDER, delimiter="\t")
-    writer.writeheader()
-    writer.writerows(output)
-  
-  #print("Done!")
-  return(os.path.join("output", "{}-{}-{}.tsv").format(datetime.date.today().isoformat().replace(":",""), cleanSearchString, inscriptions))
+  print("brian")
+  pprint(output)
+  return(output)
 
   # pprint(output)
 
@@ -412,6 +548,40 @@ def scrape(args):
 
 
 
+def test_no_letters_at_all():
+  #  'raw dating': '163 to 170;  163 to 163',
+  # ./parse.py -e 01000244 % --debug
+  args = argparse.Namespace(EDCS='01000244', publication=None, province=None, place=None, operator='and', term2=None, dating_from=None, dating_to=None, inscription_genus=None, and_not_inscription_genus=None, to_file=None, from_file=None, debug=True, term1='%')
+  test_output = scrape(args, prevent_write=True)
+
+  assert test_output[0]['dating from'] == 163
+  assert test_output[0]['dating to'] == 170
+  assert test_output[0]['date not before'] == 163
+  assert test_output[0]['date not after'] == 170
+
+
+
+def test_a_k_dates():
+  # dating:  a:  196 to 196;   b:  198 to 200;   c:  171 to 300;   d:  208 to 218;   e:  180 to 222;   f:  228 to 228;   g:  234 to 234;   h:  297 to 297;   i:  171 to 300;   j:  171 to 300;   k:  171 to 300         
+  # EDCS-ID: EDCS-72200182 
+  args = argparse.Namespace(EDCS='72200182', publication=None, province=None, place=None, operator='and', term2=None, dating_from=None, dating_to=None, inscription_genus=None, and_not_inscription_genus=None, to_file=None, from_file=None, debug=True, term1='%')
+  test_output = scrape(args, prevent_write=True)
+
+  assert test_output[0]['dating from'] == 196
+  assert test_output[0]['dating to'] == 196
+  assert test_output[0]['date not before'] == 171
+  assert test_output[0]['date not after'] == 300
+
+def test_no_letter():
+  #  'raw dating': 'b:  96 to 96;  81 to 96',
+  args = argparse.Namespace(EDCS='72300077', publication=None, province=None, place=None, operator='and', term2=None, dating_from=None, dating_to=None, inscription_genus=None, and_not_inscription_genus=None, to_file=None, from_file=None, debug=True, term1='%')
+  
+  test_output = scrape(args, prevent_write=True)
+  
+  assert test_output[0]['dating from'] == 96
+  assert test_output[0]['dating to'] == 96
+  assert test_output[0]['date not before'] == 81
+  assert test_output[0]['date not after'] == 96
 
 def main():
     print("Launch the Jupyter notebook.")
