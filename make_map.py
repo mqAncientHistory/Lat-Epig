@@ -48,9 +48,11 @@ DEBUG = False
 SUPPORTING_DATA = Path("awmc.unc.edu")
 SUPPORTING_DATA = SUPPORTING_DATA / "awmc" / "map_data" / "shapefiles"
 ROMAN_ROADS_SHP = SUPPORTING_DATA / "ba_roads" / "ba_roads.shp"
-PROVINCES_SHP   = SUPPORTING_DATA / "cultural_data" / "political_shading" / "roman_empire_ad_117" / "shape" / "roman_empire_ad_117.shp"
+#awmc.unc.edu/awmc/map_data/shapefiles/political_shading/roman_empire_ad_69_extent.sbn
+PROVINCES_SHP   = SUPPORTING_DATA / "political_shading" 
 #CITIES_SHP      = SUPPORTING_DATA / "strabo_data" / "straborivers_current.shp"
 CITIES_DATA     = Path("cities") / "Hanson2016_Cities_OxREP.csv"
+MIN_MAP = 5000
 
 # WMS_LAYERS={"Roman Roads":{"name":'Roman Roads', "zorder":"0"},
 #       "Provinces (ca. AD117)":{"name":'Provinces (ca. AD117)', "zorder":"1"},
@@ -132,10 +134,10 @@ def makeDataframe(data_file, epsg=3857):
   return point_geodataframe_3857
 
 @yaspin(text="Making maps...")
-def makeMap(data_file, map_title_text, roads_3857, provinces_3857, cities_geodataframe_3857, searchterm="", provinces=True, roads=True, cities=True):
+def makeMap(data_file, map_title_text, roads_3857, provinces_3857, cities_geodataframe_3857,  province_shapefilename,searchterm="", provinces=True, roads=True, cities=True):
   point_dataframe_3857 = makeDataframe(data_file)
 
-  pprint(point_dataframe_3857[["geometry", "Longitude", "Latitude" ]])
+  #pprint(point_dataframe_3857[["geometry", "Longitude", "Latitude" ]])
   print(f"Making {data_file}\n\troads: {roads}\n\tprovinces: {provinces}\n\tcities: {cities}\n")
 
   fig = plt.figure()
@@ -176,11 +178,21 @@ Data from Epigraphik-Datenbank Clauss / Slaby"""
 
 
   #https://gis.stackexchange.com/a/266833
-  xmin, ymin, xmax, ymax = point_dataframe_3857.total_bounds
+  buffer = geopandas.GeoDataFrame(geometry=point_dataframe_3857.buffer(MIN_MAP, cap_style = 3))
 
+  xmin, ymin, xmax, ymax = buffer.total_bounds
+
+
+  #pprint((xmin, ymin, xmax, ymax, buffer.total_bounds, point_dataframe_3857.total_bounds))
+
+  #THIS PROBABLY IS WRONG, BUT IT MAKES A MAP?!
+  bounded_prov = geopandas.overlay(buffer, provinces_3857, how='union', keep_geom_type=False)
+  province_shapefilename=province_shapefilename.replace("_provinces.shp", "").replace("ad","AD").replace("bc","BC").replace("roman_","").replace("empire_","").replace("_"," ")
+  province_shapefilename=f"Provinces in {province_shapefilename}"
+  pprint(province_shapefilename)
   if provinces:
-    bounded_prov = provinces_3857.cx[xmin:xmax, ymin:ymax]
-    bounded_prov.plot(ax=ax, linewidth=1, alpha=0.1,  cmap=plt.get_cmap("prism"), zorder=1, label="Provinces")
+    #bounded_prov.plot(ax=ax, linewidth=1, alpha=0.1,  cmap=plt.get_cmap("prism"), zorder=1, label="Provinces")
+    bounded_prov.plot(ax=ax, linewidth=0.3, alpha=1, color='#C39B77', linestyle='dashed', zorder=1, label=province_shapefilename)
   if roads:
     bounded_roads = roads_3857.cx[xmin:xmax, ymin:ymax]
     bounded_roads.plot(ax=ax, linewidth=0.2, alpha=1,  color='gray', zorder=2, label="Roads")
@@ -193,6 +205,9 @@ Data from Epigraphik-Datenbank Clauss / Slaby"""
     searchterm = "Inscription"
   point_dataframe_3857.plot(ax=ax, marker=".", linewidth=0.2, markersize=5, alpha=0.5, color='red', edgecolor='k', zorder=4, label=f"{searchterm}")
   #ctx.add_basemap(ax, source=ctx.providers.Stamen.TerrainBackground)
+
+
+  
 
   ax.legend(fontsize='small')
 
@@ -225,13 +240,22 @@ Data from Epigraphik-Datenbank Clauss / Slaby"""
               xycoords=ax.transAxes)
   # point_geodataframe.plot(ax=ax, color='red')
   #https://stackoverflow.com/a/53735672
-  scale_bar(ax, (0.05, 0.05), 1_000)
+
+  print("\n\n***\n\nBRIAN", fig.bbox, (bounded_prov.total_bounds[2] - bounded_prov.total_bounds[0]))
+  #if (buffer.total_bounds[2] - buffer.total_bounds[0]) < 1000000:
+  #  scale = 100
+  #else:
+  scale = 1_000
+
+  scale_bar(ax, (0.05, 0.05), scale)
   ax.xaxis.set_visible(False)
   ax.set_xticks([0]) 
 
   ax.autoscale_view(tight=True)
+
+  province_shapefilename=province_shapefilename.replace(" ","_")
   datafile_base_name = data_file.replace("output/","").replace('.tsv','')
-  map_filename=f"output_maps/{datafile_base_name}{'-withProvinces' if provinces else ''}{'-withCities' if cities else ''}{'-withRoads' if roads else ''}"
+  map_filename=f"output_maps/{datafile_base_name}{f'-with{province_shapefilename}' if provinces else ''}{'-withCities' if cities else ''}{'-withRoads' if roads else ''}"
   
   
   ax.spines['geo'].set_visible(False)
@@ -246,7 +270,7 @@ Data from Epigraphik-Datenbank Clauss / Slaby"""
 
   plt.close()
 
-def main(map_title_text):
+def main(map_title_text, province_shapefile):
 
   cities_rows = extract(CITIES_DATA)
   cities_dataframe = pandas.DataFrame(cities_rows)
@@ -255,7 +279,7 @@ def main(map_title_text):
   #https://cmdlinetips.com/2018/02/how-to-subset-pandas-dataframe-based-on-values-of-a-column/
 
   roads_3857 = geopandas.read_file(ROMAN_ROADS_SHP).to_crs(epsg=3857)
-  provinces_3857 = geopandas.read_file(PROVINCES_SHP).to_crs(epsg=3857)
+  provinces_3857 = geopandas.read_file(PROVINCES_SHP / province_shapefile).to_crs(epsg=3857)
 
 
   cities_geodataframe_3857 = geopandas.GeoDataFrame(
@@ -293,11 +317,11 @@ def main(map_title_text):
 
   for file in glob.glob(f"{DATA_DIR}/*.tsv"):
     print(f"Rendering: {file}")
-    makeMap(file, map_title_text,roads_3857, provinces_3857, cities_geodataframe_3857)
-    makeMap(file, map_title_text,roads_3857, provinces_3857, cities_geodataframe_3857, cities=False, roads=False)
+    makeMap(file, map_title_text,roads_3857, provinces_3857, cities_geodataframe_3857, province_shapefilename = province_shapefile)
+    makeMap(file, map_title_text,roads_3857, provinces_3857, cities_geodataframe_3857, province_shapefilename = province_shapefile, cities=False, roads=False)
     # shutil.move(file, f"already_mapped_data/{file}")
 
   print("Done Rendering maps.")
 
 if __name__ == "__main__":
-  main(map_title_text=str(datetime.datetime.now()))
+  main(map_title_text=str(datetime.datetime.now()), province_shapefile="roman_empire_60_bc_provinces.shp" )
