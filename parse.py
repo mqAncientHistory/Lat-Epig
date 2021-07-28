@@ -27,11 +27,12 @@ COLUMNORDER = ["EDCS-ID", "publication", "province", "place", "dating from", "da
 SUPPRESS_FILTER = "Link zurueck zur Suchseite"
 
 @yaspin(text="Scraping site...")
-def scrape(args, prevent_write=False):
+def scrape(args, prevent_write=False, show_inscription_transform=False):
   searchTerm = args.term1
   #print("Searching for:")
-  if "debug" in args and args.__dict__['debug']:
+  if prevent_write or "debug" in args and args.__dict__['debug']:
     pprint(args)
+    print("debug mode on")
     debug = True
   else:
     debug = False
@@ -59,97 +60,97 @@ def scrape(args, prevent_write=False):
 
   def clean_conservative(text):
     if debug:
-      print(f"\n\n***\n\nconservative cleaning: {text}\n\n***\n\n")
-    rules = {"inscription_expanded_abbreviations_conservative": {"patt":r"\([^(]*\)",
+      print(f"\n***\tconservative cleaning: {text}")
+    rules = {"inscription_expanded_abbreviations_conservative": {"patt":re.compile(r'\([^(]*\)', re.UNICODE),
                         "replace":r""},
-             "inscription_suppresion_superscripts_conservative": {"patt":r"{[^}]*}[⁰¹²³⁴⁵⁶⁷⁸⁹]+",
+             "inscription_suppresion_superscripts_conservative": {"patt":re.compile(r'{[^}]*}[⁰¹²³⁴⁵⁶⁷⁸⁹]+', re.UNICODE),
                                      "replace":r""},
-             "inscription_suppresion_conservative": {"patt":r"[\{*\}]",
+             "inscription_suppresion_conservative": {"patt":re.compile(r'[\{*\}]', re.UNICODE),
                                      "replace":r""},
-             "inscription_restoration_conservative": {"patt":r"\[[^[]*\]",
+             "inscription_restoration_conservative": {"patt":re.compile(r'\[[^[]*\]', re.UNICODE),
                                      "replace":r""},
-             "inscription_substitution_conservative": {"patt":r"\<[^<]*\>",
+             "inscription_substitution_conservative": {"patt":re.compile(r'\<[^<]*\>', re.UNICODE),
                                      "replace":r""},
-             "inscription_substitution_edh_conservative": {"patt":r"([α-ωΑ-Ωa-zA-Z])=([α-ωΑ-Ωa-zA-Z])",
+             "inscription_substitution_edh_conservative": {"patt":re.compile(r'([α-ωΑ-Ωa-zA-Z])=([α-ωΑ-Ωa-zA-Z])', re.UNICODE),
                                      "replace":r"\2"}}
     for rule in rules:
       patt = rules[rule]["patt"]
       repl = rules[rule]["replace"]
-      if debug:
+      if debug and show_inscription_transform:
         print(f"\n-------\ncons rule: {rule}\nc\tpatt:{patt}\nc\trepl:{repl}\nc\tbefore:{text}\n")
       text = re.sub(patt, repl, text)
-      if debug:
+      if debug and show_inscription_transform:
         print(f"\tAfter: {text}")
     if debug:
-      print(f"\n\n***\n\nconservative cleaned: {text}")
+      print(f"\n***\tconservative cleaned: {text}")
 
     return text
 
   def clean_interpretive(text):
-    rules={"inscription_dubious_dot_subscript": {"patt":r"\u{0323}",
+    rules={"inscription_dubious_dot_subscript": {"patt":re.compile(r'\u0323', re.UNICODE),
                         "replace":r""},
-          "inscription_edcs_number_three_both": {"patt":r"\[3\]",
+          "inscription_edcs_number_three_both": {"patt":re.compile(r'\[3\]', re.UNICODE),
                         "replace":r"[-]"},
-          "inscription_edcs_number_three_right": {"patt":r"3\]",
+          "inscription_edcs_number_three_right": {"patt":re.compile(r'3\]', re.UNICODE),
                         "replace":r"-]"},
-          "inscription_edcs_number_three_left": {"patt":r"\[3",
+          "inscription_edcs_number_three_left": {"patt":re.compile(r'\[3', re.UNICODE),
                         "replace":r"[-"},
-          "inscription_edcs_number_six_both": {"patt":r"\[6\]",
+          "inscription_edcs_number_six_both": {"patt":re.compile(r'\[6\]', re.UNICODE),
                         "replace":r"[-]"},
-          "inscription_edcs_number_one": {"patt":r"[1]",
+          "inscription_edcs_number_one": {"patt":re.compile(r'[1]', re.UNICODE),
                         "replace":r" "},
-          "inscription_edcs_quotes": {"patt":r"\u{0022}",
+          "inscription_edcs_quotes": {"patt":re.compile(r'\u0022', re.UNICODE),
                         "replace":r" "},
-          "inscription_edcs_backslashes": {"patt":r"\u{005C}\u{005C}",
+          "inscription_edcs_backslashes": {"patt":re.compile(r'\u005C\u005C', re.UNICODE),
                         "replace":r" "},
-          "inscription_expanded_abbreviations_interpretive": {"patt":r"[\(*\)]",
+          "inscription_expanded_abbreviations_interpretive": {"patt":re.compile(r'[\(*\)]', re.UNICODE),
                         "replace":r""},
-          "inscription_suppresion_remove_interpretive": {"patt":r"{[^}]*}",
+          "inscription_suppresion_remove_interpretive": {"patt":re.compile(r'{[^}]*}', re.UNICODE),
                         "replace":r""},
-          "inscription_restoration_interpretive": {"patt":r"[\[*\]]",
+          "inscription_restoration_interpretive": {"patt":re.compile(r'[\[*\]]', re.UNICODE),
                         "replace":r""},
-          "inscription_substitution_edh_interpretive": {"patt":r"([α-ωΑ-Ωa-zA-Z])=([α-ωΑ-Ωa-zA-Z])",
+          "inscription_substitution_edh_interpretive": {"patt":re.compile(r'([α-ωΑ-Ωa-zA-Z])=([α-ωΑ-Ωa-zA-Z])', re.UNICODE),
                         "replace":r"\1"},
-          "inscription_substitution_edh_interpretive_missing": {"patt":r"([α-ωΑ-Ωa-zA-Z])*=([α-ωΑ-Ωa-zA-Z])",
+          "inscription_substitution_edh_interpretive_missing": {"patt":re.compile(r'([α-ωΑ-Ωa-zA-Z])*=([α-ωΑ-Ωa-zA-Z])', re.UNICODE),
                         "replace":r"\2"},
-          "inscription_substitution_interpretive": {"patt":r"[\<*\>]",
+          "inscription_substitution_interpretive": {"patt":re.compile(r'[\<*\>]', re.UNICODE),
                         "replace":r""},
-          "inscription_new_line": {"patt":r"[\||\/|\/\/]",
+          "inscription_new_line": {"patt":re.compile(r'[\||\/|\/\/]', re.UNICODE),
                         "replace":r""},
-          "inscription_interpunction_symbols": {"patt":r"[=\+\,|\.|․|:|⋮|⁙|;|!|\-|—|–|#|%|\^|&|\~|@]",
+          "inscription_interpunction_symbols": {"patt":re.compile(r'[=\+\,|\.|․|:|⋮|⁙|;|!|\-|—|–|#|%|\^|&|\~|@]', re.UNICODE),
                         "replace":r" "},
-          "inscription_epigraphic_symbols": {"patt":r"[❦|·|∙|𐆖|⏑|⏓|⏕]",
+          "inscription_epigraphic_symbols": {"patt":re.compile(r'[❦|·|∙|𐆖|⏑|⏓|⏕]', re.UNICODE),
                         "replace":r""},
-          "inscription_uncertainty_symbols": {"patt":r"[\\?]",
+          "inscription_uncertainty_symbols": {"patt":re.compile(r'[\\?]', re.UNICODE),
                         "replace":r""},
-          "inscription_arabic_numerals": {"patt":r"[0-9]+",
+          "inscription_arabic_numerals": {"patt":re.compile(r'[0-9]+', re.UNICODE),
                         "replace":r""},
-          "inscription_unclosed_brackets": {"patt":r"[\[|\{|\(|\)|\}|\]]",
+          "inscription_unclosed_brackets": {"patt":re.compile(r'[\[|\{|\(|\)|\}|\]]', re.UNICODE),
                         "replace":r""},
-          "inscription_edcs_que": {"patt":r"(\w+)(que)\b",
+          "inscription_edcs_que": {"patt":re.compile(r'(\w+)(que)\b', re.UNICODE),
                         "replace":r"\1 \2"},
-          "inscription_edcs_vir": {"patt":r"([I|V|X])(vir*)",
+          "inscription_edcs_vir": {"patt":re.compile(r'([I|V|X])(vir*)', re.UNICODE),
                         "replace":r"\1 \2"},
-          "inscription_extra_blank": {"patt":r"[ ]+",
+          "inscription_extra_blank": {"patt":re.compile(r'[ ]+', re.UNICODE),
                         "replace":r" "},
-          "inscription_multi_whitespace": {"patt":r"\s+",
+          "inscription_multi_whitespace": {"patt":re.compile(r'\s+', re.UNICODE),
                         "replace":r" "},
-          "inscription_whitespace_endline": {"patt":r"(^\s|\s$)",
+          "inscription_whitespace_endline": {"patt":re.compile(r'(^\s|\s$)', re.UNICODE),
                         "replace":r""},
                         }
     if debug:
-      print(f"\n\n***\n\ninterpretive cleaning: {text}\n\n***\n\n")
+      print(f"\n***\tinterpretive cleaning: {text}")
     for rule in rules:
       patt = rules[rule]["patt"]
       repl = rules[rule]["replace"]
-      if debug:
+      if debug and show_inscription_transform:
         print(f"\n-------\ninterp rule: {rule}\ni\tpatt:{patt}\ni\trepl:{repl}\ni\tbefore:{text}\n")
       text = re.sub(patt, repl, text)
-      if debug:
+      if debug and show_inscription_transform:
         print(f"\tAfter: {text}")
 
     if debug:
-      print(f"\n\n***\n\ninterpretive cleaned: {text}\n\n***\n\n")
+      print(f"\n***\tinterpretive cleaned: {text}")
     return text
 
   def parseItem(result):
@@ -294,22 +295,24 @@ def scrape(args, prevent_write=False):
       if old and new:
         return min(int(old), int(new))
       elif old:
-        return old
+        return int(old)
       else:
-        return new
+        return int(new)
 
     def date_max(old, new):
       if old and new:
         return max(int(old), int(new))
       elif old:
-        return old
+        return int(old)
       else:
-        return new
+        return int(new)
 
     # dating possibilities -100 to -1;  -70 to -31
     # dating ID: 72200182
+    item['dating from'] = item['dating to'] = item['date not before'] = item['date not after'] = None
+
     if item["raw dating"]:
-      if dates := re.findall(r" *(?![a-z1-9]+:)? *([0-9-]*(?!:))( to )?([0-9-]*(?!:));?", item["raw dating"]):
+      if dates := re.findall(r"( *(?![a-z1-9]+:)? *([0-9-]*(?!:))?( to )([0-9-]*(?!:));?)", item["raw dating"]):
         # this is a multi-valued date 
         # dating:  a:  196 to 196;   b:  198 to 200;   c:  171 to 300;   d:  208 to 218;   e:  180 to 222;   f:  228 to 228;   g:  234 to 234;   h:  297 to 297;   i:  171 to 300;   j:  171 to 300;   k:  171 to 300         
         # EDCS-ID: EDCS-72200182
@@ -318,25 +321,28 @@ def scrape(args, prevent_write=False):
         # from: 71, to: 100, not-before 71, not-after 100 
         # 24900077 a:  276 to 276;   b:  276 to 282
         # EDCS-75100087 3:  ;  -27 to 37
-        #print("multi-valued dates")
-        #pprint(dates)
+        if debug:
+          print("multi-valued dates")
+          pprint(dates)
         
           
 
         for date in dates:
           if date[0]:
-            date_from = date[0]
-            date_to = date[2]
-            if not item['dating from']:
+            date_from = date[1]
+            date_to = date[3]
+            if not item['dating from'] and date_from:
               item['dating from'] = int(date_from)
               item['date not before'] = int(date_from)
-            if not item['dating to']:
+            if not item['dating to'] and date_to:
               item['dating to'] = int(date_to)
               item['date not after'] = int(date_to)
             if debug:
               print(date, date_from, date_to, item.get('date not before', -9999), item['date not after'])
-            item['date not before'] = date_min(date_from, item['date not before'])
-            item['date not after'] = date_max(date_to, item['date not after'])
+            if item['date not before']:
+              item['date not before'] = date_min(date_from, item['date not before'])
+            if item['date not after']:
+              item['date not after'] = date_max(date_to, item['date not after'])
             #print(date, item['date not before'], item['date not after'])
 
             # if not item['date not before'] or date_from > item.get("date not before", -9999):
@@ -347,22 +353,31 @@ def scrape(args, prevent_write=False):
 
       elif dates := re.findall(r"^ *([0-9-]+) to ([0-9-]+) *$", item["raw dating"]):
         # dating: -68 to -68         EDCS-ID: EDCS-24900077
-        #print("single valued datespan")
-        item['date not before'], item['date not after'] = dates[0]
-        item['dating from'], item['dating to'] = dates[0]
+        if debug:
+          print("single valued datespan")
+        item['date not before'], item['date not after'] = [ int(x) for x in dates[0] ]
+        item['dating from'], item['dating to'] = [ int(x) for x in dates[0] ]
       elif dates := re.findall(r"^ *([0-9-]+) *$", item["raw dating"]):
         # dating: -20         EDCS-ID: EDCS-41200809
-        #print("single date")
-        #pprint(dates)
-        item['date not before'] = item['date not after'] = item['dating from'] = item['dating to'] = dates[0]        
+        if debug:
+          print("single date")
+          pprint(dates)
+        item['date not before'] = item['date not after'] = item['dating from'] = item['dating to'] = int(dates[0])
+      elif dates := re.match(r"to ([0-9-]+)$", item["raw dating"]):
+        # dating: to 100, EDCS-34901010
+        if debug:
+          print("blank start date")
+          pprint(dates)
+        item['date not before'] = item['dating from'] = None
+        item['date not after'] = item['dating to'] = int(dates.group(1))
+        
       else:
         print(f"No date matched {item['EDCS-ID']}")
         if item["raw dating"]:
           pprint(item["raw dating"])
-        item['dating from'] = item['dating to'] = item['date not before'] = item['date not after'] = ''
-      if debug:
-        pprint(item)
     else:
+      if debug:
+        print("Date parsing failure")
       item['dating from'] = item['dating to'] = item['date not before'] = item['date not after'] = ''
 
 
@@ -573,7 +588,7 @@ def scrape(args, prevent_write=False):
     #print("Done!")
     return(os.path.join("output", "{}-{}-{}.tsv").format(datetime.date.today().isoformat().replace(":",""), cleanSearchString, inscriptions))
   
-  print("brian")
+  print("Debug mode on")
   pprint(output)
   return(output)
 
@@ -630,83 +645,83 @@ def test_a_k_dates():
   assert test_output[0]['date not before'] == 171
   assert test_output[0]['date not after'] == 300
 
-#def test_digit_colon():
-#  #  digit with colon 3:  ;  -27 to 37
-#  #  EDCS-75100087 
-#  args = argparse.Namespace(EDCS='75100087', publication=None, province=None, place=None, operator='and', term2=None, dating_from=None, dating_to=None, inscription_genus=None, and_not_inscription_genus=None, to_file=None, from_file=None, debug=True, term1='%')
-#  
-#  test_output = scrape(args, prevent_write=True)
-#  
-#  assert test_output[0]['dating from'] == -27
-#  assert test_output[0]['dating to'] == 37
-#  assert test_output[0]['date not before'] == -27
-#  assert test_output[0]['date not after'] == 37
+def test_digit_colon():
+  #  digit with colon 3:  ;  -27 to 37
+  #  EDCS-75100087 
+  args = argparse.Namespace(EDCS='75100087', publication=None, province=None, place=None, operator='and', term2=None, dating_from=None, dating_to=None, inscription_genus=None, and_not_inscription_genus=None, to_file=None, from_file=None, debug=True, term1='%')
 
-#def test_digit_colon_empty():
-#  #  digit with colon 1:
-#  #  EDCS-74200019 
-#  args = argparse.Namespace(EDCS='74200019', publication=None, province=None, place=None, operator='and', term2=None, dating_from=None, dating_to=None, inscription_genus=None, and_not_inscription_genus=None, to_file=None, from_file=None, debug=True, term1='%')
-#  
-#  test_output = scrape(args, prevent_write=True)
-#  
-#  assert test_output[0]['dating from'] == 
-#  assert test_output[0]['dating to'] == 
-#  assert test_output[0]['date not before'] == 
-#  assert test_output[0]['date not after'] == 
+  test_output = scrape(args, prevent_write=True)
 
-#def test_single_date():
-#  #  dating: -20         
-#  #  EDCS-ID: EDCS-41200809
-#  
-#  args = argparse.Namespace(EDCS='41200809', publication=None, province=None, place=None, operator='and', term2=None, dating_from=None, dating_to=None, inscription_genus=None, and_not_inscription_genus=None, to_file=None, from_file=None, debug=True, term1='%')
-#  
-#  test_output = scrape(args, prevent_write=True)
-#  
-#  assert test_output[0]['dating from'] == -20
-#  assert test_output[0]['dating to'] == -20
-#  assert test_output[0]['date not before'] == -20
-#  assert test_output[0]['date not after'] == -20
+  assert test_output[0]['dating from'] == -27
+  assert test_output[0]['dating to'] == 37
+  assert test_output[0]['date not before'] == -27
+  assert test_output[0]['date not after'] == 37
 
-#def test_single_valued_datespan():
-#  # dating: -68 to -68                  
-#  #  EDCS-ID: EDCS-24900077
-#  
-#  args = argparse.Namespace(EDCS='24900077', publication=None, province=None, place=None, operator='and', term2=None, dating_from=None, dating_to=None, inscription_genus=None, and_not_inscription_genus=None, to_file=None, from_file=None, debug=True, term1='%')
-#  
-#  test_output = scrape(args, prevent_write=True)
-#  
-#  assert test_output[0]['dating from'] == -68
-#  assert test_output[0]['dating to'] == -68
-#  assert test_output[0]['date not before'] == -68
-#  assert test_output[0]['date not after'] == -68
+def test_digit_colon_empty():
+  #  digit with colon 1:
+  #  EDCS-74200019 
+  args = argparse.Namespace(EDCS='74200019', publication=None, province=None, place=None, operator='and', term2=None, dating_from=None, dating_to=None, inscription_genus=None, and_not_inscription_genus=None, to_file=None, from_file=None, debug=True, term1='%')
 
+  test_output = scrape(args, prevent_write=True)
 
-#def test_missing_first_date():
-#  # dating:  to 100                  
-#  #  EDCS-ID: EDCS-34901010
-#  
-#  args = argparse.Namespace(EDCS='34901010', publication=None, province=None, place=None, operator='and', term2=None, dating_from=None, dating_to=None, inscription_genus=None, and_not_inscription_genus=None, to_file=None, from_file=None, debug=True, term1='%')
-#  
-#  test_output = scrape(args, prevent_write=True)
-#  
-#  assert test_output[0]['dating from'] == 
-#  assert test_output[0]['dating to'] == 100
-#  assert test_output[0]['date not before'] == 
-#  assert test_output[0]['date not after'] == 100
+  assert test_output[0]['dating from'] == None
+  assert test_output[0]['dating to'] == None
+  assert test_output[0]['date not before'] == None
+  assert test_output[0]['date not after'] == None
+
+def test_single_date():
+  #  dating: -20         
+  #  EDCS-ID: EDCS-41200809
+
+  args = argparse.Namespace(EDCS='41200809', publication=None, province=None, place=None, operator='and', term2=None, dating_from=None, dating_to=None, inscription_genus=None, and_not_inscription_genus=None, to_file=None, from_file=None, debug=True, term1='%')
+
+  test_output = scrape(args, prevent_write=True)
+
+  assert test_output[0]['dating from'] == -20
+  assert test_output[0]['dating to'] == -20
+  assert test_output[0]['date not before'] == -20
+  assert test_output[0]['date not after'] == -20
+
+def test_single_valued_datespan():
+  # dating: -68 to -68                  
+  #  EDCS-ID: EDCS-24900077
+
+  args = argparse.Namespace(EDCS='24900077', publication=None, province=None, place=None, operator='and', term2=None, dating_from=None, dating_to=None, inscription_genus=None, and_not_inscription_genus=None, to_file=None, from_file=None, debug=True, term1='%')
+
+  test_output = scrape(args, prevent_write=True)
+
+  assert test_output[0]['dating from'] == -68
+  assert test_output[0]['dating to'] == -68
+  assert test_output[0]['date not before'] == -68
+  assert test_output[0]['date not after'] == -68
 
 
-#def test_random__middle_date():
-#  # # dating:  a:  ;   b:  71 to 100;   c:  ;   d:                             
-#  #  EDCS-ID: EDCS-32001032
-#  
-#  args = argparse.Namespace(EDCS='34901010', publication=None, province=None, place=None, operator='and', term2=None, dating_from=None, dating_to=None, inscription_genus=None, and_not_inscription_genus=None, to_file=None, from_file=None, debug=True, term1='%')
-#  
-#  test_output = scrape(args, prevent_write=True)
-#  
-#  assert test_output[0]['dating from'] == 71
-#  assert test_output[0]['dating to'] == 100
-#  assert test_output[0]['date not before'] == 71
-#  assert test_output[0]['date not after'] == 100
+def test_missing_first_date():
+  # dating:  to 100                  
+  #  EDCS-ID: EDCS-34901010
+
+  args = argparse.Namespace(EDCS='34901010', publication=None, province=None, place=None, operator='and', term2=None, dating_from=None, dating_to=None, inscription_genus=None, and_not_inscription_genus=None, to_file=None, from_file=None, debug=True, term1='%')
+
+  test_output = scrape(args, prevent_write=True)
+
+  assert test_output[0]['dating from'] == None
+  assert test_output[0]['dating to'] == 100
+  assert test_output[0]['date not before'] == None
+  assert test_output[0]['date not after'] == 100
+
+
+def test_random__middle_date():
+  # # dating:  a:  ;   b:  71 to 100;   c:  ;   d:                             
+  #  EDCS-ID: EDCS-32001032
+
+  args = argparse.Namespace(EDCS='32001032', publication=None, province=None, place=None, operator='and', term2=None, dating_from=None, dating_to=None, inscription_genus=None, and_not_inscription_genus=None, to_file=None, from_file=None, debug=True, term1='%')
+
+  test_output = scrape(args, prevent_write=True)
+
+  assert test_output[0]['dating from'] == 71
+  assert test_output[0]['dating to'] == 100
+  assert test_output[0]['date not before'] == 71
+  assert test_output[0]['date not after'] == 100
 
 
 
