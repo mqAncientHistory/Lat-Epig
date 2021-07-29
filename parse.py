@@ -61,18 +61,60 @@ def scrape(args, prevent_write=False, show_inscription_transform=False):
   def clean_conservative(text):
     if debug:
       print(f"\n***\tconservative cleaning: {text}")
-    rules = {"inscription_expanded_abbreviations_conservative": {"patt":re.compile(r'\([^(]*\)', re.UNICODE),
+    rules = {"inscription_dubious_dot_subscript": {"patt":re.compile(r'\u0323', re.UNICODE),
                         "replace":r""},
-             "inscription_suppresion_superscripts_conservative": {"patt":re.compile(r'{[^}]*}[⁰¹²³⁴⁵⁶⁷⁸⁹]+', re.UNICODE),
+          "inscription_edcs_number_three_both": {"patt":re.compile(r'\[3\]', re.UNICODE),
+                        "replace":r"[-] "},
+          "inscription_edcs_number_three_right": {"patt":re.compile(r'3\]', re.UNICODE),
+                        "replace":r"-] "},
+          "inscription_edcs_number_three_left": {"patt":re.compile(r'\[3', re.UNICODE),
+                        "replace":r" [-"},
+          "inscription_edcs_number_three_middle": {"patt":re.compile(r'(\[\w+)( [3] )(\w+\])', re.UNICODE),
+                        "replace":r" \1 \3 "},
+          "inscription_edcs_number_six_both": {"patt":re.compile(r'\[6\]', re.UNICODE),
+                        "replace":r"[-] "},
+          "inscription_edcs_number_one": {"patt":re.compile(r'[1]', re.UNICODE),
+                        "replace":r" "},
+          "inscription_edcs_quotes": {"patt":re.compile(r'\u0022', re.UNICODE),
+                        "replace":r" "},
+          "inscription_edcs_backslashes": {"patt":re.compile(r'\u005C\u005C', re.UNICODE),
+                        "replace":r" "},
+          "inscription_expanded_abbreviations_conservative": {"patt":re.compile(r'\([^(]*\)', re.UNICODE),
+                        "replace":r""},
+          "inscription_suppresion_superscripts_conservative": {"patt":re.compile(r'{[^}]*}[⁰¹²³⁴⁵⁶⁷⁸⁹]+', re.UNICODE),
                                      "replace":r""},
-             "inscription_suppresion_conservative": {"patt":re.compile(r'[\{*\}]', re.UNICODE),
+          "inscription_suppresion_conservative": {"patt":re.compile(r'[\{*\}]', re.UNICODE),
                                      "replace":r""},
-             "inscription_restoration_conservative": {"patt":re.compile(r'\[[^[]*\]', re.UNICODE),
+          "inscription_restoration_conservative": {"patt":re.compile(r'\[[^[]*\]', re.UNICODE),
                                      "replace":r""},
-             "inscription_substitution_conservative": {"patt":re.compile(r'\<[^<]*\>', re.UNICODE),
+          "inscription_substitution_edh_conservative": {"patt":re.compile(r'(\<)([α-ωΑ-Ωa-zA-Z])=([α-ωΑ-Ωa-zA-Z])(\>)', re.UNICODE),
+                                     "replace":r"\3"},
+           "inscription_substitution_edh_conservative_missing": {"patt":re.compile(r'(\<)([α-ωΑ-Ωa-zA-Z])*=([α-ωΑ-Ωa-zA-Z])(\>)', re.UNICODE),
+                                     "replace":r"\3"},                          
+          "inscription_substitution_conservative": {"patt":re.compile(r'\<[^<]*\>', re.UNICODE),
                                      "replace":r""},
-             "inscription_substitution_edh_conservative": {"patt":re.compile(r'([α-ωΑ-Ωa-zA-Z])=([α-ωΑ-Ωa-zA-Z])', re.UNICODE),
-                                     "replace":r"\2"}}
+          "inscription_new_line": {"patt":re.compile(r'[\||\/|\/\/]', re.UNICODE),
+                        "replace":r""},
+          "inscription_interpunction_symbols": {"patt":re.compile(r'[=\+\,|\.|․|:|⋮|⁙|;|!|\-|—|–|#|%|\^|&|\~|@]', re.UNICODE),
+                        "replace":r" "},
+          "inscription_epigraphic_symbols": {"patt":re.compile(r'[❦|·|∙|𐆖|⏑|⏓|⏕]', re.UNICODE),
+                        "replace":r""},
+          "inscription_uncertainty_symbols": {"patt":re.compile(r'[\\?]', re.UNICODE),
+                        "replace":r""},
+          "inscription_arabic_numerals": {"patt":re.compile(r'[0-9]+', re.UNICODE),
+                        "replace":r""},
+          "inscription_unclosed_brackets": {"patt":re.compile(r'[\[|\{|\(|\)|\}|\]]', re.UNICODE),
+                        "replace":r""},
+          "inscription_edcs_que": {"patt":re.compile(r'(\w+)(que)\b', re.UNICODE),
+                        "replace":r"\1 \2"},
+          "inscription_edcs_vir": {"patt":re.compile(r'([I|V|X])(vir*)', re.UNICODE),
+                        "replace":r"\1 \2"},
+          "inscription_extra_blank": {"patt":re.compile(r'[ ]+', re.UNICODE),
+                        "replace":r" "},
+          "inscription_multi_whitespace": {"patt":re.compile(r'\s+', re.UNICODE),
+                        "replace":r" "},
+          "inscription_whitespace_endline": {"patt":re.compile(r'(^\s|\s$)', re.UNICODE),
+                        "replace":r""}}
     for rule in rules:
       patt = rules[rule]["patt"]
       repl = rules[rule]["replace"]
@@ -611,16 +653,9 @@ def scrape(args, prevent_write=False, show_inscription_transform=False):
   #     resultWriter.writerow(row)
 
 
-def test_inscription_substitution_edh_interpretive():
-  
-  # ./parse.py -e 63600442 % --debug
-  args = argparse.Namespace(EDCS='63600442', publication=None, province=None, place=None, operator='and', term2=None, dating_from=None, dating_to=None, inscription_genus=None, and_not_inscription_genus=None, to_file=None, from_file=None, debug=True, term1='%')
-  test_output = scrape(args, prevent_write=True, show_inscription_transform=True)
+############ UNIT TESTS #################################################################
 
-  assert "<F=P>urius" in test_output[0]['inscription']
-  assert " urius  " in test_output[0]['inscription conservative cleaning'] 
-  assert "Furius" in test_output[0]['inscription interpretive cleaning'] 
-
+######### 1. Cleaning of the text of inscription ########################################
 def test_inscription_dubious_dot_subscript():
   # ./parse.py -e 72200182 % --debug
   args = argparse.Namespace(EDCS='76700107', publication=None, province=None, place=None, operator='and', term2=None, dating_from=None, dating_to=None, inscription_genus=None, and_not_inscription_genus=None, to_file=None, from_file=None, debug=True, term1='%')
@@ -628,8 +663,154 @@ def test_inscription_dubious_dot_subscript():
   test_output = scrape(args, prevent_write=True, show_inscription_transform=True)
   assert "ẹ" in test_output[0]['inscription']
   assert "ẹ" not in test_output[0]['inscription interpretive cleaning'] 
+  assert "ẹ" not in test_output[0]['inscription conservative cleaning']
+
+def test_inscription_three_both():
+  # ./parse.py -e 65300182 % --debug
+  args = argparse.Namespace(EDCS='65300182', publication=None, province=None, place=None, operator='and', term2=None, dating_from=None, dating_to=None, inscription_genus=None, and_not_inscription_genus=None, to_file=None, from_file=None, debug=True, term1='%')
+
+  test_output = scrape(args, prevent_write=True, show_inscription_transform=True)
+  assert "[3]" in test_output[0]['inscription']
+  assert "[3]" not in test_output[0]['inscription interpretive cleaning'] 
+  assert "[3]" not in test_output[0]['inscription conservative cleaning']
+
+def test_inscription_three_middle():
+  # ./parse.py -e 09000264 20700224 % --debug
+  args = argparse.Namespace(EDCS='20700224', publication=None, province=None, place=None, operator='and', term2=None, dating_from=None, dating_to=None, inscription_genus=None, and_not_inscription_genus=None, to_file=None, from_file=None, debug=True, term1='%')
+
+  test_output = scrape(args, prevent_write=True, show_inscription_transform=True)
+  assert "mo[numentum 3 vi]/olaverit" in test_output[0]['inscription']
+  assert "mo[numentum 3 vi]/olaverit" not in test_output[0]['inscription conservative cleaning'] 
+  assert "mo[numentum 3 vi]/olaverit" not in test_output[0]['inscription interpretive cleaning']
+
+def test_inscription_six():
+  # ./parse.py -e 31900104  % --debug
+  args = argparse.Namespace(EDCS='31900104', publication=None, province=None, place=None, operator='and', term2=None, dating_from=None, dating_to=None, inscription_genus=None, and_not_inscription_genus=None, to_file=None, from_file=None, debug=True, term1='%')
+
+  test_output = scrape(args, prevent_write=True, show_inscription_transform=True)
+  assert "[6]" in test_output[0]['inscription']
+  assert "[6]" not in test_output[0]['inscription interpretive cleaning']
+  assert "[6]" not in test_output[0]['inscription conservative cleaning']
 
 
+def test_inscription_one():
+  # ./parse.py -e 10400149  % --debug
+  args = argparse.Namespace(EDCS='10400149', publication=None, province=None, place=None, operator='and', term2=None, dating_from=None, dating_to=None, inscription_genus=None, and_not_inscription_genus=None, to_file=None, from_file=None, debug=True, term1='%')
+
+  test_output = scrape(args, prevent_write=True, show_inscription_transform=True)
+  assert "[1]" in test_output[0]['inscription']
+  assert "[1]" not in test_output[0]['inscription interpretive cleaning']
+  assert "[1]" not in test_output[0]['inscription conservative cleaning']
+
+
+### EXTRA QUOTES - find better example inscription
+#def test_inscription_quotes():
+#  # ./parse.py -e 10501222  % --debug
+#  args = argparse.Namespace(EDCS='10501222', publication=None, province=None, place=None, operator='and', term2=None, dating_from=None, dating_to=None, inscription_genus=None, and_not_inscription_genus=None, to_file=None, from_file=None, debug=True, term1='%')
+
+#  test_output = scrape(args, prevent_write=True, show_inscription_transform=True)
+#  assert "[\u0022]" in test_output[0]['inscription']
+#  assert "[\u0022]" not in test_output[0]['inscription interpretive cleaning']
+#  assert "[\u0022]" not in test_output[0]['inscription conservative cleaning']
+
+### EXTRA BACKSLASH - find better example inscription
+#def test_inscription_quotes():
+#  # ./parse.py -e 10501222  % --debug
+#  args = argparse.Namespace(EDCS='10501222', publication=None, province=None, place=None, operator='and', term2=None, dating_from=None, dating_to=None, inscription_genus=None, and_not_inscription_genus=None, to_file=None, from_file=None, debug=True, term1='%')
+
+#  test_output = scrape(args, prevent_write=True, show_inscription_transform=True)
+#  assert "[\u005C]" in test_output[0]['inscription']
+#  assert "[\u005C]" not in test_output[0]['inscription interpretive cleaning']
+#  assert "[\u005C]" not in test_output[0]['inscription conservative cleaning']
+
+
+def test_inscription_expanded_abbreviations():
+  # ./parse.py -e 27000432  % --debug
+  args = argparse.Namespace(EDCS='27000432', publication=None, province=None, place=None, operator='and', term2=None, dating_from=None, dating_to=None, inscription_genus=None, and_not_inscription_genus=None, to_file=None, from_file=None, debug=True, term1='%')
+
+  test_output = scrape(args, prevent_write=True, show_inscription_transform=True)
+  assert "D(is) M(anibus)" in test_output[0]['inscription']
+  assert "D(is) M(anibus)" not in test_output[0]['inscription conservative cleaning']
+  assert "D M " in test_output[0]['inscription conservative cleaning']
+  assert "Dis Manibus" in test_output[0]['inscription interpretive cleaning']
+
+
+def test_inscription_suppresion():
+  # ./parse.py -e 27800893  % --debug
+  args = argparse.Namespace(EDCS='27800893', publication=None, province=None, place=None, operator='and', term2=None, dating_from=None, dating_to=None, inscription_genus=None, and_not_inscription_genus=None, to_file=None, from_file=None, debug=True, term1='%')
+
+  test_output = scrape(args, prevent_write=True, show_inscription_transform=True)
+  assert "praetoria{e}" in test_output[0]['inscription']
+  assert "praetoria{e}" not in test_output[0]['inscription conservative cleaning']
+  assert "praetoriae " in test_output[0]['inscription conservative cleaning']
+  assert "praetoria" in test_output[0]['inscription interpretive cleaning']
+
+
+def test_inscription_restoration():
+  # ./parse.py -e 34100092  % --debug
+  args = argparse.Namespace(EDCS='34100092', publication=None, province=None, place=None, operator='and', term2=None, dating_from=None, dating_to=None, inscription_genus=None, and_not_inscription_genus=None, to_file=None, from_file=None, debug=True, term1='%')
+
+  test_output = scrape(args, prevent_write=True, show_inscription_transform=True)
+  assert "nillae c[oniugi]" in test_output[0]['inscription']
+  assert "nillae c[oniugi]" not in test_output[0]['inscription conservative cleaning']
+  assert "nillae c " in test_output[0]['inscription conservative cleaning']
+  assert "nillae coniugi" in test_output[0]['inscription interpretive cleaning']
+
+def test_inscription_substitution_edh():
+  
+  # ./parse.py -e 63600442 % --debug
+  args = argparse.Namespace(EDCS='63600442', publication=None, province=None, place=None, operator='and', term2=None, dating_from=None, dating_to=None, inscription_genus=None, and_not_inscription_genus=None, to_file=None, from_file=None, debug=True, term1='%')
+  test_output = scrape(args, prevent_write=True, show_inscription_transform=True)
+
+  assert "<F=P>urius" in test_output[0]['inscription']
+  assert "Purius" in test_output[0]['inscription conservative cleaning'] 
+  assert "Furius" in test_output[0]['inscription interpretive cleaning'] 
+
+
+def test_inscription_substitution():
+  # ./parse.py -e 34100092  % --debug
+  args = argparse.Namespace(EDCS='15300609', publication=None, province=None, place=None, operator='and', term2=None, dating_from=None, dating_to=None, inscription_genus=None, and_not_inscription_genus=None, to_file=None, from_file=None, debug=True, term1='%')
+
+  test_output = scrape(args, prevent_write=True, show_inscription_transform=True)
+  assert "sanc<t=I>issi<ma=AM>" in test_output[0]['inscription']
+  assert "sanc<t=I>issi<ma=AM>" not in test_output[0]['inscription conservative cleaning']
+  assert "sanc<t=I>issi<ma=AM>" not in test_output[0]['inscription interpretive cleaning']
+
+def test_inscription_que():
+  # ./parse.py -e 54601011  % --debug
+  args = argparse.Namespace(EDCS='54601011', publication=None, province=None, place=None, operator='and', term2=None, dating_from=None, dating_to=None, inscription_genus=None, and_not_inscription_genus=None, to_file=None, from_file=None, debug=True, term1='%')
+
+  test_output = scrape(args, prevent_write=True, show_inscription_transform=True)
+  assert "libertabusque" in test_output[0]['inscription']
+  assert "libertabusque" not in test_output[0]['inscription conservative cleaning']
+  assert "libertabusque" not in test_output[0]['inscription interpretive cleaning']
+  assert "libertabus que " in test_output[0]['inscription conservative cleaning']
+  assert "libertabus que " in test_output[0]['inscription interpretive cleaning']
+
+def test_inscription_vir():
+  # ./parse.py -e 24900101  % --debug
+  args = argparse.Namespace(EDCS='24900101', publication=None, province=None, place=None, operator='and', term2=None, dating_from=None, dating_to=None, inscription_genus=None, and_not_inscription_genus=None, to_file=None, from_file=None, debug=True, term1='%')
+
+  test_output = scrape(args, prevent_write=True, show_inscription_transform=True)
+  assert "IIIIvir" in test_output[0]['inscription']
+  assert "IIIIvir" not in test_output[0]['inscription conservative cleaning']
+  assert "IIIIvir" not in test_output[0]['inscription interpretive cleaning']
+  assert "IIII vir " in test_output[0]['inscription conservative cleaning']
+  assert "IIII vir " in test_output[0]['inscription interpretive cleaning']
+
+# Template
+#def test_inscription_XXX():
+#  # ./parse.py -e 09000264  % --debug
+#  args = argparse.Namespace(EDCS='09000264', publication=None, province=None, place=None, operator='and', term2=None, dating_from=None, dating_to=None, inscription_genus=None, and_not_inscription_genus=None, to_file=None, from_file=None, debug=True, term1='%')
+#
+#  test_output = scrape(args, prevent_write=True, show_inscription_transform=True)
+#  assert "[3]" in test_output[0]['inscription']
+#  assert "[3]" not in test_output[0]['inscription interpretive cleaning']
+
+
+
+
+############ 2. Date parsing ##############################################################
 
 def test_no_letters_at_all():
   #  'raw dating': '163 to 170;  163 to 163',
@@ -742,7 +923,7 @@ def test_random__middle_date():
   assert test_output[0]['date not before'] == 71
   assert test_output[0]['date not after'] == 100
 
-
+############ End of UNIT TESTS ##############################################################
 
 def main():
     print("Launch the Jupyter notebook.")
