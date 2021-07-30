@@ -1,4 +1,4 @@
-from setuptools import setup
+from setuptools import setup, find_packages
 
 setup(name='EpigraphyScraper',
       version='0.1',
@@ -6,10 +6,11 @@ setup(name='EpigraphyScraper',
       url='https://github.com/Denubis/EpigraphyScraper',
       author='Denubis',
       author_email='brian.ballsun-stanton@mq.edu.au',
-      license='MIT',
-      packages=[''],
+      license='MIT',      
       install_requires=[
           'beautifulsoup4',
           'MechanicalSoup',          
       ],
+      package_dir={'': 'src'},
+      packages=find_packages(where='src'),
       zip_safe=False)
