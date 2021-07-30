@@ -58,6 +58,7 @@ def scrape(args, prevent_write=False, show_inscription_transform=False):
 
 
 
+
   def clean_conservative(text):
     if debug:
       print(f"\n***\tconservative cleaning: {text}")
@@ -654,7 +655,6 @@ def scrape(args, prevent_write=False, show_inscription_transform=False):
   #         row.append(None)
   #     resultWriter.writerow(row)
 
- 
 def main():
     print("Launch the Jupyter notebook.")
     parser = argparse.ArgumentParser(description="Scraping of http://db.edcs.eu/epigr/epi.php?s_sprache=en")
