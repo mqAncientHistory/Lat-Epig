@@ -54,12 +54,15 @@ SUPPRESS_FILTER = "Link zurueck zur Suchseite"
 def scrape(args, prevent_write=False, show_inscription_transform=False):
   searchTerm = args.term1
   #print("Searching for:")
-  if prevent_write or "debug" in args and args.__dict__['debug']:
-    pprint(args)
-    print("debug mode on")
-    debug = True
-  else:
-    debug = False
+  debug = False
+  try:
+    if (prevent_write or "debug" in args and args.__dict__['debug']):
+      pprint(args)
+      print("debug mode on")
+      debug = True
+  except:
+    # Fix the stupid debug logging thing!!!
+    pass
 
   searchString = []
 
@@ -233,7 +236,7 @@ def scrape(args, prevent_write=False, show_inscription_transform=False):
       languages.append(matchobj.group(1))
       return ''
 
-    print(item['inscription'])
+    #print(item['inscription'])
 
     language_pattern = r"\"([A-Z]+)\""
     if type(item['inscription']) == str and re.search(language_pattern, item['inscription']):
@@ -249,7 +252,8 @@ def scrape(args, prevent_write=False, show_inscription_transform=False):
 
 
     if item['inscription']:
-      pprint(item['inscription'])
+      if debug:
+        pprint(item['inscription'])
 
       item['inscription conservative cleaning'] = clean(text=item['inscription'],
                                                         mode="conservative",
