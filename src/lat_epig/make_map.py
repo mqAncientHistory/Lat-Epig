@@ -21,7 +21,7 @@ from shapely.geometry import Point
 import contextily as ctx
 
 from yaspin import yaspin
-from scalebar import scale_bar
+from lat_epig.scalebar import scale_bar
 
 import cartopy.crs as ccrs
 
@@ -134,11 +134,37 @@ def makeDataframe(data_file, epsg=3857):
   return point_geodataframe_3857
 
 @yaspin(text="Making maps...")
-def makeMap(data_file, map_title_text, roads_3857, provinces_3857, cities_geodataframe_3857,  province_shapefilename,searchterm="", provinces=True, roads=True, cities=True):
+def make_map(data_file, 
+             map_title_text, 
+             province_shapefilename,
+             searchterm="", 
+             basemap_multicolour=True, 
+             provinces=True, 
+             roads=True, 
+             cities=True):
+  cities_rows = extract(CITIES_DATA)
+  cities_dataframe = pandas.DataFrame(cities_rows)
+
+
+  #https://cmdlinetips.com/2018/02/how-to-subset-pandas-dataframe-based-on-values-of-a-column/
+
+  roads_3857 = geopandas.read_file(ROMAN_ROADS_SHP).to_crs(epsg=3857)
+  provinces_3857 = geopandas.read_file(PROVINCES_SHP / province_shapefilename).to_crs(epsg=3857)
+
+
+  cities_geodataframe_3857 = geopandas.GeoDataFrame(
+    cities_dataframe,
+    geometry=geopandas.points_from_xy(
+      cities_dataframe["Longitude (X)"],
+      cities_dataframe["Latitude (Y)"]),
+    crs="EPSG:4326").to_crs(epsg=3857)
+
+  geopandas.options.use_pygeos = True
+
   point_dataframe_3857 = makeDataframe(data_file)
 
   #pprint(point_dataframe_3857[["geometry", "Longitude", "Latitude" ]])
-  print(f"Making {data_file}\n\troads: {roads}\n\tprovinces: {provinces}\n\tcities: {cities}\n")
+  #print(f"Making {data_file}\n\troads: {roads}\n\tprovinces: {provinces}\n\tcities: {cities}\n")
 
   fig = plt.figure()
 
@@ -157,23 +183,22 @@ def makeMap(data_file, map_title_text, roads_3857, provinces_3857, cities_geodat
   #     #projection=geoplot.crs.Orthographic(), 
   #     figsize=(8, 4)
   # )
-  if map_title_text:
-    print(f"making map with title {map_title_text}")
-  else:
-    map_title_text = data_file.replace("-"," ").replace("_"," ").replace(".tsv","")
+  if not map_title_text:  
+    map_title_text = data_file.name.replace("-"," ").replace("_"," ").replace(".tsv","")
   
-  map_metadata_list=data_file.replace("output/","").replace(".tsv","").split("-")
+  map_metadata_list=data_file.name.replace(".tsv","").split("-")
   search_params = map_metadata_list[3].replace("_"," ").replace("term1","Term 1 =").replace("term2","Term 2 =").replace("%","All").replace("+","; ").replace(r" +"," ")
 
   map_metadata = f"""Search Parameters: {search_params}
 Results: {map_metadata_list[4]} Date scraped: {map_metadata_list[0]}-{map_metadata_list[1]}-{map_metadata_list[2]}
-Data from Epigraphik-Datenbank Clauss / Slaby"""
+Data from Epigraphik-Datenbank Clauss / Slaby <http://manfredclauss.de/>
+Ancient World Mapping Center “{province_shapefilename}” <http://awmc.unc.edu/wordpress/map-files/>"""
   
 
-  print(f"making map with title {map_title_text}")
-  print(f"making map with metadata {map_metadata_list} rendered as \n{map_metadata}")
+  #print(f"making map with title {map_title_text}")
+  #print(f"making map with metadata {map_metadata_list} rendered as \n{map_metadata}")
   plt.tight_layout()
-  plt.suptitle(map_metadata, fontsize=6, y=0.10)
+  plt.suptitle(map_metadata, fontsize=3, y=0.10)
   plt.title(map_title_text, fontsize=12, y=1)
 
 
@@ -189,15 +214,23 @@ Data from Epigraphik-Datenbank Clauss / Slaby"""
   bounded_prov = geopandas.overlay(buffer, provinces_3857, how='union', keep_geom_type=False)
   province_shapefilename=province_shapefilename.replace("_provinces.shp", "").replace("ad","AD").replace("bc","BC").replace("roman_","").replace("empire_","").replace("_"," ")
   province_shapefilename=f"Provinces in {province_shapefilename}"
-  pprint(province_shapefilename)
+  #pprint(province_shapefilename)
   if provinces:
-    #bounded_prov.plot(ax=ax, linewidth=1, alpha=0.1,  cmap=plt.get_cmap("prism"), zorder=1, label="Provinces")
-    bounded_prov.plot(ax=ax, linewidth=0.3, alpha=1, color='#C39B77', linestyle='dashed', zorder=1, label=province_shapefilename)
+    if basemap_multicolour:
+      bounded_prov.plot(ax=ax, linewidth=1, alpha=0.1,  cmap=plt.get_cmap("prism"), zorder=1, label=province_shapefilename)
+    else:
+      bounded_prov.plot(ax=ax, linewidth=0.3, alpha=0.5, color='#C39B77', linestyle='dashed', zorder=1, label=province_shapefilename)
   if roads:
-    bounded_roads = roads_3857.cx[xmin:xmax, ymin:ymax]
+    if roads == "points":
+      bounded_roads = roads_3857.cx[xmin:xmax, ymin:ymax]
+    else:
+      bounded_roads = roads_3857
     bounded_roads.plot(ax=ax, linewidth=0.2, alpha=1,  color='gray', zorder=2, label="Roads")
   if cities:
-    bounded_cities = cities_geodataframe_3857.cx[xmin:xmax, ymin:ymax]
+    if cities == "points":
+      bounded_cities = cities_geodataframe_3857.cx[xmin:xmax, ymin:ymax]
+    else:
+      bounded_cities = cities_geodataframe_3857
     bounded_cities.plot(ax=ax, marker="+", markersize=3, linewidth=0.25, alpha=0.5,  color='black', zorder=3, label="Cities")
   if searchterm:
     searchterm = f"Inscription:\n{searchterm}"
@@ -241,7 +274,7 @@ Data from Epigraphik-Datenbank Clauss / Slaby"""
   # point_geodataframe.plot(ax=ax, color='red')
   #https://stackoverflow.com/a/53735672
 
-  print("\n\n***\n\nBRIAN", fig.bbox, (bounded_prov.total_bounds[2] - bounded_prov.total_bounds[0]))
+  #print("\n\n***\n\nBRIAN", fig.bbox, (bounded_prov.total_bounds[2] - bounded_prov.total_bounds[0]))
   #if (buffer.total_bounds[2] - buffer.total_bounds[0]) < 1000000:
   #  scale = 100
   #else:
@@ -254,7 +287,7 @@ Data from Epigraphik-Datenbank Clauss / Slaby"""
   ax.autoscale_view(tight=True)
 
   province_shapefilename=province_shapefilename.replace(" ","_")
-  datafile_base_name = data_file.replace("output/","").replace('.tsv','')
+  datafile_base_name = data_file.name.replace('.tsv','')
   map_filename=f"output_maps/{datafile_base_name}{f'-with{province_shapefilename}' if provinces else ''}{'-withCities' if cities else ''}{'-withRoads' if roads else ''}"
   
   
@@ -270,26 +303,9 @@ Data from Epigraphik-Datenbank Clauss / Slaby"""
 
   plt.close()
 
-def main(map_title_text, province_shapefile):
+def make_all_maps(map_title_text=str(datetime.datetime.now()), province_shapefile="roman_empire_ad_117.shp", basemap_multicolour=True):
 
-  cities_rows = extract(CITIES_DATA)
-  cities_dataframe = pandas.DataFrame(cities_rows)
-
-
-  #https://cmdlinetips.com/2018/02/how-to-subset-pandas-dataframe-based-on-values-of-a-column/
-
-  roads_3857 = geopandas.read_file(ROMAN_ROADS_SHP).to_crs(epsg=3857)
-  provinces_3857 = geopandas.read_file(PROVINCES_SHP / province_shapefile).to_crs(epsg=3857)
-
-
-  cities_geodataframe_3857 = geopandas.GeoDataFrame(
-    cities_dataframe,
-    geometry=geopandas.points_from_xy(
-      cities_dataframe["Longitude (X)"],
-      cities_dataframe["Latitude (Y)"]),
-    crs="EPSG:4326").to_crs(epsg=3857)
-
-  geopandas.options.use_pygeos = True
+  
   
   #pre_geo_data = {'objects':[], 'geometry':[]}
 
@@ -315,13 +331,15 @@ def main(map_title_text, province_shapefile):
   # except FileExistsError:
   #   pass
 
-  for file in glob.glob(f"{DATA_DIR}/*.tsv"):
-    print(f"Rendering: {file}")
-    makeMap(file, map_title_text,roads_3857, provinces_3857, cities_geodataframe_3857, province_shapefilename = province_shapefile)
-    makeMap(file, map_title_text,roads_3857, provinces_3857, cities_geodataframe_3857, province_shapefilename = province_shapefile, cities=False, roads=False)
+  # for file in glob.glob(f"{DATA_DIR}/*.tsv"):
+  #   print(f"Rendering: {file}")
+  #   makeMap(file, map_title_text,roads_3857, provinces_3857, cities_geodataframe_3857, basemap_multicolour=basemap_multicolour, province_shapefilename = province_shapefile)
+  #   makeMap(file, map_title_text,roads_3857, provinces_3857, cities_geodataframe_3857, basemap_multicolour=basemap_multicolour, province_shapefilename = province_shapefile, cities=False, roads=False)
     # shutil.move(file, f"already_mapped_data/{file}")
 
   print("Done Rendering maps.")
 
+
+
 if __name__ == "__main__":
-  main(map_title_text=str(datetime.datetime.now()), province_shapefile="roman_empire_60_bc_provinces.shp" )
+  make_all_maps(map_title_text=str(datetime.datetime.now()) )
