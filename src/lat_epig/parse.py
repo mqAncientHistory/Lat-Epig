@@ -23,7 +23,31 @@ import codecs
 from clint.textui import progress
 from yaspin import yaspin
 
-COLUMNORDER = ["EDCS-ID", "publication", "province", "place", "dating from", "dating to", "date not before", "date not after", "status", "inscription", "inscription conservative cleaning", "inscription interpretive cleaning", "Material", "Comment", "Latitude", "Longitude", "TM Place", "language", "photo", "partner_link", "extra_text", "extra_html", "raw dating"]
+from lat_epig.date_parse import parse_date
+from lat_epig.text_parse import clean_conservative_rules, clean_interpretive_rules, clean
+
+COLUMNORDER = ["EDCS-ID",  #1
+               "publication",  #2
+               "province",  #3
+               "place",  #4
+               "dating from", #5
+               "dating to",  #6
+               "date not before",  #7
+               "date not after",  #8
+               "status",  #9
+               "inscription",  #10
+               "inscription conservative cleaning", #11
+               "inscription interpretive cleaning",  #12
+               "Material",  #13
+               "Comment",  #14
+               "Latitude",  #15
+               "Longitude",  #16
+               "language",  #17
+               "photo",  #18
+               "partner_link",  #19
+               "extra_text",  #20
+               "extra_html",  #21
+               "raw dating"] #22
 SUPPRESS_FILTER = "Link zurueck zur Suchseite"
 
 @yaspin(text="Scraping site...")
@@ -59,142 +83,7 @@ def scrape(args, prevent_write=False, show_inscription_transform=False):
 
 
 
-  def clean_conservative(text):
-    if debug:
-      print(f"\n***\tconservative cleaning: {text}")
-    rules = {"inscription_dubious_dot_subscript": {"patt":re.compile(r'\u0323', re.UNICODE),
-                        "replace":r""},
-          "inscription_edcs_number_three_both": {"patt":re.compile(r'\[3\]', re.UNICODE),
-                        "replace":r"[-] "},
-          "inscription_edcs_number_three_right": {"patt":re.compile(r'3\]', re.UNICODE),
-                        "replace":r"-] "},
-          "inscription_edcs_number_three_left": {"patt":re.compile(r'\[3', re.UNICODE),
-                        "replace":r" [-"},
-          "inscription_edcs_number_three_middle": {"patt":re.compile(r'(\[\w+)( [3] )(\w+\])', re.UNICODE),
-                        "replace":r" \1 \3 "},
-          "inscription_edcs_number_six_both": {"patt":re.compile(r'\[6\]', re.UNICODE),
-                        "replace":r"[-] "},
-          "inscription_edcs_number_one": {"patt":re.compile(r'[1]', re.UNICODE),
-                        "replace":r" "},
-          "inscription_edcs_quotes": {"patt":re.compile(r'\u0022', re.UNICODE),
-                        "replace":r" "},
-          "inscription_edcs_backslashes": {"patt":re.compile(r'\u005C\u005C', re.UNICODE),
-                        "replace":r" "},
-          "inscription_expanded_abbreviations_conservative": {"patt":re.compile(r'\([^(]*\)', re.UNICODE),
-                        "replace":r""},
-          "inscription_suppresion_superscripts_conservative": {"patt":re.compile(r'{[^}]*}[⁰¹²³⁴⁵⁶⁷⁸⁹]+', re.UNICODE),
-                                     "replace":r""},
-          "inscription_suppresion_conservative": {"patt":re.compile(r'[\{*\}]', re.UNICODE),
-                                     "replace":r""},
-          "inscription_restoration_conservative": {"patt":re.compile(r'\[[^[]*\]', re.UNICODE),
-                                     "replace":r""},
-          "inscription_substitution_edh_conservative": {"patt":re.compile(r'(\<)([α-ωΑ-Ωa-zA-Z])=([α-ωΑ-Ωa-zA-Z])(\>)', re.UNICODE),
-                                     "replace":r"\3"},
-           "inscription_substitution_edh_conservative_missing": {"patt":re.compile(r'(\<)([α-ωΑ-Ωa-zA-Z])*=([α-ωΑ-Ωa-zA-Z])(\>)', re.UNICODE),
-                                     "replace":r"\3"},                          
-          "inscription_substitution_conservative": {"patt":re.compile(r'\<[^<]*\>', re.UNICODE),
-                                     "replace":r""},
-          "inscription_new_line": {"patt":re.compile(r'[\||\/|\/\/]', re.UNICODE),
-                        "replace":r""},
-          "inscription_interpunction_symbols": {"patt":re.compile(r'[=\+\,|\.|․|:|⋮|⁙|;|!|\-|—|–|#|%|\^|&|\~|@]', re.UNICODE),
-                        "replace":r" "},
-          "inscription_epigraphic_symbols": {"patt":re.compile(r'[❦|·|∙|𐆖|⏑|⏓|⏕]', re.UNICODE),
-                        "replace":r""},
-          "inscription_uncertainty_symbols": {"patt":re.compile(r'[\\?]', re.UNICODE),
-                        "replace":r""},
-          "inscription_arabic_numerals": {"patt":re.compile(r'[0-9]+', re.UNICODE),
-                        "replace":r""},
-          "inscription_unclosed_brackets": {"patt":re.compile(r'[\[|\{|\(|\)|\}|\]]', re.UNICODE),
-                        "replace":r""},
-          "inscription_edcs_que": {"patt":re.compile(r'(\w+)(que)\b', re.UNICODE),
-                        "replace":r"\1 \2"},
-          "inscription_edcs_vir": {"patt":re.compile(r'([I|V|X])(vir*)', re.UNICODE),
-                        "replace":r"\1 \2"},
-          "inscription_extra_blank": {"patt":re.compile(r'[ ]+', re.UNICODE),
-                        "replace":r" "},
-          "inscription_multi_whitespace": {"patt":re.compile(r'\s+', re.UNICODE),
-                        "replace":r" "},
-          "inscription_whitespace_endline": {"patt":re.compile(r'(^\s|\s$)', re.UNICODE),
-                        "replace":r""}}
-    for rule in rules:
-      patt = rules[rule]["patt"]
-      repl = rules[rule]["replace"]
-      if debug and show_inscription_transform:
-        print(f"\n-------\ncons rule: {rule}\nc\tpatt:{patt}\nc\trepl:{repl}\nc\tbefore:{text}\n")
-      text = re.sub(patt, repl, text)
-      if debug and show_inscription_transform:
-        print(f"\tAfter: {text}")
-    if debug:
-      print(f"\n***\tconservative cleaned: {text}")
 
-    return text
-
-  def clean_interpretive(text):
-    rules={"inscription_dubious_dot_subscript": {"patt":re.compile(r'\u0323', re.UNICODE),
-                        "replace":r""},
-          "inscription_edcs_number_three_both": {"patt":re.compile(r'\[3\]', re.UNICODE),
-                        "replace":r"[-]"},
-          "inscription_edcs_number_three_right": {"patt":re.compile(r'3\]', re.UNICODE),
-                        "replace":r"-]"},
-          "inscription_edcs_number_three_left": {"patt":re.compile(r'\[3', re.UNICODE),
-                        "replace":r"[-"},
-          "inscription_edcs_number_six_both": {"patt":re.compile(r'\[6\]', re.UNICODE),
-                        "replace":r"[-]"},
-          "inscription_edcs_number_one": {"patt":re.compile(r'[1]', re.UNICODE),
-                        "replace":r" "},
-          "inscription_edcs_quotes": {"patt":re.compile(r'\u0022', re.UNICODE),
-                        "replace":r" "},
-          "inscription_edcs_backslashes": {"patt":re.compile(r'\u005C\u005C', re.UNICODE),
-                        "replace":r" "},
-          "inscription_expanded_abbreviations_interpretive": {"patt":re.compile(r'[\(*\)]', re.UNICODE),
-                        "replace":r""},
-          "inscription_suppresion_remove_interpretive": {"patt":re.compile(r'{[^}]*}', re.UNICODE),
-                        "replace":r""},
-          "inscription_restoration_interpretive": {"patt":re.compile(r'[\[*\]]', re.UNICODE),
-                        "replace":r""},
-          "inscription_substitution_edh_interpretive": {"patt":re.compile(r'([α-ωΑ-Ωa-zA-Z])=([α-ωΑ-Ωa-zA-Z])', re.UNICODE),
-                        "replace":r"\1"},
-          "inscription_substitution_edh_interpretive_missing": {"patt":re.compile(r'([α-ωΑ-Ωa-zA-Z])*=([α-ωΑ-Ωa-zA-Z])', re.UNICODE),
-                        "replace":r"\2"},
-          "inscription_substitution_interpretive": {"patt":re.compile(r'[\<*\>]', re.UNICODE),
-                        "replace":r""},
-          "inscription_new_line": {"patt":re.compile(r'[\||\/|\/\/]', re.UNICODE),
-                        "replace":r""},
-          "inscription_interpunction_symbols": {"patt":re.compile(r'[=\+\,|\.|․|:|⋮|⁙|;|!|\-|—|–|#|%|\^|&|\~|@]', re.UNICODE),
-                        "replace":r" "},
-          "inscription_epigraphic_symbols": {"patt":re.compile(r'[❦|·|∙|𐆖|⏑|⏓|⏕]', re.UNICODE),
-                        "replace":r""},
-          "inscription_uncertainty_symbols": {"patt":re.compile(r'[\\?]', re.UNICODE),
-                        "replace":r""},
-          "inscription_arabic_numerals": {"patt":re.compile(r'[0-9]+', re.UNICODE),
-                        "replace":r""},
-          "inscription_unclosed_brackets": {"patt":re.compile(r'[\[|\{|\(|\)|\}|\]]', re.UNICODE),
-                        "replace":r""},
-          "inscription_edcs_que": {"patt":re.compile(r'(\w+)(que)\b', re.UNICODE),
-                        "replace":r"\1 \2"},
-          "inscription_edcs_vir": {"patt":re.compile(r'([I|V|X])(vir*)', re.UNICODE),
-                        "replace":r"\1 \2"},
-          "inscription_extra_blank": {"patt":re.compile(r'[ ]+', re.UNICODE),
-                        "replace":r" "},
-          "inscription_multi_whitespace": {"patt":re.compile(r'\s+', re.UNICODE),
-                        "replace":r" "},
-          "inscription_whitespace_endline": {"patt":re.compile(r'(^\s|\s$)', re.UNICODE),
-                        "replace":r""},
-                        }
-    if debug:
-      print(f"\n***\tinterpretive cleaning: {text}")
-    for rule in rules:
-      patt = rules[rule]["patt"]
-      repl = rules[rule]["replace"]
-      if debug and show_inscription_transform:
-        print(f"\n-------\ninterp rule: {rule}\ni\tpatt:{patt}\ni\trepl:{repl}\ni\tbefore:{text}\n")
-      text = re.sub(patt, repl, text)
-      if debug and show_inscription_transform:
-        print(f"\tAfter: {text}")
-
-    if debug:
-      print(f"\n***\tinterpretive cleaned: {text}")
-    return text
 
   def parseItem(result):
     
@@ -211,41 +100,7 @@ def scrape(args, prevent_write=False, show_inscription_transform=False):
           item['partner_link'] = f"http://db.edcs.eu/epigr/{partner['href']}"
         else:
           item['partner_link'] = ''
-        # if partner:
-        #   co=re.search("CO([0-9]+)", str(partner['href']))
-        #   hd=re.search("(HD[0-9]+)", str(partner['href']))
-        #   t=re.search("T([0-9]+)", str(partner['href']))
-        #   n=re.search("N([0-9]+)", str(partner['href']))
-        #   P=re.search("P([0-9]+)", str(partner['href']))
-        #   oneae=re.search("1ae([0-9]+)-([0-9]+)", str(partner['href']))
-        #   #print(partner['href'], hd, t)
-        #   links=["http://db.edcs.eu/epigr/{}".format(partner['href'])]
-        #   if oneae:
-        #     links.append(f"http://db.edcs.eu/epigr/ae/{oneae.group(1)}/{oneae.group(1)}-{oneae.group(2)}.pdf")
-        #     partner.extract()
-        #   if P:
-        #     links.append(f"https://epigraphy.packhum.org/text/{P.group(1)}")
-        #     partner.extract()
-        #   if hd:
-        #     links.append("https://edh-www.adw.uni-heidelberg.de/edh/inschrift/{}".format(hd.group(1)))
-        #     partner.extract()
-        #   if t:
-        #     links.append("https://www.trismegistos.org/text/{}".format(t.group(1)))
-        #     partner.extract()
-        #   if co:
-        #     links.append("http://cil.bbaw.de/dateien/cil_view.php?KO=KO{}".format(co.group(1)))
-        #     partner.extract()
-        #   if n:
-        #     links.append("http://www.edr-edr.it/edr_programmi/res_complex_comune.php?do=book&id_nr=EDR{}&partId=1".format(n.group(1)))
-        #     partner.extract()
-        #   if links:
-        #     item['Links']=' | '.join(links)
-        #   numlinks=partner['href'].count(';')+2
-        #   # Because of the partnerpage, and no ; if there's only one.
-
-        #   if len(links) != numlinks:
-        #     with open("unknownDatabaseLink.csv","a") as unknown:
-        #       unknown.write("{}\t{}\t{}\n".format(numlinks,len(links),partner['href']))
+        
         maplink = r.find(href=re.compile(".*map.php.*"))
         if maplink:
           
@@ -332,99 +187,15 @@ def scrape(args, prevent_write=False, show_inscription_transform=False):
     for key in terms:             
       bs, item = itemExtract(bs, key, terms[key], item)
     
-    def parse_date(item):
-      pass
-    def date_min(old, new):
-      if old and new:
-        return min(int(old), int(new))
-      elif old:
-        return int(old)
-      else:
-        return int(new)
 
-    def date_max(old, new):
-      if old and new:
-        return max(int(old), int(new))
-      elif old:
-        return int(old)
-      else:
-        return int(new)
 
     # dating possibilities -100 to -1;  -70 to -31
     # dating ID: 72200182
     item['dating from'] = item['dating to'] = item['date not before'] = item['date not after'] = None
 
-    #parse_date(item)
+    parse_date(item, debug)
 
-    if item["raw dating"]:
-      if dates := re.findall(r"( *(?![a-z1-9]+:)? *([0-9-]*(?!:))?( to )([0-9-]*(?!:));?)", item["raw dating"]):
-        # this is a multi-valued date 
-        # dating:  a:  196 to 196;   b:  198 to 200;   c:  171 to 300;   d:  208 to 218;   e:  180 to 222;   f:  228 to 228;   g:  234 to 234;   h:  297 to 297;   i:  171 to 300;   j:  171 to 300;   k:  171 to 300         
-        # EDCS-ID: EDCS-72200182
-        # from: 196, to: 196, not-before: 196, not after: 300
-        # dating:  a:  ;   b:  71 to 100;   c:  ;   d:           EDCS-ID: EDCS-32001032
-        # from: 71, to: 100, not-before 71, not-after 100 
-        # 24900077 a:  276 to 276;   b:  276 to 282
-        # EDCS-75100087 3:  ;  -27 to 37
-        if debug:
-          print("multi-valued dates")
-          pprint(dates)
-        
-          
-
-        for date in dates:
-          if date[0]:
-            date_from = date[1]
-            date_to = date[3]
-            if not item['dating from'] and date_from:
-              item['dating from'] = int(date_from)
-              item['date not before'] = int(date_from)
-            if not item['dating to'] and date_to:
-              item['dating to'] = int(date_to)
-              item['date not after'] = int(date_to)
-            if debug:
-              print(date, date_from, date_to, item.get('date not before', -9999), item['date not after'])
-            if item['date not before']:
-              item['date not before'] = date_min(date_from, item['date not before'])
-            if item['date not after']:
-              item['date not after'] = date_max(date_to, item['date not after'])
-            #print(date, item['date not before'], item['date not after'])
-
-            # if not item['date not before'] or date_from > item.get("date not before", -9999):
-            #   item['date not before'] = date_from
-            # if not item['date not after'] or date_to < item.get("date not after", 9999):
-            #   item['date not after'] = date_to
-
-
-      elif dates := re.findall(r"^ *([0-9-]+) to ([0-9-]+) *$", item["raw dating"]):
-        # dating: -68 to -68         EDCS-ID: EDCS-24900077
-        if debug:
-          print("single valued datespan")
-        item['date not before'], item['date not after'] = [ int(x) for x in dates[0] ]
-        item['dating from'], item['dating to'] = [ int(x) for x in dates[0] ]
-      elif dates := re.findall(r"^ *([0-9-]+) *$", item["raw dating"]):
-        # dating: -20         EDCS-ID: EDCS-41200809
-        if debug:
-          print("single date")
-          pprint(dates)
-        item['date not before'] = item['date not after'] = item['dating from'] = item['dating to'] = int(dates[0])
-      elif dates := re.match(r"to ([0-9-]+)$", item["raw dating"]):
-        # dating: to 100, EDCS-34901010
-        if debug:
-          print("blank start date")
-          pprint(dates)
-        item['date not before'] = item['dating from'] = None
-        item['date not after'] = item['dating to'] = int(dates.group(1))
-        
-      else:
-        print(f"No date matched {item['EDCS-ID']}")
-        if item["raw dating"]:
-          pprint(item["raw dating"])
-    else:
-      if debug and item['EDCS-ID']:
-        print(f"No date matched {item['EDCS-ID']}")
-        pprint(item["raw dating"])
-      item['dating from'] = item['dating to'] = item['date not before'] = item['date not after'] = ''
+    
 
 
     if pub := bs.find("details"):
@@ -462,15 +233,34 @@ def scrape(args, prevent_write=False, show_inscription_transform=False):
       languages.append(matchobj.group(1))
       return ''
 
+    print(item['inscription'])
 
     language_pattern = r"\"([A-Z]+)\""
     if type(item['inscription']) == str and re.search(language_pattern, item['inscription']):
       item['inscription'] = re.sub(language_pattern, pop_language, item['inscription'])
 
+    opening_quote_language_pattern = r"\"([A-Z]+)(?:\"|\b)"
+    if type(item['inscription']) == str and re.search(opening_quote_language_pattern, item['inscription']):
+      item['inscription'] = re.sub(opening_quote_language_pattern, pop_language, item['inscription'])
+
+    closing_quote_language_pattern = r"(?:\"|\b)([A-Z]+)\""
+    if type(item['inscription']) == str and re.search(closing_quote_language_pattern, item['inscription']):      
+      item['inscription'] = re.sub(closing_quote_language_pattern, pop_language, item['inscription'])
+
+
     if item['inscription']:
       pprint(item['inscription'])
-      item['inscription conservative cleaning'] = clean_conservative(item['inscription'])
-      item['inscription interpretive cleaning'] = clean_interpretive(item['inscription'])
+
+      item['inscription conservative cleaning'] = clean(text=item['inscription'],
+                                                        mode="conservative",
+                                                        rules=clean_conservative_rules(),
+                                                        debug=debug,
+                                                        show_inscription_transform=show_inscription_transform)
+      item['inscription interpretive cleaning'] = clean(text=item['inscription'],
+                                                        mode="interpretive",
+                                                        rules=clean_interpretive_rules(),
+                                                        debug=debug,
+                                                        show_inscription_transform=show_inscription_transform)
     # while pub:    
     #   lang=re.search("\"([A-Z]+)\"", pub)
     #   if lang:
