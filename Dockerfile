@@ -55,7 +55,7 @@ python3.8-tk
 
 RUN update-ca-certificates
 
-RUN curl -fsSL https://deb.nodesource.com/setup_15.x | bash -
+RUN curl -fsSL https://deb.nodesource.com/setup_16.x | bash -
 RUN apt-get install -y --no-install-recommends  nodejs
 
 
@@ -129,9 +129,10 @@ ENTRYPOINT ["/usr/bin/tini", "--"]
 # https://github.com/jupyter-widgets/ipywidgets/issues/1683#issuecomment-328952119
 
 
-RUN pip3 install --no-cache-dir numpy==1.20.2 cython wheel
+RUN pip3 install --no-cache-dir numpy==1.21.0 cython wheel
 # jhsingle-native-proxy>=0.0.10
 RUN pip3 install --no-cache-dir -r requirements.txt 
+RUN pip install --editable .
 RUN jupyter nbextension enable --py widgetsnbextension --sys-prefix && \
 	jupyter contrib nbextension install --sys-prefix && \
 	jupyter nbextension enable init_cell/main
