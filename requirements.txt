@@ -9,6 +9,7 @@ Babel==2.9.1
 backcall==0.2.0
 beautifulsoup4==4.9.3
 bleach==3.3.1
+blume==0.1
 boto3==1.18.1
 botocore==1.21.1
 branca==0.4.2
@@ -29,6 +30,7 @@ decorator==4.4.2
 defusedxml==0.7.1
 descartes==1.1.0
 entrypoints==0.3
+-e git+git@github.com:mqAncientHistory/EpigraphyScraperNotebook.git@4b384a4563cc968376f0e5e44f18a2d5df86bddc#egg=EpigraphyScraper
 et-xmlfile==1.1.0
 Fiona==1.8.20
 folium==0.12.1
