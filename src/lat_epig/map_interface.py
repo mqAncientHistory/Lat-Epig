@@ -138,6 +138,9 @@ def make_map_interface():
     display(HTML("<hr/>"))
     def map_on_button_clicked(b):
         out.clear_output(wait=True)
+        if not i_map_data.value:
+            display("<span style='color:red'>No data scraped</span>")
+            return
 
         if map_title.value:
             map_title_text=map_title.value
