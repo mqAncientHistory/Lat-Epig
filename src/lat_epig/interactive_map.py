@@ -20,6 +20,7 @@ from folium import plugins
 import random
 import simplejson as json
 import textwrap
+from yaspin import yaspin
 
 
 def makeDataframe(data_file, epsg=3857):
@@ -60,7 +61,8 @@ def makeDataframe(data_file, epsg=3857):
     
     point_geodataframe_3857 = point_geodataframe.to_crs(epsg=epsg)
     return point_geodataframe_3857
-
+    
+@yaspin(text="Making interactive maps...")
 def make_interactive_map(data_file):
   DATA_DIR = "output"
   SUPPORTING_DATA = Path("awmc.unc.edu")

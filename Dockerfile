@@ -1,6 +1,7 @@
 #Download base image ubuntu 20.04
 #https://www.howtoforge.com/tutorial/how-to-create-docker-images-with-dockerfile/
 FROM ubuntu:20.04
+FROM python:3.9.6-buster
 # FROM jupyter/scipy-notebook:016833b15ceb
 # FROM python:3.8
 # FROM armandokeller/cartopy:first
@@ -16,6 +17,44 @@ RUN sed -i '/^#\sdeb-src /s/^#//' "/etc/apt/sources.list"
 
 
 RUN apt-get update
+# RUN apt-get install -y --no-install-recommends \
+# apt-transport-https \
+# apt-utils \
+# build-essential \
+# ca-certificates \
+# curl \
+# git \
+# libbz2-dev \
+# libffi-dev \
+# libgeos++-dev \
+# liblzma-dev \
+# libncurses5-dev \
+# libproj-dev \
+# libreadline-dev \
+# libsqlite3-dev \
+# libssl-dev \
+# libxml2-dev \
+# libxmlsec1-dev \
+# make \
+# proj-bin \
+# proj-data \
+# python3-pip \
+# wget \
+# zlib1g-dev \
+# libgeos-dev \
+# libxml2-dev \
+# libxslt-dev \
+# python-dev \
+# libc6 \
+# libgcc-s1 \
+# libgeos-c1v5 \
+# libproj15 \
+# libstdc++6 \
+# libpython3.9-dev \
+# python3.9 \
+# python3.9-tk
+
+
 RUN apt-get install -y --no-install-recommends \
 apt-transport-https \
 apt-utils \
@@ -37,7 +76,6 @@ libxmlsec1-dev \
 make \
 proj-bin \
 proj-data \
-python3-pip \
 wget \
 zlib1g-dev \
 libgeos-dev \
@@ -45,13 +83,10 @@ libxml2-dev \
 libxslt-dev \
 python-dev \
 libc6 \
-libgcc-s1 \
 libgeos-c1v5 \
-libproj15 \
-libstdc++6 \
-libpython3.8-dev \
-python3.8 \
-python3.8-tk
+libproj-dev \
+libstdc++6
+
 
 RUN update-ca-certificates
 
@@ -135,7 +170,11 @@ RUN pip3 install --no-cache-dir -r requirements.txt
 RUN pip install --editable .
 RUN jupyter nbextension enable --py widgetsnbextension --sys-prefix && \
 	jupyter contrib nbextension install --sys-prefix && \
-	jupyter nbextension enable init_cell/main
+	jupyter nbextension enable init_cell/main && \
+	jupyter labextension install @voila-dashboards/jupyterlab-preview && \
+	jupyter serverextension enable voila --sys-prefix
+
+
 #&& \
 #	jupyter labextension install @jupyter-widgets/jupyterlab-manager && \
 #	jupyter labextension install @voila-dashboards/jupyterlab-preview && \
@@ -161,7 +200,8 @@ RUN jupyter trust EpigraphyScraper.ipynb
 EXPOSE 8888
 EXPOSE 8866
 
-CMD ["jupyter", "notebook", "--ip='*'", "--NotebookApp.token=''", "--NotebookApp.password=''",  "--no-browser"]
+#CMD ["jupyter", "notebook", "--ip='*'", "--NotebookApp.token=''", "--NotebookApp.password=''",  "--no-browser"]
+
 # , \     
 # 	 "--VoilaConfiguration.base_url={base_url}/", \
 # 	 "--VoilaConfiguration.server_url=/"]
@@ -174,4 +214,4 @@ CMD ["jupyter", "notebook", "--ip='*'", "--NotebookApp.token=''", "--NotebookApp
 # CMD ["jhsingle-native-proxy", "--destport", "8505", \
 # 	 "voila", "/home/jovyan/EpigraphyScraper.ipynb", \
 
-# CMD ["start.sh"]
+CMD ["runVoila.sh"]

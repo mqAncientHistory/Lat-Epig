@@ -13,6 +13,7 @@ import re
 import rasterio as rio
 from rasterio.warp import calculate_default_transform, reproject, Resampling
 from pathlib import Path
+from yaspin import yaspin
 
 #https://www.earthdatascience.org/courses/scientists-guide-to-plotting-data-in-python/plot-spatial-data/customize-raster-plots/interactive-maps/
 SUPPORTING_DATA = Path("awmc.unc.edu")
@@ -21,6 +22,7 @@ PROVINCES_SHP   = SUPPORTING_DATA / "political_shading"
 OUTPUTS = Path("output")
 class Parseargs:
     maps = None
+
 
 def make_i_map_interface():
     args = Parseargs()
@@ -79,8 +81,13 @@ def make_i_map_interface():
     display(HTML("<hr/>"))
     def i_map_on_button_clicked(b):
         with out:
+            if not i_map_data.value:
+                display("<span style='color:red'>No data scraped</span>")
+                return
             out.clear_output(wait=True)
-            display(make_interactive_map(i_map_data.value))
+            i_map = make_interactive_map(i_map_data.value)
+            out.clear_output(wait=True)
+            display(i_map)
         
 
     i_map_button.on_click(i_map_on_button_clicked)
