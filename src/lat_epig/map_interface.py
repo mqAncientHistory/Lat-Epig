@@ -137,6 +137,7 @@ def make_map_interface():
     display(HTML("<h2>PDF Map Output</h2>"), out)    
     display(HTML("<hr/>"))
     def map_on_button_clicked(b):
+        out.clear_output(wait=True)
 
         if map_title.value:
             map_title_text=map_title.value
@@ -177,9 +178,23 @@ def make_map_interface():
             # output_tsv_filename=f"epigraphy_scraper_spreadsheet_output_{datestring}"
             # shutil.make_archive(output_tsv_filename, 'zip', "already_mapped_data/output/")
             # display(HTML("<a href='/tree/output_maps/' target='_blank'>Full Maps</a>"))
+            OUTPUTS = Path("output_maps")
+
+            file_outputs = {}
+            for output in OUTPUTS.glob("*.*"):
+                file_outputs[output.stat().st_mtime] = (output.name, output)
+            output_keys = sorted(file_outputs, reverse=True)
+            
+            filenames = []
+            for key in output_keys:
+                filenames.append(file_outputs[key])
+
+            
+            #print(filename)
+            # display(HTML("<a href='/tree/output/' target='_blank'>Full File List</a>"))
             display(HTML("<ul>"))
-            for zipfile in glob.glob("output_maps/*.*"):
-                display(HTML(f"<li><a href='{zipfile}'>{zipfile.name}</a></li>"))
+            for zipfile in filenames:
+                display(HTML(f"<li><a href='{zipfile[1]}'>{zipfile[0]}</a></li>"))
             display(HTML("</ul>"))
 
     map_button.on_click(map_on_button_clicked)
