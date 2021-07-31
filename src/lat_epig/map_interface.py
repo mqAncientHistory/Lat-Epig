@@ -4,6 +4,7 @@ import ipywidgets as widgets
 from IPython.core.display import display, HTML
 from IPython.display import FileLink, FileLinks
 
+
 import shutil
 import datetime
 import glob
@@ -107,8 +108,34 @@ def make_map_interface():
         value=True,
         description="Basemap<br/>Styling"
         )
+
+    map_filetype = widgets.RadioButtons(
+        options=['pdf', 'png', 'tiff', 'eps', 'svg'],
+        value='pdf',
+        description="Filetype"
+        )
+
+    map_inscription_ids = widgets.Checkbox(        
+        value=False,
+        description="Inscription IDs with Points"
+        )
+
+    map_append_inscriptions = widgets.Checkbox(        
+        value=False,
+        description="(PDF Only) Append Inscriptions"
+        )
+
+    map_dpi = widgets.RadioButtons(        
+        options=[72,300,600,1200],
+        value=300,
+        description="DPI"
+        )
+
+
     
-    display(HTML("<h1>Generate PDF Map</h1>"), map_refresh, map_data, map_title, map_shapefile, map_basemap_multicolour, map_show_roads, map_show_cities, map_button, out)
+    display(HTML("<h1>Generate PDF Map</h1>"), map_refresh, map_data, map_title, map_shapefile, map_basemap_multicolour, map_show_roads, map_show_cities, map_filetype, map_dpi, map_inscription_ids, map_append_inscriptions, map_button)
+    display(HTML("<h2>PDF Map Output</h2>"), out)    
+    display(HTML("<hr/>"))
     def map_on_button_clicked(b):
 
         if map_title.value:
@@ -138,20 +165,23 @@ def make_map_interface():
                      searchterm=searchterm,
                      provinces=True,
                      roads=map_show_roads.value,
-                     cities=map_show_cities.value
+                     cities=map_show_cities.value,
+                     filetype=map_filetype.value,
+                     show_ids=map_inscription_ids.value,
+                     append_inscriptions=map_append_inscriptions,
+                     dpi=map_dpi.value
                      )
-            datestring=datetime.datetime.now().strftime("%Y%m%d")
-            output_filename=f"epigraphy_scraper_maps_output_{datestring}"
-            shutil.make_archive(output_filename, 'zip', "output_maps/")
-            output_tsv_filename=f"epigraphy_scraper_spreadsheet_output_{datestring}"
-            shutil.make_archive(output_tsv_filename, 'zip', "already_mapped_data/output/")
+            #datestring=datetime.datetime.now().strftime("%Y%m%d")
+            # output_filename=f"epigraphy_scraper_maps_output_{datestring}"
+            # shutil.make_archive(output_filename, 'zip', "output_maps/")
+            # output_tsv_filename=f"epigraphy_scraper_spreadsheet_output_{datestring}"
+            # shutil.make_archive(output_tsv_filename, 'zip', "already_mapped_data/output/")
             # display(HTML("<a href='/tree/output_maps/' target='_blank'>Full Maps</a>"))
             display(HTML("<ul>"))
-            # for zipfile in glob.glob("output_maps/*.pdf"):
-            #     display(HTML(f"<li><a href='/tree/{zipfile}'>{zipfile}</a></li>"))
-            for zipfile in glob.glob("*.zip"):
-                display(HTML(f"<li><a href='{zipfile}'>{zipfile}</a></li>"))
+            for zipfile in glob.glob("output_maps/*.*"):
+                display(HTML(f"<li><a href='{zipfile}'>{zipfile.name}</a></li>"))
             display(HTML("</ul>"))
+
     map_button.on_click(map_on_button_clicked)
     map_refresh.on_click(reset_outputs)
 #     map_button_interactive.on_click(interactive_refresh)

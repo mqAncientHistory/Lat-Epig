@@ -24,11 +24,15 @@ from yaspin import yaspin
 from lat_epig.scalebar import scale_bar
 
 import cartopy.crs as ccrs
-
+import textwrap
 # https://github.com/geopandas/geopandas/issues/1597
 from matplotlib_scalebar.scalebar import ScaleBar
-
+from collections import defaultdict
 from cartopy.mpl.gridliner import LONGITUDE_FORMATTER, LATITUDE_FORMATTER
+from matplotlib.backends.backend_pdf import PdfPages
+
+#from blume.table import table
+#from blume.taybell import table
 
 
 #https://geopython.github.io/OWSLib/#wms
@@ -37,8 +41,6 @@ from cartopy.mpl.gridliner import LONGITUDE_FORMATTER, LATITUDE_FORMATTER
 
 # TO DISABLE SSL CHECKING 
 # $ export CURL_CA_BUNDLE=""; ./make_map.py
-
-
 
 
 DATA_DIR = "output"
@@ -53,6 +55,8 @@ PROVINCES_SHP   = SUPPORTING_DATA / "political_shading"
 #CITIES_SHP      = SUPPORTING_DATA / "strabo_data" / "straborivers_current.shp"
 CITIES_DATA     = Path("cities") / "Hanson2016_Cities_OxREP.csv"
 MIN_MAP = 5000
+
+
 
 # WMS_LAYERS={"Roman Roads":{"name":'Roman Roads', "zorder":"0"},
 #       "Provinces (ca. AD117)":{"name":'Provinces (ca. AD117)', "zorder":"1"},
@@ -109,6 +113,8 @@ MIN_MAP = 5000
 # ax.outline_patch.set_visible(True)
 
 def makeDataframe(data_file, epsg=3857):
+
+
     
   # pprint(WMS_LAYERS)
   # pprint([op.name for op in wms.operations])
@@ -135,13 +141,22 @@ def makeDataframe(data_file, epsg=3857):
 
 @yaspin(text="Making maps...")
 def make_map(data_file, 
-             map_title_text, 
-             province_shapefilename,
-             searchterm="", 
+             map_title_text=None, 
+             province_shapefilename="roman_empire_ad_117.shp",
+             searchterm=None, 
              basemap_multicolour=True, 
              provinces=True, 
              roads=True, 
-             cities=True):
+             cities=True,
+             filetype='pdf',
+             show_ids=False,
+             append_inscriptions=False,
+             dpi=1200):
+
+
+  
+
+
   cities_rows = extract(CITIES_DATA)
   cities_dataframe = pandas.DataFrame(cities_rows)
 
@@ -166,7 +181,7 @@ def make_map(data_file,
   #pprint(point_dataframe_3857[["geometry", "Longitude", "Latitude" ]])
   #print(f"Making {data_file}\n\troads: {roads}\n\tprovinces: {provinces}\n\tcities: {cities}\n")
 
-  fig = plt.figure()
+  fig = plt.figure(figsize=(16.5, 11.7), dpi=dpi)
 
  
   ax = fig.add_subplot(1,1,1, projection=ccrs.Mercator.GOOGLE, frameon=False)
@@ -188,11 +203,11 @@ def make_map(data_file,
   
   map_metadata_list=data_file.name.replace(".tsv","").split("-")
   search_params = map_metadata_list[3].replace("_"," ").replace("term1","Term 1 =").replace("term2","Term 2 =").replace("%","All").replace("+","; ").replace(r" +"," ")
-
-  map_metadata = f"""Search Parameters: {search_params}
+  escaped_provinceshapefilename = province_shapefilename.replace("_", r"\_")
+  map_metadata = rf"""Search Parameters: {search_params}
 Results: {map_metadata_list[4]} Date scraped: {map_metadata_list[0]}-{map_metadata_list[1]}-{map_metadata_list[2]}
 Data from Epigraphik-Datenbank Clauss / Slaby <http://manfredclauss.de/>
-Ancient World Mapping Center “{province_shapefilename}” <http://awmc.unc.edu/wordpress/map-files/>"""
+Ancient World Mapping Center “{escaped_provinceshapefilename}” <http://awmc.unc.edu/wordpress/map-files/>"""
   
 
   #print(f"making map with title {map_title_text}")
@@ -200,6 +215,7 @@ Ancient World Mapping Center “{province_shapefilename}” <http://awmc.unc.edu
   plt.tight_layout()
   plt.suptitle(map_metadata, fontsize=3, y=0.10)
   plt.title(map_title_text, fontsize=12, y=1)
+  plt.rc('font',**{'family':'serif'})
 
 
   #https://gis.stackexchange.com/a/266833
@@ -240,7 +256,13 @@ Ancient World Mapping Center “{province_shapefilename}” <http://awmc.unc.edu
   #ctx.add_basemap(ax, source=ctx.providers.Stamen.TerrainBackground)
 
 
-  
+  if show_ids:
+    for x,y, label in zip(point_dataframe_3857.geometry.x, point_dataframe_3857.geometry.y, point_dataframe_3857["EDCS-ID"]):
+      #print(x,y,label)
+      ax.annotate(label, xy=(x, y), xytext=(2, 2), textcoords="offset points", fontsize=3)
+
+    # https://stackoverflow.com/a/50270936
+    #point_dataframe_3857.apply(lambda x: ax.annotate(s=x['EDCS-ID'], xy=x.geometry.coords[0], xytext=(3,3), textcoords="offset points"))
 
   ax.legend(fontsize='small')
 
@@ -288,25 +310,152 @@ Ancient World Mapping Center “{province_shapefilename}” <http://awmc.unc.edu
 
   province_shapefilename=province_shapefilename.replace(" ","_")
   datafile_base_name = data_file.name.replace('.tsv','')
-  map_filename=f"output_maps/{datafile_base_name}{f'-with{province_shapefilename}' if provinces else ''}{'-withCities' if cities else ''}{'-withRoads' if roads else ''}"
+  map_filename=f"output_maps/{datafile_base_name}{f'-with{province_shapefilename}' if provinces else ''}{f'-withCities{cities}' if cities else ''}{f'-withRoads{roads}' if roads else ''}"
   
   
   ax.spines['geo'].set_visible(False)
 
-  
+  #fig.set_size_inches(11.7,8.3) # dpi=80
+
   #ax.get_tightbbox()
   #ax.outline_patch.set_visible(False)
-  plt.savefig(f"{map_filename}.pdf", dpi=1200,bbox_inches='tight')
-  plt.savefig(f"{map_filename}.png", dpi=1200,bbox_inches='tight')
+  if filetype != 'pdf':
+    plt.savefig(f"{map_filename}.{filetype}", dpi=dpi,bbox_inches='tight')
+    plt.close()
+  else:
+    figdate = [int(x) for x in data_file.name.replace("-"," ").replace("_"," ").replace(".tsv","").split( )[0:3]]
+    with PdfPages(f"{map_filename}.{filetype}", metadata={"Title":map_title_text,
+                                                          "Subject":map_metadata,
+                                                          "Creator":"Lat Epig by Ballsun-Stanton, Heřmánková, and Laurence",
+                                                          "Keywords":' '.join(data_file.name.replace("-"," ").replace("_"," ").replace(".tsv","").split( )[3:]),
+                                                          "CreationDate": datetime.datetime(figdate[0], figdate[1], figdate[2])
+                                                          }) as pdf:
+      #https://matplotlib.org/stable/api/backend_pdf_api.html#matplotlib.backends.backend_pdf.PdfPages
+      pdf.savefig(fig, dpi=dpi,bbox_inches='tight')
+      plt.close()
+      if append_inscriptions:
+        def chunks(lst, n):
+          # https://stackoverflow.com/a/312464
+          """Yield successive n-sized chunks from lst."""
+          for i in range(0, len(lst), n):
+              yield lst[i:i + n]
+
+        point_dataframe_3857["geom_4326"] = point_dataframe_3857["geometry"].to_crs("EPSG:4326")
+        cell_text=point_dataframe_3857[["EDCS-ID","inscription interpretive cleaning", "province", "place", "geom_4326"]].sort_values(by='EDCS-ID').values
+        #pprint(cell_text)
+        # rowLabels=point_dataframe_3857[].values
+        
+        formatted_text={}
+        for a_line in cell_text:
+          geom = a_line[4]
+          y=round(geom.y,2)
+          x=round(geom.x,2)
+          province=a_line[2]
+          place=a_line[3]
+          y_bucket=int(5 * round(y/5,0))
+          x_bucket=int(5 * round(x/5,0))
+          #print(y, y_bucket, x, x_bucket)
+          key = a_line[0]
+          line = a_line[1]
+          if y_bucket not in formatted_text:
+            formatted_text[y_bucket] = {}
+          if x_bucket not in formatted_text[y_bucket]:
+            formatted_text[y_bucket][x_bucket] = []
+          formatted_text[y_bucket][x_bucket].append('\n'.join([textwrap.shorten(" - ({}, {}, {})".format(key, province, place), width=120)] + textwrap.wrap(line, width=100, max_lines=3, initial_indent='        ', subsequent_indent='        ' )))
+
+        #matplotlib.rcParams['text.latex.unicode']=True
+        for y_bucket in sorted(formatted_text):
+          
+          formatted_slice = []
+
+          for x_bucket in sorted(formatted_text[y_bucket]):
+            formatted_slice.append("\nInscriptions near Long: {}, Lat: {}".format(y_bucket, x_bucket))
+            for inscription in formatted_text[y_bucket][x_bucket]:
+              formatted_slice.append(inscription)
+
+
+          plt.rc('font',**{'family':'serif'})
+          plt.rc('text', usetex=False)
+
+          #if len(formatted_slice) > 80:
+          #  v_align='center'
+          #else:
+          v_align='center'
+          #pprint(point_dataframe_3857)
+          #https://stackoverflow.com/q/57713738
+          fig = plt.figure(figsize=(8.3, 11.7), dpi=dpi)
+          ax = fig.add_axes([0,0,1,1])
+          ax.set_axis_off()
+          t = ax.text(0, 0.5, "\n".join(formatted_slice), 
+                  horizontalalignment='left', 
+                  verticalalignment=v_align,
+                  fontsize=10, 
+                  color='black',
+                  wrap=True)
+          ax.figure.canvas.draw()
+          bbox = t.get_window_extent()
+          #fig.set_size_inches(8.3, 11.7) # dpi=80
+          fig.set_size_inches(bbox.width/dpi, bbox.height/dpi) # dpi=80
+
+          # cell_text=[ [x] for x in point_dataframe_3857["inscription"].values]
+          # rowLabels=point_dataframe_3857["EDCS-ID"].values
+          # colLabels=["Inscription"]
+          # print(rowLabels)
+          # print(colLabels)
+
+          # # table = plt.table(cellText = cell_text,
+          # #                   rowLabels=rowLabels,
+          # #                   colLabels=colLabels)
+          # plt.axis('off')
+          # plt.grid('off')
+
+
+
+          pdf.savefig(fig,dpi=dpi, bbox_inches='tight')
+          plt.close()
+      #pdf.savefig()
+
+
+  #plt.savefig(f"{map_filename}.png", dpi=dpi,bbox_inches='tight')
   #subprocess.call(["xdg-open", MAP_FILENAME])
 
 
-  plt.close()
+      plt.close()
 
-def make_all_maps(map_title_text=str(datetime.datetime.now()), province_shapefile="roman_empire_ad_117.shp", basemap_multicolour=True):
+def make_recent_map():
 
+  OUTPUTS = Path("output")
+
+  def get_outputs():
+        outputs = {}
+        for output in OUTPUTS.glob("*.tsv"):
+            outputs[output.stat().st_mtime] = (output.name, output)
+        output_keys = sorted(outputs, reverse=True)
+        
+        filenames = []
+        for key in output_keys:
+            filenames.append(outputs[key])
+        
+        
+        return filenames
   
-  
+
+  output_tsv = get_outputs()[0][1]
+  # print(f"making {output_tsv} png")
+  # make_map(data_file=output_tsv,           
+  #          show_ids=True,
+  #          filetype='png',
+  #          append_inscriptions=False,
+  #          dpi=300
+  #          )
+  print(f"making {output_tsv} pdf")
+  make_map(data_file=output_tsv,           
+           show_ids=True,
+           filetype='pdf',
+           append_inscriptions=True,
+           dpi=300
+           )
+
   #pre_geo_data = {'objects':[], 'geometry':[]}
 
   # for row in import_rows:
@@ -342,4 +491,4 @@ def make_all_maps(map_title_text=str(datetime.datetime.now()), province_shapefil
 
 
 if __name__ == "__main__":
-  make_all_maps(map_title_text=str(datetime.datetime.now()) )
+  make_recent_map()
