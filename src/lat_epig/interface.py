@@ -267,7 +267,7 @@ def makeScrapeInterface():
             # display(HTML("<a href='/tree/output/' target='_blank'>Full File List</a>"))
             display(HTML("<ul>"))
             for zipfile in glob.glob("output/*.tsv"):
-                display(HTML(f"<li><a href='{zipfile}'>{zipfile}</a></li>"))
+                display(HTML(f"<li><a href='{zipfile}'>{zipfile.name}</a></li>"))
             display(HTML("</ul>"))
     
     def genusbutton(on_button_clicked):
