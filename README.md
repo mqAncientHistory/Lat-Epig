@@ -1,5 +1,6 @@
 # Lat Epig 2.0
 
+
 *The Jupyter Notebook inteface allows you to query the EDCS and save the search result in a CSV file and plot the results on a map of the Roman Empire without any prior knowledge of programming.*
 
 ## Authors 
@@ -10,6 +11,12 @@
 ## Description 
 
 This  programe extracts the output of a search query from the [Epigraphik-Datenbank  Clauss / Slaby (EDCS)](http://www.manfredclauss.de/) in a reproducible manner and saves it as a CSV file. The output can be also plotted the output to a map of the Roman Empire, along with the system of Roman Provinces, roads, and cities. 
+
+# Launch this on myBinder
+
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/mqAncientHistory/EpigraphyScraperNotebook/HEAD?urlpath=voila/render/EpigraphyScraper.ipynb)
+
+
 
 
 ## Data Sources

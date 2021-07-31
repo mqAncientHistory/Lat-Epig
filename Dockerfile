@@ -144,6 +144,8 @@ USER root
 ARG NB_USER=jovyan
 
 RUN useradd -m ${NB_USER}
+ENV PYTHONPATH "/home/jovyan/work/"
+ENV PATH="/home/jovyan/work/:/home/jovyan/.local/bin/:${PATH}"
 
 ENV USER ${NB_USER}
 ENV HOME /home/${NB_USER}
@@ -164,15 +166,11 @@ ENTRYPOINT ["/usr/bin/tini", "--"]
 # https://github.com/jupyter-widgets/ipywidgets/issues/1683#issuecomment-328952119
 
 
-RUN pip3 install --no-cache-dir numpy==1.21.0 cython wheel
+RUN python3 -m pip install  --user --no-cache-dir numpy==1.21.0 cython wheel
 # jhsingle-native-proxy>=0.0.10
-RUN pip3 install --no-cache-dir -r requirements.txt 
-RUN pip install --editable .
-RUN jupyter nbextension enable --py widgetsnbextension --sys-prefix && \
-	jupyter contrib nbextension install --sys-prefix && \
-	jupyter nbextension enable init_cell/main && \
-	jupyter labextension install @voila-dashboards/jupyterlab-preview && \
-	jupyter serverextension enable voila --sys-prefix
+RUN python3 -m pip install  --user --no-cache-dir -r requirements.txt 
+RUN python3 -m pip install  --user --no-cache-dir --editable .
+RUN bash ./setupJupyter.sh
 
 
 #&& \
@@ -200,7 +198,7 @@ RUN jupyter trust EpigraphyScraper.ipynb
 EXPOSE 8888
 EXPOSE 8866
 
-#CMD ["jupyter", "notebook", "--ip='*'", "--NotebookApp.token=''", "--NotebookApp.password=''",  "--no-browser"]
+CMD ["jupyter", "notebook", "--ip='*'", "--NotebookApp.token=''", "--NotebookApp.password=''",  "--no-browser"]
 
 # , \     
 # 	 "--VoilaConfiguration.base_url={base_url}/", \
@@ -214,4 +212,5 @@ EXPOSE 8866
 # CMD ["jhsingle-native-proxy", "--destport", "8505", \
 # 	 "voila", "/home/jovyan/EpigraphyScraper.ipynb", \
 
-CMD ["runVoila.sh"]
+# We don't need to run voila as a server, since it "Voilà can also be used as a notebook server extension, both with the notebook server or with the jupyter_server."
+#CMD ["bash", "runVoila.sh"]
