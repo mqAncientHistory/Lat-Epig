@@ -7,6 +7,7 @@ from IPython.display import FileLink, FileLinks
 import threading
 import glob
 import argparse
+from pathlib import Path
 
 class Parseargs:
     
@@ -212,6 +213,8 @@ def makeScrapeInterface():
     
     def on_button_clicked(b):
         with out:
+            out.clear_output(wait=True)
+
             if and_not_inscription_genus.value:
                 args.and_not_inscription_genus=and_not_inscription_genus.value
                 and_not_inscription_genus.value=""
@@ -261,13 +264,26 @@ def makeScrapeInterface():
          #   with widgets.Output(layout={'border': '1px solid black'}) as out:
 
             display(HTML("<p>Getting the inscriptions. This may take a few minutes (or hours), depending on the number of search results.</p>"))
-
+            
             filename=parse.scrape(args)
+
+            OUTPUTS = Path("output")
+
+            file_outputs = {}
+            for output in OUTPUTS.glob("*.tsv"):
+                file_outputs[output.stat().st_mtime] = (output.name, output)
+            output_keys = sorted(file_outputs, reverse=True)
+            
+            filenames = []
+            for key in output_keys:
+                filenames.append(file_outputs[key])
+
+            
             #print(filename)
             # display(HTML("<a href='/tree/output/' target='_blank'>Full File List</a>"))
             display(HTML("<ul>"))
-            for zipfile in glob.glob("output/*.tsv"):
-                display(HTML(f"<li><a href='{zipfile}'>{zipfile.name}</a></li>"))
+            for zipfile in filenames:
+                display(HTML(f"<li><a href='{zipfile[1]}'>{zipfile[0]}</a></li>"))
             display(HTML("</ul>"))
     
     def genusbutton(on_button_clicked):
