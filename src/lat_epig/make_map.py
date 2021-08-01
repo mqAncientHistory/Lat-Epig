@@ -151,7 +151,8 @@ def make_map(data_file,
              filetype='pdf',
              show_ids=False,
              append_inscriptions=False,
-             dpi=1200):
+             dpi=1200,
+             map_dimensions=None):
 
 
   
@@ -178,10 +179,11 @@ def make_map(data_file,
 
   point_dataframe_3857 = makeDataframe(data_file)
 
+  print("Loaded data...")
   #pprint(point_dataframe_3857[["geometry", "Longitude", "Latitude" ]])
   #print(f"Making {data_file}\n\troads: {roads}\n\tprovinces: {provinces}\n\tcities: {cities}\n")
 
-  fig = plt.figure(figsize=(16.5, 11.7), dpi=dpi)
+  fig = plt.figure(figsize=map_dimensions, dpi=dpi)
 
  
   ax = fig.add_subplot(1,1,1, projection=ccrs.Mercator.GOOGLE, frameon=False)
@@ -254,7 +256,7 @@ Ancient World Mapping Center “{escaped_provinceshapefilename}” <http://awmc.
     searchterm = "Inscription"
   point_dataframe_3857.plot(ax=ax, marker=".", linewidth=0.2, markersize=5, alpha=0.5, color='red', edgecolor='k', zorder=4, label=f"{searchterm}")
   #ctx.add_basemap(ax, source=ctx.providers.Stamen.TerrainBackground)
-
+  print("Plotted data...")
 
   if show_ids:
     for x,y, label in zip(point_dataframe_3857.geometry.x, point_dataframe_3857.geometry.y, point_dataframe_3857["EDCS-ID"]):
@@ -322,6 +324,7 @@ Ancient World Mapping Center “{escaped_provinceshapefilename}” <http://awmc.
   if filetype != 'pdf':
     plt.savefig(f"{map_filename}.{filetype}", dpi=dpi,bbox_inches='tight')
     plt.close()
+    print("Saved map...")
   else:
     figdate = [int(x) for x in data_file.name.replace("-"," ").replace("_"," ").replace(".tsv","").split( )[0:3]]
     with PdfPages(f"{map_filename}.{filetype}", metadata={"Title":map_title_text,
@@ -333,7 +336,9 @@ Ancient World Mapping Center “{escaped_provinceshapefilename}” <http://awmc.
       #https://matplotlib.org/stable/api/backend_pdf_api.html#matplotlib.backends.backend_pdf.PdfPages
       pdf.savefig(fig, dpi=dpi,bbox_inches='tight')
       plt.close()
+      print("Saved map...")
       if append_inscriptions:
+        print("Appending inscriptions...")
         def chunks(lst, n):
           # https://stackoverflow.com/a/312464
           """Yield successive n-sized chunks from lst."""
@@ -352,8 +357,8 @@ Ancient World Mapping Center “{escaped_provinceshapefilename}” <http://awmc.
           x=round(geom.x,2)
           province=a_line[2]
           place=a_line[3]
-          y_bucket=int(5 * round(y/5,0))
-          x_bucket=int(5 * round(x/5,0))
+          y_bucket=int(2.5 * round(y/2.5))
+          x_bucket=int(2.5 * round(x/2.5))
           #print(y, y_bucket, x, x_bucket)
           key = a_line[0]
           line = a_line[1]
@@ -383,7 +388,7 @@ Ancient World Mapping Center “{escaped_provinceshapefilename}” <http://awmc.
           v_align='center'
           #pprint(point_dataframe_3857)
           #https://stackoverflow.com/q/57713738
-          fig = plt.figure(figsize=(8.3, 11.7), dpi=dpi)
+          fig = plt.figure(dpi=dpi)
           ax = fig.add_axes([0,0,1,1])
           ax.set_axis_off()
           t = ax.text(0, 0.5, "\n".join(formatted_slice), 
@@ -413,6 +418,7 @@ Ancient World Mapping Center “{escaped_provinceshapefilename}” <http://awmc.
 
           pdf.savefig(fig,dpi=dpi, bbox_inches='tight')
           plt.close()
+          print("Saved inscription(s)...")
       #pdf.savefig()
 
 
@@ -421,6 +427,7 @@ Ancient World Mapping Center “{escaped_provinceshapefilename}” <http://awmc.
 
 
       plt.close()
+    print("Done!")
 
 def make_recent_map():
 
