@@ -24,7 +24,8 @@ class Parseargs:
 
 def make_map_interface():
     args = Parseargs()
-    map_button = widgets.Button(description="Generate New Maps!")
+    map_button = widgets.Button(layout={'width': 'max-content'},
+        description="Generate New Maps!")
     #     map_button_interactive = widgets.Button(description="Reload Interactive!")
     out = widgets.Output(layout={'border': '1px solid black'})
 #     display(HTML("<h1>Interactive Map</h1>"))
@@ -46,7 +47,8 @@ def make_map_interface():
     
 
     map_refresh=widgets.Button(
-        description="Update Data File List"
+        description="Update Data File List",
+        layout={'width': 'max-content'}
     )
 
     def get_outputs():
@@ -67,7 +69,7 @@ def make_map_interface():
     map_data=widgets.Dropdown(
         description="Data File",
         options=get_outputs(),
-        layout=Layout(width='50%')
+        layout={'width': 'max-content'}
         )
 
     map_title=widgets.Text(
@@ -86,6 +88,7 @@ def make_map_interface():
     map_shapefile=widgets.Dropdown(
         description="Basemap",
         value="roman_empire_ad_117.shp",
+        layout={'width': 'max-content'},
         options=province_list
         )
     map_show_roads = widgets.RadioButtons(
@@ -93,6 +96,7 @@ def make_map_interface():
                  ("Roads around points", "points"),
                  ("No Roads", None)],
         value="all",
+        layout={'width': 'max-content'},
         description="Show Roads")
 
     map_show_cities = widgets.RadioButtons(
@@ -100,40 +104,52 @@ def make_map_interface():
                  ("Cities around points", "points"),
                  ("No Cities", None)],
         value="all",
+        layout={'width': 'max-content'},
         description="Show Cities")
 
 
     map_basemap_multicolour = widgets.RadioButtons(
         options=[('Light Brown', False), ('Multicoloured', True)],
         value=True,
+        layout={'width': 'max-content'},
         description="Basemap<br/>Styling"
         )
 
     map_filetype = widgets.RadioButtons(
         options=['pdf', 'png', 'tiff', 'eps', 'svg'],
         value='pdf',
+        layout={'width': 'max-content'},
         description="Filetype"
         )
 
     map_inscription_ids = widgets.Checkbox(        
         value=False,
+        layout={'width': 'max-content'},
         description="Inscription IDs with Points"
         )
 
     map_append_inscriptions = widgets.Checkbox(        
         value=False,
+        layout={'width': 'max-content'},
         description="(PDF Only) Append Inscriptions"
         )
 
     map_dpi = widgets.RadioButtons(        
         options=[72,300,600,1200],
         value=300,
+        layout={'width': 'max-content'},
         description="DPI"
         )
 
+    map_dimensions = widgets.RadioButtons(
+        options=[('Default', None), ('A3', (16.5, 11.7)), ('A4', (11.7, 8.3)), ('A5', (8.3, 5.8))],
+        value=None,
+        layout={'width': 'max-content'},
+        description="Map dimensions"
+        )
 
     
-    display(HTML("<h1>Generate PDF Map</h1>"), map_refresh, map_data, map_title, map_shapefile, map_basemap_multicolour, map_show_roads, map_show_cities, map_filetype, map_dpi, map_inscription_ids, map_append_inscriptions, map_button)
+    display(HTML("<h1>Generate PDF Map</h1>"), map_refresh, map_data, map_title, map_shapefile, map_basemap_multicolour, map_show_roads, map_show_cities, map_filetype, map_dpi, map_inscription_ids, map_append_inscriptions, map_dimensions, map_button)
     display(HTML("<h2>PDF Map Output</h2>"), out)    
     display(HTML("<hr/>"))
     def map_on_button_clicked(b):
@@ -172,7 +188,7 @@ def make_map_interface():
                      cities=map_show_cities.value,
                      filetype=map_filetype.value,
                      show_ids=map_inscription_ids.value,
-                     append_inscriptions=map_append_inscriptions,
+                     append_inscriptions=map_append_inscriptions.value,
                      dpi=map_dpi.value
                      )
             #datestring=datetime.datetime.now().strftime("%Y%m%d")
@@ -197,7 +213,7 @@ def make_map_interface():
             # display(HTML("<a href='/tree/output/' target='_blank'>Full File List</a>"))
             display(HTML("<ul>"))
             for zipfile in filenames:
-                display(HTML(f"<li><a href='{zipfile[1]}'>{zipfile[0]}</a></li>"))
+                display(HTML(f"<li><a target='_blank' href='{zipfile[1]}'>{zipfile[0]}</a></li>"))
             display(HTML("</ul>"))
 
     map_button.on_click(map_on_button_clicked)
