@@ -93,9 +93,9 @@ def make_map_interface():
         )
 
     map_show_provinces = widgets.RadioButtons(
-        options=[("All Provinces (don't use on myBinder)", True),
+        options=[("All Provinces", True),
                  ("Provinces near points", False)],
-        value=False,
+        value=True,
         layout={'width': 'max-content'},
         description="Show Provinces")
 
@@ -151,7 +151,6 @@ def make_map_interface():
 
     map_dimensions = widgets.RadioButtons(
         options=[('Default', None), ('A3', (16.5, 11.7)), ('A4', (11.7, 8.3)), ('A5', (8.3, 5.8))],
-        value=None,
         layout={'width': 'max-content'},
         description="Map dimensions"
         )
