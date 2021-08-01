@@ -31,6 +31,9 @@ from collections import defaultdict
 from cartopy.mpl.gridliner import LONGITUDE_FORMATTER, LATITUDE_FORMATTER
 from matplotlib.backends.backend_pdf import PdfPages
 
+import psutil
+
+
 #from blume.table import table
 #from blume.taybell import table
 
@@ -152,7 +155,8 @@ def make_map(data_file,
              show_ids=False,
              append_inscriptions=False,
              dpi=1200,
-             map_dimensions=None):
+             map_dimensions=None,
+             partial_provinces=False):
 
 
   
@@ -205,7 +209,7 @@ def make_map(data_file,
   
   map_metadata_list=data_file.name.replace(".tsv","").split("-")
   search_params = map_metadata_list[3].replace("_"," ").replace("term1","Term 1 =").replace("term2","Term 2 =").replace("%","All").replace("+","; ").replace(r" +"," ")
-  escaped_provinceshapefilename = province_shapefilename.replace("_", r"\_")
+  escaped_provinceshapefilename = province_shapefilename.replace("_", r"_")
   map_metadata = rf"""Search Parameters: {search_params}
 Results: {map_metadata_list[4]} Date scraped: {map_metadata_list[0]}-{map_metadata_list[1]}-{map_metadata_list[2]}
 Data from Epigraphik-Datenbank Clauss / Slaby <http://manfredclauss.de/>
@@ -230,7 +234,14 @@ Ancient World Mapping Center “{escaped_provinceshapefilename}” <http://awmc.
   #pprint((xmin, ymin, xmax, ymax, buffer.total_bounds, point_dataframe_3857.total_bounds))
 
   #THIS PROBABLY IS WRONG, BUT IT MAKES A MAP?!
-  bounded_prov = geopandas.overlay(buffer, provinces_3857, how='union', keep_geom_type=False)
+  print("Currently used memory:", psutil.virtual_memory().percent)
+
+  if not partial_provinces or psutil.virtual_memory().percent > 60:
+    print("entering low-memory province mode", partial_provinces, psutil.virtual_memory().percent > 60)
+    bounded_prov = provinces_3857.cx[xmin:xmax, ymin:ymax]
+  else:
+    bounded_prov = provinces_3857#geopandas.overlay(buffer, provinces_3857, how='union', keep_geom_type=False)
+  print("Currently used memory:", psutil.virtual_memory().percent)
   province_shapefilename=province_shapefilename.replace("_provinces.shp", "").replace("ad","AD").replace("bc","BC").replace("roman_","").replace("empire_","").replace("_"," ")
   province_shapefilename=f"Provinces in {province_shapefilename}"
   #pprint(province_shapefilename)
@@ -297,7 +308,7 @@ Ancient World Mapping Center “{escaped_provinceshapefilename}” <http://awmc.
   #                        location="lower left", 
   #                        font_properties={"size": "xx-small"}))
 
-  x, y, arrow_length = 0.025, 0.1, 0.075
+  x, y, arrow_length = 0.005, 0.1, 0.075
   ax.annotate('N', xy=(x, y), xytext=(x, y-arrow_length),
               arrowprops=dict(facecolor='black', arrowstyle='->'),#width=.05, headwidth=2),
               ha='center', va='center', fontsize=5,
@@ -305,11 +316,11 @@ Ancient World Mapping Center “{escaped_provinceshapefilename}” <http://awmc.
   # point_geodataframe.plot(ax=ax, color='red')
   #https://stackoverflow.com/a/53735672
 
-  #print("\n\n***\n\nBRIAN", fig.bbox, (bounded_prov.total_bounds[2] - bounded_prov.total_bounds[0]))
-  #if (buffer.total_bounds[2] - buffer.total_bounds[0]) < 1000000:
-  #  scale = 100
-  #else:
-  scale = 1_000
+  print("\n\n***\n\nBRIAN", fig.bbox, (bounded_prov.total_bounds[2] - bounded_prov.total_bounds[0]))
+  if (buffer.total_bounds[2] - buffer.total_bounds[0]) < 1000000:
+   scale = 100
+  else:
+    scale = 1_000
 
   scale_bar(ax, (0.05, 0.05), scale)
   ax.xaxis.set_visible(False)
