@@ -30,7 +30,6 @@ decorator==4.4.2
 defusedxml==0.7.1
 descartes==1.1.0
 entrypoints==0.3
--e git+https@github.com:mqAncientHistory/EpigraphyScraperNotebook.git#egg=EpigraphyScraper
 et-xmlfile==1.1.0
 Fiona==1.8.20
 folium==0.12.1
