@@ -12,13 +12,11 @@ LABEL description="Docker image for epig scraper with map generation."
 ARG DEBIAN_FRONTEND=noninteractive
 # Update Ubuntu Software repository
 # https://askubuntu.com/a/769429
-RUN sed -i '/^#\sdeb-src /s/^#//' "/etc/apt/sources.list"
 
 
-RUN apt-get update && \
+RUN sed -i '/^#\sdeb-src /s/^#//' "/etc/apt/sources.list" && \
+apt-get update && \
 apt-get install curl gnupg ca-certificates -y --no-install-recommends && \
-echo "deb http://ppa.launchpad.net/deadsnakes/ppa/ubuntu focal main\ndeb-src http://ppa.launchpad.net/deadsnakes/ppa/ubuntu focal main" > /etc/apt/sources.list.d/deadsnakes.list && \
-apt-key adv --keyserver keyserver.ubuntu.com --recv-keys F23C5A6CF475977595C89F51BA6932366A755776 && \
 curl -fsSL https://deb.nodesource.com/setup_16.x | bash - && \
 apt-get install -y --no-install-recommends \
 apt-transport-https \
@@ -50,10 +48,10 @@ nodejs \
 openssh-client \
 proj-bin \
 proj-data \
-python3.9 \
-python3.9-dev \
+python3 \
+python3-dev \
 python3-pip \
-python3.9-tk \
+python3-tk \
 wget \
 zlib1g-dev && \
 update-ca-certificates 
@@ -87,10 +85,10 @@ ENTRYPOINT ["/usr/bin/tini", "--"]
 # https://github.com/jupyter-widgets/ipywidgets/issues/1683#issuecomment-328952119
 
 
-RUN python3.9 -m pip install  --user --no-cache-dir numpy==1.21.1 cython wheel pyshp==2.1.3 && \
-python3.9 -m pip install shapely --no-cache-dir --no-binary shapely==1.7.1 && \
-python3.9 -m pip install  --user --no-cache-dir -r requirements.txt && \
-python3.9 -m pip install  --user --no-cache-dir --editable . && \
+RUN python3 -m pip install  --user --no-cache-dir numpy==1.21.1 cython wheel pyshp==2.1.3 && \
+python3 -m pip install shapely --no-cache-dir --no-binary shapely==1.7.1 && \
+python3 -m pip install  --user --no-cache-dir -r requirements.txt && \
+python3 -m pip install  --user --no-cache-dir --editable . && \
 bash ./setupJupyter.sh && \
 chown -R ${NB_USER} ${HOME}
 
