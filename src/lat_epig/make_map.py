@@ -160,7 +160,8 @@ def make_map(data_file,
 
 
   
-
+  if not os.path.exists('output_maps'):
+    os.makedirs('output_maps')
 
   cities_rows = extract(CITIES_DATA)
   cities_dataframe = pandas.DataFrame(cities_rows)
@@ -329,7 +330,7 @@ Ancient World Mapping Center “{escaped_provinceshapefilename}” <http://awmc.
 
   ax.autoscale_view(tight=True)
 
-  province_shapefilename=province_shapefilename.replace(" ","_")
+  province_shapefilename=province_shapefilename.replace(" ","_").replace(".shp","")
   datafile_base_name = data_file.name.replace('.tsv','')
   map_filename=f"output_maps/{datafile_base_name}{f'-with{province_shapefilename}' if provinces else ''}{f'-withCities{cities}' if cities else ''}{f'-withRoads{roads}' if roads else ''}"
   
