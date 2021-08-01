@@ -219,6 +219,7 @@ Ancient World Mapping Center “{escaped_provinceshapefilename}” <http://awmc.
   plt.title(map_title_text, fontsize=12, y=1)
   plt.rc('font',**{'family':'serif'})
 
+  print("Initalised plot...")
 
   #https://gis.stackexchange.com/a/266833
   buffer = geopandas.GeoDataFrame(geometry=point_dataframe_3857.buffer(MIN_MAP, cap_style = 3))
@@ -234,22 +235,28 @@ Ancient World Mapping Center “{escaped_provinceshapefilename}” <http://awmc.
   province_shapefilename=f"Provinces in {province_shapefilename}"
   #pprint(province_shapefilename)
   if provinces:
+
     if basemap_multicolour:
       bounded_prov.plot(ax=ax, linewidth=1, alpha=0.1,  cmap=plt.get_cmap("prism"), zorder=1, label=province_shapefilename)
     else:
       bounded_prov.plot(ax=ax, linewidth=0.3, alpha=0.5, color='#C39B77', linestyle='dashed', zorder=1, label=province_shapefilename)
+    print("Plotted provinces...")
   if roads:
     if roads == "points":
       bounded_roads = roads_3857.cx[xmin:xmax, ymin:ymax]
     else:
       bounded_roads = roads_3857
     bounded_roads.plot(ax=ax, linewidth=0.2, alpha=1,  color='gray', zorder=2, label="Roads")
+    print("Plotted roads...")
+
   if cities:
     if cities == "points":
       bounded_cities = cities_geodataframe_3857.cx[xmin:xmax, ymin:ymax]
     else:
       bounded_cities = cities_geodataframe_3857
     bounded_cities.plot(ax=ax, marker="+", markersize=3, linewidth=0.25, alpha=0.5,  color='black', zorder=3, label="Cities")
+    print("Plotted cities...")
+
   if searchterm:
     searchterm = f"Inscription:\n{searchterm}"
   else:
