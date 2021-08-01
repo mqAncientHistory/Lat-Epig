@@ -27,7 +27,7 @@ class Parseargs:
 def make_i_map_interface():
     args = Parseargs()
     i_map_button = widgets.Button(description="Refresh Interactive Map!" ,
-        layout=Layout(width='30%'))
+        layout={'width': 'max-content'})
     #     map_button_interactive = widgets.Button(description="Reload Interactive!")
     out = widgets.Output(layout={'border': '1px solid black'})
 #     display(HTML("<h1>Interactive Map</h1>"))
@@ -49,7 +49,8 @@ def make_i_map_interface():
     
 
     i_map_refresh=widgets.Button(
-        description="Update Data File List"
+        description="Update Data File List",
+        layout={'width': 'max-content'}
     )
 
     def get_outputs():
@@ -70,7 +71,7 @@ def make_i_map_interface():
     i_map_data=widgets.Dropdown(
         description="Data File",
         options=get_outputs(),
-        layout=Layout(width='50%')
+        layout={'width': 'max-content'}
         )
 
 
