@@ -91,6 +91,14 @@ def make_map_interface():
         layout={'width': 'max-content'},
         options=province_list
         )
+
+    map_show_provinces = widgets.RadioButtons(
+        options=[("All Provinces (don't use on myBinder)", True),
+                 ("Provinces near points", False)],
+        value=False,
+        layout={'width': 'max-content'},
+        description="Show Provinces")
+
     map_show_roads = widgets.RadioButtons(
         options=[("All Roman Roads", 'all'),
                  ("Roads around points", "points"),
@@ -149,7 +157,7 @@ def make_map_interface():
         )
 
     
-    display(HTML("<h1>Generate PDF Map</h1>"), map_refresh, map_data, map_title, map_shapefile, map_basemap_multicolour, map_show_roads, map_show_cities, map_filetype, map_dpi, map_inscription_ids, map_append_inscriptions, map_dimensions, map_button)
+    display(HTML("<h1>Generate PDF Map</h1>"), map_refresh, map_data, map_title, map_shapefile, map_show_provinces, map_basemap_multicolour, map_show_roads, map_show_cities, map_filetype, map_dpi, map_inscription_ids, map_append_inscriptions, map_dimensions, map_button)
     display(HTML("<h2>PDF Map Output</h2>"), out)    
     display(HTML("<hr/>"))
     def map_on_button_clicked(b):
@@ -189,7 +197,8 @@ def make_map_interface():
                      filetype=map_filetype.value,
                      show_ids=map_inscription_ids.value,
                      append_inscriptions=map_append_inscriptions.value,
-                     dpi=map_dpi.value
+                     dpi=map_dpi.value,
+                     partial_provinces=map_show_provinces.value
                      )
             #datestring=datetime.datetime.now().strftime("%Y%m%d")
             # output_filename=f"epigraphy_scraper_maps_output_{datestring}"
