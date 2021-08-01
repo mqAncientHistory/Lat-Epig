@@ -1,7 +1,8 @@
 #Download base image ubuntu 20.04
 #https://www.howtoforge.com/tutorial/how-to-create-docker-images-with-dockerfile/
-FROM ubuntu:20.04
-FROM python:3.9.6-buster
+FROM ubuntu:21.04
+#FROM python:3.9.6-buster
+#FROM node:16-alpine3.11
 # FROM jupyter/scipy-notebook:016833b15ceb
 # FROM python:3.8
 # FROM armandokeller/cartopy:first
@@ -63,29 +64,34 @@ ca-certificates \
 curl \
 git \
 libbz2-dev \
+libc6 \
 libffi-dev \
+libgcc-s1 \
 libgeos++-dev \
+libgeos-c1v5 \
+libgeos-dev \
 liblzma-dev \
 libncurses5-dev \
 libproj-dev \
+libpython3-dev \
 libreadline-dev \
 libsqlite3-dev \
 libssl-dev \
+libstdc++6 \
+libxml2-dev \
 libxml2-dev \
 libxmlsec1-dev \
+libxslt-dev \
 make \
+openssh-client \
 proj-bin \
 proj-data \
+python3 \
+python3-dev \
+python3-pip \
+python3-tk \
 wget \
-zlib1g-dev \
-libgeos-dev \
-libxml2-dev \
-libxslt-dev \
-python-dev \
-libc6 \
-libgeos-c1v5 \
-libproj-dev \
-libstdc++6
+zlib1g-dev
 
 
 RUN update-ca-certificates
@@ -166,9 +172,11 @@ ENTRYPOINT ["/usr/bin/tini", "--"]
 # https://github.com/jupyter-widgets/ipywidgets/issues/1683#issuecomment-328952119
 
 
-RUN python3 -m pip install  --user --no-cache-dir numpy==1.21.0 cython wheel
+RUN python3 -m pip install  --user --no-cache-dir numpy==1.21.1 cython wheel pyshp==2.1.3
 # jhsingle-native-proxy>=0.0.10
+RUN python3 -m pip install shapely --no-cache-dir --no-binary shapely==1.7.1
 RUN python3 -m pip install  --user --no-cache-dir -r requirements.txt 
+#RUN python3 -m pip uninstall shapely
 RUN python3 -m pip install  --user --no-cache-dir --editable .
 RUN bash ./setupJupyter.sh
 
