@@ -1,8 +1,6 @@
 #Download base image ubuntu 20.04
 #https://www.howtoforge.com/tutorial/how-to-create-docker-images-with-dockerfile/
-FROM ubuntu:21.04
-#FROM python:3.9.6-buster
-#FROM node:16-alpine3.11
+FROM ubuntu:20.04
 # FROM jupyter/scipy-notebook:016833b15ceb
 # FROM python:3.8
 # FROM armandokeller/cartopy:first
@@ -17,50 +15,15 @@ ARG DEBIAN_FRONTEND=noninteractive
 RUN sed -i '/^#\sdeb-src /s/^#//' "/etc/apt/sources.list"
 
 
-RUN apt-get update
-# RUN apt-get install -y --no-install-recommends \
-# apt-transport-https \
-# apt-utils \
-# build-essential \
-# ca-certificates \
-# curl \
-# git \
-# libbz2-dev \
-# libffi-dev \
-# libgeos++-dev \
-# liblzma-dev \
-# libncurses5-dev \
-# libproj-dev \
-# libreadline-dev \
-# libsqlite3-dev \
-# libssl-dev \
-# libxml2-dev \
-# libxmlsec1-dev \
-# make \
-# proj-bin \
-# proj-data \
-# python3-pip \
-# wget \
-# zlib1g-dev \
-# libgeos-dev \
-# libxml2-dev \
-# libxslt-dev \
-# python-dev \
-# libc6 \
-# libgcc-s1 \
-# libgeos-c1v5 \
-# libproj15 \
-# libstdc++6 \
-# libpython3.9-dev \
-# python3.9 \
-# python3.9-tk
-
-
-RUN apt-get install -y --no-install-recommends \
+RUN apt-get update && \
+apt-get install curl gnupg ca-certificates -y --no-install-recommends && \
+echo "deb http://ppa.launchpad.net/deadsnakes/ppa/ubuntu focal main\ndeb-src http://ppa.launchpad.net/deadsnakes/ppa/ubuntu focal main" > /etc/apt/sources.list.d/deadsnakes.list && \
+apt-key adv --keyserver keyserver.ubuntu.com --recv-keys F23C5A6CF475977595C89F51BA6932366A755776 && \
+curl -fsSL https://deb.nodesource.com/setup_16.x | bash - && \
+apt-get install -y --no-install-recommends \
 apt-transport-https \
 apt-utils \
 build-essential \
-ca-certificates \
 curl \
 git \
 libbz2-dev \
@@ -83,66 +46,18 @@ libxml2-dev \
 libxmlsec1-dev \
 libxslt-dev \
 make \
+nodejs \
 openssh-client \
 proj-bin \
 proj-data \
-python3 \
-python3-dev \
+python3.9 \
+python3.9-dev \
 python3-pip \
-python3-tk \
+python3.9-tk \
 wget \
-zlib1g-dev
+zlib1g-dev && \
+update-ca-certificates 
 
-
-RUN update-ca-certificates
-
-RUN curl -fsSL https://deb.nodesource.com/setup_16.x | bash -
-RUN apt-get install -y --no-install-recommends  nodejs
-
-
-
-# jupyter-notebook \
-# python3-bs4 \
-# python3-cartopy \
-# python3-clint \
-# python3-geopy \
-# python3-mechanicalsoup \
-# python3-numpy \
-# python3-pandas \
-# python3-pyshp \
-# python3-rtree \
-# python3-tk \
-# python3-shapely \
-# python3-ipywidgets \
-# python3-matplotlib \
-# nodejs \
-# npm \
-# jupyter-core \
-# jupyter-client \
-
-#RUN apt-get build-dep python3-cartopy python3-lxml jupyter-notebook -y 
-
-
-# RUN git clone https://github.com/pyenv/pyenv.git ~/.pyenv && \
-# 	cd ~/.pyenv && \
-# 	src/configure && make -C src && \
-# 	echo 'export PYENV_ROOT="$HOME/.pyenv"' >> ~/.bash_profile && \
-# 	echo 'export PATH="$PYENV_ROOT/bin:$PATH"' >> ~/.bash_profile && \
-# 	echo 'export PYENV_ROOT="$HOME/.pyenv"' >> ~/.bashrc && \
-# 	echo 'export PATH="$PYENV_ROOT/bin:$PATH"' >> ~/.bashrc && \
-	# echo -e 'if command -v pyenv 1>/dev/null 2>&1; then\n  eval "$(pyenv init -)"\nfi' >> ~/.bash_profile && \
-	# echo -e 'if command -v pyenv 1>/dev/null 2>&1; then\n  eval "$(pyenv init -)"\nfi' >> ~/.bashrc 
-
- 
-# 
-# 
-# RUN rm -rf /var/lib/apt/lists/* && \
-# 	apt-get clean
-
-# https://u.group/thinking/how-to-put-jupyter-notebooks-in-a-dockerfile/
-
-# RUN mkdir src
-# WORKDIR src/
 
 
 USER root
@@ -172,22 +87,13 @@ ENTRYPOINT ["/usr/bin/tini", "--"]
 # https://github.com/jupyter-widgets/ipywidgets/issues/1683#issuecomment-328952119
 
 
-RUN python3 -m pip install  --user --no-cache-dir numpy==1.21.1 cython wheel pyshp==2.1.3
-# jhsingle-native-proxy>=0.0.10
-RUN python3 -m pip install shapely --no-cache-dir --no-binary shapely==1.7.1
-RUN python3 -m pip install  --user --no-cache-dir -r requirements.txt 
-#RUN python3 -m pip uninstall shapely
-RUN python3 -m pip install  --user --no-cache-dir --editable .
-RUN bash ./setupJupyter.sh
+RUN python3.9 -m pip install  --user --no-cache-dir numpy==1.21.1 cython wheel pyshp==2.1.3 && \
+python3.9 -m pip install shapely --no-cache-dir --no-binary shapely==1.7.1 && \
+python3.9 -m pip install  --user --no-cache-dir -r requirements.txt && \
+python3.9 -m pip install  --user --no-cache-dir --editable . && \
+bash ./setupJupyter.sh && \
+chown -R ${NB_USER} ${HOME}
 
-
-#&& \
-#	jupyter labextension install @jupyter-widgets/jupyterlab-manager && \
-#	jupyter labextension install @voila-dashboards/jupyterlab-preview && \
-#	jupyter serverextension enable voila --sys-prefix && \
-
-
-RUN chown -R ${NB_USER} ${HOME}
 USER ${NB_USER}
 
 #RUN pip3 install --upgrade frictionless geoplot jupyterlab jupyter_client pandas geopandas && jupyter nbextension enable --py widgetsnbextension --sys-prefix && jupyter labextension install @jupyter-widgets/jupyterlab-manager
@@ -204,7 +110,6 @@ RUN jupyter trust EpigraphyScraper.ipynb
 
 #https://github.com/ideonate/jhsingle-native-proxy/blob/master/docker-examples/jupyterhub-singleuser-voila-native/Dockerfile
 EXPOSE 8888
-EXPOSE 8866
 
 CMD ["jupyter", "notebook", "--ip='*'", "--NotebookApp.token=''", "--NotebookApp.password=''",  "--no-browser"]
 

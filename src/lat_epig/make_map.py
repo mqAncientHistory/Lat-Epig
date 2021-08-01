@@ -223,7 +223,7 @@ Ancient World Mapping Center “{escaped_provinceshapefilename}” <http://awmc.
   plt.title(map_title_text, fontsize=12, y=1)
   plt.rc('font',**{'family':'serif'})
 
-  print("Initalised plot...")
+  print("Initialised plot...")
 
   #https://gis.stackexchange.com/a/266833
   buffer = geopandas.GeoDataFrame(geometry=point_dataframe_3857.buffer(MIN_MAP, cap_style = 3))
