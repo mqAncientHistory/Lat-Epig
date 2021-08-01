@@ -234,14 +234,15 @@ Ancient World Mapping Center “{escaped_provinceshapefilename}” <http://awmc.
   #pprint((xmin, ymin, xmax, ymax, buffer.total_bounds, point_dataframe_3857.total_bounds))
 
   #THIS PROBABLY IS WRONG, BUT IT MAKES A MAP?!
-  print("Currently used memory:", psutil.virtual_memory().percent)
+  # print("Currently used memory:", psutil.virtual_memory().percent)
 
-  if not partial_provinces or psutil.virtual_memory().percent > 60:
-    print("entering low-memory province mode", partial_provinces, psutil.virtual_memory().percent > 60)
+  if not partial_provinces:
+    #    print("entering low-memory province mode", partial_provinces, psutil.virtual_memory().percent > 60)
     bounded_prov = provinces_3857.cx[xmin:xmax, ymin:ymax]
   else:
     bounded_prov = provinces_3857#geopandas.overlay(buffer, provinces_3857, how='union', keep_geom_type=False)
-  print("Currently used memory:", psutil.virtual_memory().percent)
+  
+  # print("Currently used memory:", psutil.virtual_memory().percent)
   province_shapefilename=province_shapefilename.replace("_provinces.shp", "").replace("ad","AD").replace("bc","BC").replace("roman_","").replace("empire_","").replace("_"," ")
   province_shapefilename=f"Provinces in {province_shapefilename}"
   #pprint(province_shapefilename)
@@ -316,7 +317,7 @@ Ancient World Mapping Center “{escaped_provinceshapefilename}” <http://awmc.
   # point_geodataframe.plot(ax=ax, color='red')
   #https://stackoverflow.com/a/53735672
 
-  print("\n\n***\n\nBRIAN", fig.bbox, (bounded_prov.total_bounds[2] - bounded_prov.total_bounds[0]))
+  # print("\n\n***\n\nBRIAN", fig.bbox, (bounded_prov.total_bounds[2] - bounded_prov.total_bounds[0]))
   if (buffer.total_bounds[2] - buffer.total_bounds[0]) < 1000000:
    scale = 100
   else:
