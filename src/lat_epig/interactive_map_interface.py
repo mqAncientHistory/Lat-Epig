@@ -79,7 +79,7 @@ def make_i_map_interface():
     
     display(HTML("<h1>Interactive Map</h1>"), i_map_refresh, i_map_data, i_map_button)
     display(HTML("<h2>Interactive Map Output</h2>"), out)    
-    display(HTML("<hr/>"))
+    
     def i_map_on_button_clicked(b):
         with out:
             if not i_map_data.value:

@@ -25,7 +25,7 @@ class Parseargs:
 def make_map_interface():
     args = Parseargs()
     map_button = widgets.Button(layout={'width': 'max-content'},
-        description="Generate New Maps!")
+        description="Export Desired Map!")
     #     map_button_interactive = widgets.Button(description="Reload Interactive!")
     out = widgets.Output(layout={'border': '1px solid black'})
 #     display(HTML("<h1>Interactive Map</h1>"))
@@ -76,11 +76,24 @@ def make_map_interface():
         description='Map Title:'
     ) 
 
-    province_list=[]
-    for province in PROVINCES_SHP.glob("roman_empire_*.shp"):
-        province_list.append((str(province.name).replace(".shp", "").replace("ad","AD").replace("bc","BC").replace("roman_","").replace("empire_","").replace("_"," ") ,
-                              province.name))
+    province_file=['roman_empire_60_bc_provinces.shp',
+'roman_empire_60_bc_extent.shp',
+'roman_empire_ad_14_extent.shp',
+'roman_empire_ad_14_provinces.shp',
+'roman_empire_ad_69_extent.shp',
+'roman_empire_ad_69_provinces.shp',
+'roman_empire_ad_117_extent.shp',
+'roman_empire_ad_117.shp',
+'roman_empire_ad_200_extent.shp',
+'roman_empire_ad_200_provinces.shp',
 
+    ]
+    province_list=[]
+    for province in province_file:
+        province_list.append((str(province).replace(".shp", "").replace("ad","AD").replace("bc","BC").replace("roman_","").replace("empire_","").replace("_"," ") ,
+                              province))
+
+    
     #print(province_list)
 
 
@@ -133,7 +146,7 @@ def make_map_interface():
     map_inscription_ids = widgets.Checkbox(        
         value=False,
         layout={'width': 'max-content'},
-        description="Inscription IDs with Points"
+        description="Label with Inscription IDs"
         )
 
     map_append_inscriptions = widgets.Checkbox(        
@@ -156,9 +169,9 @@ def make_map_interface():
         )
 
     
-    display(HTML("<h1>Generate PDF Map</h1>"), map_refresh, map_data, map_title, map_shapefile, map_show_provinces, map_basemap_multicolour, map_show_roads, map_show_cities, map_filetype, map_dpi, map_inscription_ids, map_append_inscriptions, map_dimensions, map_button)
-    display(HTML("<h2>PDF Map Output</h2>"), out)    
-    display(HTML("<hr/>"))
+    display(HTML("<h1>Export Map</h1>"), map_refresh, map_data, map_title, map_shapefile, map_show_provinces, map_basemap_multicolour, map_show_roads, map_show_cities, map_filetype, map_dpi, map_inscription_ids, map_append_inscriptions, map_dimensions, map_button)
+    display(HTML("<h2>Exported Map Output</h2>"), out)    
+    
     def map_on_button_clicked(b):
         out.clear_output(wait=True)
         if not map_data.value:
