@@ -1,6 +1,6 @@
 import argparse
 from lat_epig.parse import scrape
-
+import re
 ############ UNIT TESTS #################################################################
 
 # Template
@@ -19,7 +19,7 @@ def test_EDCS_ID():
 
   test_output = scrape(args, prevent_write=True, show_inscription_transform=True)
   assert "[]" not in test_output[0]['EDCS-ID']
-  assert "EDCS-07600345" in test_output[0]['EDCS-ID']
+  assert re.match(r"EDCS-[0-9]{8,8}", test_output[0]['EDCS-ID'])
 
 
 def test_publication():

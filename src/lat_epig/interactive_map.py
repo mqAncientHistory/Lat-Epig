@@ -57,7 +57,7 @@ def makeDataframe(data_file, epsg=3857):
 
     point_geodataframe['EDCS Link'] = point_geodataframe['EDCS-ID'].apply(linkify)
 
-    point_geodataframe['cleaned inscription'] = point_geodataframe['inscription interpretive cleaning'].apply(lambda x: textwrap.shorten(x, width=255))
+    point_geodataframe['cleaned inscription'] = point_geodataframe['inscription interpretive cleaning'].apply(lambda x: textwrap.shorten(x or 'null', width=255))
     
     point_geodataframe_3857 = point_geodataframe.to_crs(epsg=epsg)
     return point_geodataframe_3857
@@ -152,7 +152,7 @@ def make_interactive_map(data_file):
       # https://github.com/python-visualization/folium/issues/1385
       folium.features.GeoJson(output_maps[map_json],
                               name=f"{map_json}",
-                              popup=folium.GeoJsonPopup(["EDCS-ID","EDCS Link","cleaned inscription"])
+                              popup=folium.GeoJsonPopup(["EDCS-ID","EDCS Link","raw dating","province", "place", "Material", "cleaned inscription"])
                              ).add_to(scrape_map)
 
 

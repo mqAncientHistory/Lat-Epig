@@ -32,6 +32,7 @@ from cartopy.mpl.gridliner import LONGITUDE_FORMATTER, LATITUDE_FORMATTER
 from matplotlib.backends.backend_pdf import PdfPages
 
 import psutil
+import matplotlib.patheffects as pe
 
 
 #from blume.table import table
@@ -267,13 +268,13 @@ Ancient World Mapping Center “{escaped_provinceshapefilename}” <http://awmc.
       bounded_cities = cities_geodataframe_3857.cx[xmin:xmax, ymin:ymax]
     else:
       bounded_cities = cities_geodataframe_3857
-    bounded_cities.plot(ax=ax, marker="+", markersize=3, linewidth=0.25, alpha=0.5,  color='black', zorder=3, label="Cities")
+    bounded_cities.plot(ax=ax, marker="+", markersize=2, linewidth=0.25, alpha=0.25,  color='black', zorder=3, label="Cities")
     print("Plotted cities...")
 
   if searchterm:
     searchterm = f"Inscription:\n{searchterm}"
   else:
-    searchterm = "Inscription"
+    searchterm = "Inscriptions"
   point_dataframe_3857.plot(ax=ax, marker=".", linewidth=0.2, markersize=5, alpha=0.5, color='red', edgecolor='k', zorder=4, label=f"{searchterm}")
   #ctx.add_basemap(ax, source=ctx.providers.Stamen.TerrainBackground)
   print("Plotted data...")
@@ -281,12 +282,15 @@ Ancient World Mapping Center “{escaped_provinceshapefilename}” <http://awmc.
   if show_ids:
     for x,y, label in zip(point_dataframe_3857.geometry.x, point_dataframe_3857.geometry.y, point_dataframe_3857["EDCS-ID"]):
       #print(x,y,label)
-      ax.annotate(label, xy=(x, y), xytext=(2, 2), textcoords="offset points", fontsize=3)
+      ax.annotate(label, xy=(x, y), xytext=(2, 2), textcoords="offset points", fontsize=1,
+                      path_effects=[pe.withStroke(linewidth=0.5, foreground="white")])
 
     # https://stackoverflow.com/a/50270936
     #point_dataframe_3857.apply(lambda x: ax.annotate(s=x['EDCS-ID'], xy=x.geometry.coords[0], xytext=(3,3), textcoords="offset points"))
 
-  ax.legend(fontsize='small')
+  legend = ax.legend(fontsize='small')
+  legend.legendHandles[1]._sizes = [30]
+  legend.legendHandles[2]._sizes = [30]
 
 
   # for layer in WMS_LAYERS:
@@ -332,7 +336,7 @@ Ancient World Mapping Center “{escaped_provinceshapefilename}” <http://awmc.
 
   province_shapefilename=province_shapefilename.replace(" ","_").replace(".shp","")
   datafile_base_name = data_file.name.replace('.tsv','')
-  map_filename=f"output_maps/{datafile_base_name}{f'-with{province_shapefilename}' if provinces else ''}{f'-withCities{cities}' if cities else ''}{f'-withRoads{roads}' if roads else ''}"
+  map_filename=f"output_maps/{datafile_base_name}{f'-{province_shapefilename}' if provinces else ''}{f'-Cities{cities}' if cities else ''}{f'-Roads{roads}' if roads else ''}{f'-IDs' if show_ids else ''}{f'-index' if append_inscriptions else ''}{f'-multicolour' if basemap_multicolour else ''}-DPI{dpi}"
   
   
   ax.spines['geo'].set_visible(False)
@@ -357,7 +361,9 @@ Ancient World Mapping Center “{escaped_provinceshapefilename}” <http://awmc.
       pdf.savefig(fig, dpi=dpi,bbox_inches='tight')
       plt.close()
       print("Saved map...")
-      if append_inscriptions:
+      if append_inscriptions and point_dataframe_3857.size >= 250:
+        print("Too many inscriptions to attach to PDF, use your TSV instead.")
+      elif append_inscriptions:
         print("Appending inscriptions...")
         def chunks(lst, n):
           # https://stackoverflow.com/a/312464
@@ -377,11 +383,11 @@ Ancient World Mapping Center “{escaped_provinceshapefilename}” <http://awmc.
           x=round(geom.x,2)
           province=a_line[2]
           place=a_line[3]
-          y_bucket=int(2.5 * round(y/2.5))
-          x_bucket=int(2.5 * round(x/2.5))
+          y_bucket=int(5 * round(y/5))
+          x_bucket=int(5 * round(x/5))
           #print(y, y_bucket, x, x_bucket)
           key = a_line[0]
-          line = a_line[1]
+          line = a_line[1] or 'No Inscription Listed'
           if y_bucket not in formatted_text:
             formatted_text[y_bucket] = {}
           if x_bucket not in formatted_text[y_bucket]:
@@ -389,56 +395,55 @@ Ancient World Mapping Center “{escaped_provinceshapefilename}” <http://awmc.
           formatted_text[y_bucket][x_bucket].append('\n'.join([textwrap.shorten(" - ({}, {}, {})".format(key, province, place), width=120)] + textwrap.wrap(line, width=100, max_lines=3, initial_indent='        ', subsequent_indent='        ' )))
 
         #matplotlib.rcParams['text.latex.unicode']=True
+        formatted_slice = []
+        
         for y_bucket in sorted(formatted_text):
-          
-          formatted_slice = []
-
           for x_bucket in sorted(formatted_text[y_bucket]):
             formatted_slice.append("\nInscriptions near Long: {}, Lat: {}".format(y_bucket, x_bucket))
             for inscription in formatted_text[y_bucket][x_bucket]:
               formatted_slice.append(inscription)
 
 
-          plt.rc('font',**{'family':'serif'})
-          plt.rc('text', usetex=False)
+        plt.rc('font',**{'family':'serif'})
+        plt.rc('text', usetex=False)
 
-          #if len(formatted_slice) > 80:
-          #  v_align='center'
-          #else:
-          v_align='center'
-          #pprint(point_dataframe_3857)
-          #https://stackoverflow.com/q/57713738
-          fig = plt.figure(dpi=dpi)
-          ax = fig.add_axes([0,0,1,1])
-          ax.set_axis_off()
-          t = ax.text(0, 0.5, "\n".join(formatted_slice), 
-                  horizontalalignment='left', 
-                  verticalalignment=v_align,
-                  fontsize=10, 
-                  color='black',
-                  wrap=True)
-          ax.figure.canvas.draw()
-          bbox = t.get_window_extent()
-          #fig.set_size_inches(8.3, 11.7) # dpi=80
-          fig.set_size_inches(bbox.width/dpi, bbox.height/dpi) # dpi=80
+        #if len(formatted_slice) > 80:
+        #  v_align='center'
+        #else:
+        v_align='center'
+        #pprint(point_dataframe_3857)
+        #https://stackoverflow.com/q/57713738
+        fig = plt.figure(dpi=dpi)
+        ax = fig.add_axes([0,0,1,1])
+        ax.set_axis_off()
+        t = ax.text(0, 0.5, "\n".join(formatted_slice), 
+                horizontalalignment='left', 
+                verticalalignment=v_align,
+                fontsize=10, 
+                color='black',
+                wrap=True)
+        ax.figure.canvas.draw()
+        bbox = t.get_window_extent()
+        #fig.set_size_inches(8.3, 11.7) # dpi=80
+        fig.set_size_inches(bbox.width/dpi, bbox.height/dpi) # dpi=80
 
-          # cell_text=[ [x] for x in point_dataframe_3857["inscription"].values]
-          # rowLabels=point_dataframe_3857["EDCS-ID"].values
-          # colLabels=["Inscription"]
-          # print(rowLabels)
-          # print(colLabels)
+        # cell_text=[ [x] for x in point_dataframe_3857["inscription"].values]
+        # rowLabels=point_dataframe_3857["EDCS-ID"].values
+        # colLabels=["Inscription"]
+        # print(rowLabels)
+        # print(colLabels)
 
-          # # table = plt.table(cellText = cell_text,
-          # #                   rowLabels=rowLabels,
-          # #                   colLabels=colLabels)
-          # plt.axis('off')
-          # plt.grid('off')
+        # # table = plt.table(cellText = cell_text,
+        # #                   rowLabels=rowLabels,
+        # #                   colLabels=colLabels)
+        # plt.axis('off')
+        # plt.grid('off')
 
 
 
-          pdf.savefig(fig,dpi=dpi, bbox_inches='tight')
-          plt.close()
-          print("Saved inscription(s)...")
+        pdf.savefig(fig,dpi=dpi, bbox_inches='tight')
+        plt.close()
+        print("Saved inscription(s)...")
       #pdf.savefig()
 
 
@@ -477,8 +482,9 @@ def make_recent_map():
   #          )
   print(f"making {output_tsv} pdf")
   make_map(data_file=output_tsv,           
-           show_ids=True,
+           show_ids=False,
            filetype='pdf',
+           province_shapefilename="roman_empire_ad_117.shp",
            append_inscriptions=True,
            dpi=300
            )
