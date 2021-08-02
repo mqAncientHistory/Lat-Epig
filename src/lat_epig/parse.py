@@ -202,8 +202,9 @@ def scrape(args, prevent_write=False, show_inscription_transform=False):
 
 
     if pub := bs.find("details"):
-      print("details found")
-      pprint(pub.get_text())
+      if debug:
+        print("details found")
+        pprint(pub.get_text())
       item['Comment'] = pub.get_text().replace('<br/>','\\n').strip()
       pub.extract()
 
