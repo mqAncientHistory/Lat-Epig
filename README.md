@@ -61,7 +61,7 @@ When it starts, click the fast-forward button, or choose the Kernel menu and cho
 
 ### To run locally using the latest image:
 
-`docker run -p 8888:8888 denubis/lat-epig-scraper:master` then visit <http://localhost:8888/voila/render/EpigraphyScraper.ipynb> in your browser.
+`docker run -p 8888:8888 denubis/lat-epig-scraper:main` then visit <http://localhost:8888/voila/render/EpigraphyScraper.ipynb> in your browser.
 
 ### To test docker locally:
 
