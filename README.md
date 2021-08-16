@@ -1,25 +1,27 @@
 # Lat Epig 2.0
 
-
 *The Lat-Epig inteface allows you to query the EDCS and save the search result in a TSV (tab separated value) file and plot the results on a map of the Roman Empire without any prior knowledge of programming.*
+
+<p align="center">
+  <img src="https://github.com/mqAncientHistory/EpigraphyScraperNotebook/blob/main/images/2021-08-16-term1_viator-690-Provinces_in_AD_117-Citiesall-Roadsall-multicolour-DPI600-.png" width="100%" alt="Lat Epig map showing inscriptions containing the term viator (a passer-by), Petra Hermankova, 16/08/2021, epigraphic data: Epigraphic Database Clauss-Slaby"/>
+</p>
+
+---
 
 ## Authors 
 * Brian Ballsun-Stanton, Macquarie University, [![](https://orcid.org/sites/default/files/images/orcid_16x16.png)](https://orcid.org/0000-0003-4932-7912)
 * Petra Heřmánková, Aarhus University, [![](https://orcid.org/sites/default/files/images/orcid_16x16.png)](https://orcid.org/0000-0002-6349-0540)
 * Ray Laurence, Macquarie University, [![](https://orcid.org/sites/default/files/images/orcid_16x16.png)](https://orcid.org/0000-0002-8229-1053)
 
-<p align="center">
-  <img src="https://github.com/mqAncientHistory/EpigraphyScraperNotebook/images/2021-08-16-term1_viator-690-Provinces_in_AD_117-Citiesall-Roadsall-multicolour-DPI600-.png" width="400" alt="Lat Epig map showing inscriptions containing the term viator (a passer-by), Petra Hermankova, 16/08/2021, epigraphic data: Epigraphic Database Clauss-Slaby"/>
-</p>
-
----
 ## Description 
 
 This  programe extracts the output of a search query from the [Epigraphik-Datenbank  Clauss / Slaby (EDCS)](http://www.manfredclauss.de/) in a reproducible manner and saves it as a TSV file. The output can be also plotted to a map of the Roman Empire, along with the system of Roman Provinces, roads, and cities. More on used datasets in the `Data Sources` section.
 
-# Launch Lat-Epig on myBinder (as Voila application)
+## Run Lat Epig with a single click
 
-_No need for powerful computer, runs on external servers with a single click. This option is ideal if you want to test the tool or do small searches (with up to 1000 results). Searches with more than 1000+ results will still run, however, the interactive map may not be created. For creation of interactive maps based on large searches we recommend to use some of the other options (see below)._
+*Launch Lat-Epig on myBinder (as Voila application)*
+
+No need for powerful computer, as the tool runs on external servers with a single click. This option is ideal if you want to test the tool or do small searches (with up to 1000 results). Searches with more than 1000+ results will still run, however, the interactive map may not be created. For creation of interactive maps based on large searches we recommend to use some of the other options (see below).
 
 To launch, click on the following icon: 
 [![LatEpig on myBinder (VOILA)](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/mqAncientHistory/EpigraphyScraperNotebook/HEAD?urlpath=voila/render/EpigraphyScraper.ipynb)
@@ -106,3 +108,5 @@ Next, rerun all cells of the Jupyter Notebook.
 _Optional_
 Running `voila --enable_nbextensions=True  --VoilaConfiguration.file_whitelist="['.*']" EpigraphyScraper.ipynb ` may provide a cleaner UI than Jupyter Notebook.
 
+
+For feedback, or to report bugs, please use the [Github Issues](https://github.com/mqAncientHistory/EpigraphyScraperNotebook/issues).
