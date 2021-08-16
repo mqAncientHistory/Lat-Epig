@@ -8,21 +8,20 @@
 * Petra Heřmánková, Aarhus University, [![](https://orcid.org/sites/default/files/images/orcid_16x16.png)](https://orcid.org/0000-0002-6349-0540)
 * Ray Laurence, Macquarie University, [![](https://orcid.org/sites/default/files/images/orcid_16x16.png)](https://orcid.org/0000-0002-8229-1053)
 
-
-![Lat Epig map showing findspots of inscriptions containing the term "viator" (a passer-by)](https://github.com/mqAncientHistory/EpigraphyScraperNotebook/images/2021-08-16-term1_viator-690-Provinces_in_AD_117-Citiesall-Roadsall-multicolour-DPI600-.png "Lat Epig map showing inscriptions containing the term "viator" (a passer-by), Petra Hermankova, 16/08/2021, epigraphic data: Epigraphic Database Clauss-Slaby")
-
-
+<p align="center">
+  <img src="https://github.com/mqAncientHistory/EpigraphyScraperNotebook/images/2021-08-16-term1_viator-690-Provinces_in_AD_117-Citiesall-Roadsall-multicolour-DPI600-.png" width="400" alt="Lat Epig map showing inscriptions containing the term viator (a passer-by), Petra Hermankova, 16/08/2021, epigraphic data: Epigraphic Database Clauss-Slaby"/>
+</p>
 
 ---
 ## Description 
 
 This  programe extracts the output of a search query from the [Epigraphik-Datenbank  Clauss / Slaby (EDCS)](http://www.manfredclauss.de/) in a reproducible manner and saves it as a TSV file. The output can be also plotted to a map of the Roman Empire, along with the system of Roman Provinces, roads, and cities. More on used datasets in the `Data Sources` section.
 
-# No fuss option: launch Lat-Epig on myBinder (as Voila application)
+# Launch Lat-Epig on myBinder (as Voila application)
 
 _No need for powerful computer, runs on external servers with a single click. This option is ideal if you want to test the tool or do small searches (with up to 1000 results). Searches with more than 1000+ results will still run, however, the interactive map may not be created. For creation of interactive maps based on large searches we recommend to use some of the other options (see below)._
 
-To run, click on the following icon: 
+To launch, click on the following icon: 
 [![LatEpig on myBinder (VOILA)](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/mqAncientHistory/EpigraphyScraperNotebook/HEAD?urlpath=voila/render/EpigraphyScraper.ipynb)
 
 ---
@@ -87,7 +86,7 @@ _This option should be used for testing, smaller searches, or demonstration of t
 
 *Note: If your computer is low on memory, we recommend using Firefox instead of Chrome. If you have troubles starting Docker, close Chrome, and all non-essential software and try again with Firefox browser.*
 
-### For Developers (local build):
+### 3. For Developers (local build):
 
 _We recommend using Ubuntu 18.04+. For testing or development purposes mainly._
 
