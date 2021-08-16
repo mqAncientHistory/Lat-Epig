@@ -30,6 +30,10 @@ from matplotlib_scalebar.scalebar import ScaleBar
 from collections import defaultdict
 from cartopy.mpl.gridliner import LONGITUDE_FORMATTER, LATITUDE_FORMATTER
 from matplotlib.backends.backend_pdf import PdfPages
+from matplotlib.colors import ListedColormap, LinearSegmentedColormap
+
+
+from matplotlib import cm
 
 import psutil
 import matplotlib.patheffects as pe
@@ -157,7 +161,9 @@ def make_map(data_file,
              append_inscriptions=False,
              dpi=1200,
              map_dimensions=None,
-             partial_provinces=False):
+             partial_provinces=False,
+             map_inscription_markersize=5,
+             map_greyscale=False):
 
 
   
@@ -189,8 +195,13 @@ def make_map(data_file,
   #pprint(point_dataframe_3857[["geometry", "Longitude", "Latitude" ]])
   #print(f"Making {data_file}\n\troads: {roads}\n\tprovinces: {provinces}\n\tcities: {cities}\n")
 
+
+
   fig = plt.figure(figsize=map_dimensions, dpi=dpi)
 
+  if map_greyscale:
+    print("greyscale")
+    plt.style.use('grayscale')
  
   ax = fig.add_subplot(1,1,1, projection=ccrs.Mercator.GOOGLE, frameon=False)
 
@@ -249,11 +260,18 @@ Ancient World Mapping Center “{escaped_provinceshapefilename}” <http://awmc.
   province_shapefilename=f"Provinces in {province_shapefilename}"
   #pprint(province_shapefilename)
   if provinces:
-
+    prism = plt.get_cmap("prism")
+    brown = "#C39B77"
+    red = "#ff0000"
+    if map_greyscale:      
+      #rgb = cm.get_cmap(plt.get_cmap("prism"))(bounded_prov)[np.newaxis, :, :3]
+      prism =  ListedColormap(["#eeeeee", "#111111", "#bbbbbb", "#333333", "#999999","#000000","#ffffff", "#777777"])
+      brown = '#9d9d9d'
+      red = '#000000'
     if basemap_multicolour:
-      bounded_prov.plot(ax=ax, linewidth=1, alpha=0.1,  cmap=plt.get_cmap("prism"), zorder=1, label=province_shapefilename)
+      bounded_prov.plot(ax=ax, linewidth=1, alpha=0.1,  cmap=prism, zorder=1, label=province_shapefilename)
     else:
-      bounded_prov.plot(ax=ax, linewidth=0.3, alpha=0.5, color='#C39B77', linestyle='dashed', zorder=1, label=province_shapefilename)
+      bounded_prov.plot(ax=ax, linewidth=0.3, alpha=0.5, color=brown, linestyle='dashed', zorder=1, label=province_shapefilename)
     print("Plotted provinces...")
   if roads:
     if roads == "points":
@@ -275,7 +293,15 @@ Ancient World Mapping Center “{escaped_provinceshapefilename}” <http://awmc.
     searchterm = f"Inscription:\n{searchterm}"
   else:
     searchterm = "Inscriptions"
-  point_dataframe_3857.plot(ax=ax, marker=".", linewidth=0.2, markersize=5, alpha=0.5, color='red', edgecolor='k', zorder=4, label=f"{searchterm}")
+  point_dataframe_3857.plot(ax=ax
+                           , marker="."
+                           , linewidth=0.2
+                           , markersize=map_inscription_markersize
+                           , alpha=0.5
+                           , color=red
+                           , edgecolor='k'
+                           , zorder=4
+                           , label=f"{searchterm}")
   #ctx.add_basemap(ax, source=ctx.providers.Stamen.TerrainBackground)
   print("Plotted data...")
 
@@ -336,7 +362,7 @@ Ancient World Mapping Center “{escaped_provinceshapefilename}” <http://awmc.
 
   province_shapefilename=province_shapefilename.replace(" ","_").replace(".shp","")
   datafile_base_name = data_file.name.replace('.tsv','')
-  map_filename=f"output_maps/{datafile_base_name}{f'-{province_shapefilename}' if provinces else ''}{f'-Cities{cities}' if cities else ''}{f'-Roads{roads}' if roads else ''}{f'-IDs' if show_ids else ''}{f'-index' if append_inscriptions else ''}{f'-multicolour' if basemap_multicolour else ''}-DPI{dpi}"
+  map_filename=f"output_maps/{datafile_base_name}{f'-{province_shapefilename}' if provinces else ''}{f'-Cities{cities}' if cities else ''}{f'-Roads{roads}' if roads else ''}{f'-IDs' if show_ids else ''}{f'-index' if append_inscriptions else ''}{f'-multicolour' if basemap_multicolour else ''}-DPI{dpi}-{'-for_publication' if map_greyscale else ''}"
   
   
   ax.spines['geo'].set_visible(False)
