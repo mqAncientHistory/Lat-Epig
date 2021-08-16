@@ -1,23 +1,31 @@
 # Lat Epig 2.0
 
 
-*The Jupyter Notebook inteface allows you to query the EDCS and save the search result in a CSV file and plot the results on a map of the Roman Empire without any prior knowledge of programming.*
+*The Lat-Epig inteface allows you to query the EDCS and save the search result in a TSV (tab separated value) file and plot the results on a map of the Roman Empire without any prior knowledge of programming.*
 
 ## Authors 
 * Brian Ballsun-Stanton, Macquarie University, [![](https://orcid.org/sites/default/files/images/orcid_16x16.png)](https://orcid.org/0000-0003-4932-7912)
 * Petra Heřmánková, Aarhus University, [![](https://orcid.org/sites/default/files/images/orcid_16x16.png)](https://orcid.org/0000-0002-6349-0540)
 * Ray Laurence, Macquarie University, [![](https://orcid.org/sites/default/files/images/orcid_16x16.png)](https://orcid.org/0000-0002-8229-1053)
 
+
+![Lat Epig map showing findspots of inscriptions containing the term "viator" (a passer-by)](https://github.com/mqAncientHistory/EpigraphyScraperNotebook/images/2021-08-16-term1_viator-690-Provinces_in_AD_117-Citiesall-Roadsall-multicolour-DPI600-.png "Lat Epig map showing inscriptions containing the term "viator" (a passer-by), Petra Hermankova, 16/08/2021, epigraphic data: Epigraphic Database Clauss-Slaby")
+
+
+
+---
 ## Description 
 
-This  programe extracts the output of a search query from the [Epigraphik-Datenbank  Clauss / Slaby (EDCS)](http://www.manfredclauss.de/) in a reproducible manner and saves it as a CSV file. The output can be also plotted the output to a map of the Roman Empire, along with the system of Roman Provinces, roads, and cities. 
+This  programe extracts the output of a search query from the [Epigraphik-Datenbank  Clauss / Slaby (EDCS)](http://www.manfredclauss.de/) in a reproducible manner and saves it as a TSV file. The output can be also plotted to a map of the Roman Empire, along with the system of Roman Provinces, roads, and cities. More on used datasets in the `Data Sources` section.
 
-# Launch this on myBinder
+# No fuss option: launch Lat-Epig on myBinder (as Voila application)
 
-[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/mqAncientHistory/EpigraphyScraperNotebook/HEAD?urlpath=voila/render/EpigraphyScraper.ipynb)
+_No need for powerful computer, runs on external servers with a single click. This option is ideal if you want to test the tool or do small searches (with up to 1000 results). Searches with more than 1000+ results will still run, however, the interactive map may not be created. For creation of interactive maps based on large searches we recommend to use some of the other options (see below)._
 
+To run, click on the following icon: 
+[![LatEpig on myBinder (VOILA)](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/mqAncientHistory/EpigraphyScraperNotebook/HEAD?urlpath=voila/render/EpigraphyScraper.ipynb)
 
-
+---
 
 ## Data Sources
 ### Inscriptions
@@ -30,10 +38,11 @@ The [Epigraphik-Datenbank  Clauss / Slaby (EDCS)](http://www.manfredclauss.de/) 
 
 [Ancient World Mapping Centre, political shading shapefiles](http://awmc.unc.edu/awmc/map_data/shapefiles/cultural_data/political_shading/), following the Barington Atlas of Greek Roman World, [AWMC.UNC.EDU ], under the Creative Commons Attribution-NonCommercial 4.0 International License. 
 
-1. Roman Empire 60 BC
-1. Roman Empire in AD 14
-1. Roman Empire in AD 117
-1. Roman Empire in AD 200
+1. Roman Empire 60 BC (provinces or extent)
+1. Roman Empire in AD 14 (provinces or extent)
+1. Roman Empire in AD 69 (provinces or extent)
+1. Roman Empire in AD 117 (DEFAULT, provinces or extent)
+1. Roman Empire in AD 200 (provinces or extent)
 
 #### Roman Roads
 
@@ -47,32 +56,42 @@ The [Epigraphik-Datenbank  Clauss / Slaby (EDCS)](http://www.manfredclauss.de/) 
 
 1. Hanson, J. W. (2016b). An Urban Geography of the Roman World, 100 B.C. to A.D. 300. Oxford: Archaeopress.
 
-
 ---
 
-## Instructions how to use the tool
+## Other options how to run `Lat Epig`
 
-### To run the notebook on myBinder:
+### 1. To run as Jupyter Notebook on myBinder:
 
-Click here: [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/mqAncientHistory/EpigraphyScraperNotebook/HEAD?urlpath=notebooks/EpigraphyScraper.ipynb)
+Click here: [![Lat Epig on myBinder (Jupyter)](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/mqAncientHistory/EpigraphyScraperNotebook/HEAD?urlpath=notebooks/EpigraphyScraper.ipynb)
 
-When it starts, click the fast-forward button, or choose the Kernel menu and choose `Restart & Run All`
+When it starts, click the fast-forward button, or choose the Kernel menu and choose `Restart & Run All`.
 
+_This option should be used for testing, smaller searches, or demonstration of the Lat Epig. Large searches may take long and may not render properly (as the memory on the myBinder is limited). If you need to perform large seraches, we recommend using the Docker option._
 
-### To run locally using the latest image:
+### 2. To run on your computer as Voila in Docker:
 
-`docker run -p 8888:8888 denubis/lat-epig-scraper:main` then visit <http://localhost:8888/voila/render/EpigraphyScraper.ipynb> in your browser.
+1. Install docker on your computer.
+ - [Windows instructions](https://hub.docker.com/editions/community/docker-ce-desktop-windows)
+ - [Linux instructions](https://docs.docker.com/engine/install/ubuntu/) + [Add users to Docker inscructions](https://docs.docker.com/engine/install/linux-postinstall/)
+ - [Mac instructions](https://docs.docker.com/docker-for-mac/install/)
+1. Start Docker
+1. Open a Command Line / Terminal
+1. Test if Docker runs by running
+`docker run hello-world`
+1. If you see the following message, you have installed Docker succesfully:
+`Hello from Docker! This message shows that your installation appears to be working correctly.`
+1. Now run the following to strat the Lat Epig within Docker. You will need a stable internet connection.
+`docker run -p 8888:8888 denubis/lat-epig-scraper:main`
+1. Go to your browser (Firefox, Chrome...) and paste in 
+`http://localhost:8888/voila/render/EpigraphyScraper.ipynb` and you should see the Lat Epig interface.
 
-### To test docker locally:
+*Note: If your computer is low on memory, we recommend using Firefox instead of Chrome. If you have troubles starting Docker, close Chrome, and all non-essential software and try again with Firefox browser.*
 
-`docker build https://github.com/mqAncientHistory/EpigraphyScraperNotebook.git -t epigraphyscraper && docker run -it -p 8866:8888 epigraphyscraper`
+### For Developers (local build):
 
-`http://127.0.0.1:8866/notebooks/EpigraphyScraper.ipynb`
+_We recommend using Ubuntu 18.04+. For testing or development purposes mainly._
 
-### To build locally:
-
-**Do this inside a virtualised environment using direnv and pyenv**
-
+**Run the following code inside a virtualised environment using direnv and pyenv**
 ```
 sudo apt-get update && sudo apt-get install -y --no-install-recommends apt-transport-https apt-utils build-essential ca-certificates curl git libbz2-dev libffi-dev libgeos++-dev liblzma-dev libncurses5-dev libproj-dev libreadline-dev libsqlite3-dev libssl-dev libxml2-dev libxmlsec1-dev make proj-bin proj-data python3-pip wget zlib1g-dev libgeos-dev libxml2-dev libxslt-dev python-dev libc6 libgcc-s1 libgeos-c1v5 libproj15 libstdc++6 libpython3.8-dev python3.8 python3.8-tk
 curl -fsSL https://deb.nodesource.com/setup_15.x | bash -
@@ -83,8 +102,8 @@ jupyter nbextension enable --py widgetsnbextension --sys-prefix && 	jupyter labe
 jupyter trust EpigraphyScraper.ipynb 
 jupyter lab EpigraphyScraper.ipynb 
 ```
+Next, rerun all cells of the Jupyter Notebook.
 
-Then rerun all cells of the Notebook.
-
-Running `voila --enable_nbextensions=True  --VoilaConfiguration.file_whitelist="['.*']" EpigraphyScraper.ipynb ` may provide a cleaner UI than Jupyter Lab, if it works.
+_Optional_
+Running `voila --enable_nbextensions=True  --VoilaConfiguration.file_whitelist="['.*']" EpigraphyScraper.ipynb ` may provide a cleaner UI than Jupyter Notebook.
 
