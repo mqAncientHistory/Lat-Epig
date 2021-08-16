@@ -59,7 +59,11 @@ Click here: [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.or
 When it starts, click the fast-forward button, or choose the Kernel menu and choose `Restart & Run All`
 
 
-### To run locally:
+### To run locally using the latest image:
+
+`docker run -p 8888:8888 denubis/lat-epig-scraper:master` then visit <http://localhost:8888/voila/render/EpigraphyScraper.ipynb> in your browser.
+
+### To test docker locally:
 
 `docker build https://github.com/mqAncientHistory/EpigraphyScraperNotebook.git -t epigraphyscraper && docker run -it -p 8866:8888 epigraphyscraper`
 
