@@ -3,7 +3,7 @@
 *The Lat-Epig inteface allows you to query the EDCS and save the search result in a TSV (tab separated value) file and plot the results on a map of the Roman Empire without any prior knowledge of programming.*
 
 <p align="center">
-  <img src="https://github.com/mqAncientHistory/EpigraphyScraperNotebook/blob/main/images/2021-08-16-term1_viator-690-Provinces_in_AD_117-Citiesall-Roadsall-multicolour-DPI600-.png" width="100%" alt="Lat Epig map showing inscriptions containing the term viator (a passer-by), Petra Hermankova, 16/08/2021, epigraphic data: Epigraphic Database Clauss-Slaby"/>
+  <img src="https://github.com/mqAncientHistory/EpigraphyScraperNotebook/blob/main/images/2021-08-16-term1_viator-690-Provinces_in_AD_117-Citiesall-Roadsall-multicolour-DPI600-.png" width="100%" alt="Lat Epig map showing inscriptions containing the term viator (a passer-by), Petra Hermankova, 16/08/2021, epigraphic data: Epigraphic Database Clauss-Slaby" style="border:1px solid black"/>
 </p>
 
 ---
