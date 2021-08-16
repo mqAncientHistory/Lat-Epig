@@ -155,11 +155,24 @@ def make_map_interface():
         description="(PDF Only) Append Inscriptions"
         )
 
+    map_greyscale = widgets.Checkbox(        
+        value=False,
+        layout={'width': 'max-content'},
+        description="Greyscale for publication"
+        )
+
     map_dpi = widgets.RadioButtons(        
         options=[72,300,600,1200],
         value=300,
         layout={'width': 'max-content'},
         description="DPI"
+        )
+
+    map_inscription_markersize = widgets.RadioButtons(        
+        options=[1,5,10,20],
+        value=5,
+        layout={'width': 'max-content'},
+        description="Marker size for inscriptions"
         )
 
     map_dimensions = widgets.RadioButtons(
@@ -169,7 +182,7 @@ def make_map_interface():
         )
 
     
-    display(HTML("<h1>Export Map</h1>"), map_refresh, map_data, map_title, map_shapefile, map_show_provinces, map_basemap_multicolour, map_show_roads, map_show_cities, map_filetype, map_dpi, map_inscription_ids, map_append_inscriptions, map_dimensions, map_button)
+    display(HTML("<h1>Export Map</h1>"), map_refresh, map_data, map_title, map_shapefile, map_show_provinces, map_basemap_multicolour, map_show_roads, map_show_cities, map_filetype, map_dpi, map_inscription_ids, map_append_inscriptions, map_dimensions, map_inscription_markersize, map_greyscale, map_button)
     display(HTML("<h2>Exported Map Output</h2>"), out)    
     
     def map_on_button_clicked(b):
@@ -210,7 +223,9 @@ def make_map_interface():
                      show_ids=map_inscription_ids.value,
                      append_inscriptions=map_append_inscriptions.value,
                      dpi=map_dpi.value,
-                     partial_provinces=map_show_provinces.value
+                     partial_provinces=map_show_provinces.value,
+                     map_inscription_markersize=map_inscription_markersize.value,
+                     map_greyscale=map_greyscale.value
                      )
             #datestring=datetime.datetime.now().strftime("%Y%m%d")
             # output_filename=f"epigraphy_scraper_maps_output_{datestring}"

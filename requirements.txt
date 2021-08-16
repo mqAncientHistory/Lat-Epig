@@ -23,6 +23,7 @@ click-plugins==1.1.1
 cligj==0.7.2
 clint==0.5.1
 colorama==0.4.4
+colorspacious==1.1.2
 contextily==1.1.0
 cycler==0.10.0
 Cython==0.29.24
