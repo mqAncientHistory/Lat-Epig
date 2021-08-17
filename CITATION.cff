@@ -19,6 +19,10 @@ authors:
     orcid: "https://orcid.org/0000-0002-8229-1053"
 cff-version: "1.1.0"
 license: "GPL-3.0"
+identifiers:
+  - description: Zenodo release of 2.0
+    type: doi
+    value: "10.5281/zenodo.5211341"
 message: "If you use this software, please cite it using these metadata."
 repository-code: "https://github.com/mqAncientHistory/Lat-Epig/"
 title: "Lat Epig"
