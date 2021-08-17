@@ -158,7 +158,7 @@ def make_map_interface():
     map_greyscale = widgets.Checkbox(        
         value=False,
         layout={'width': 'max-content'},
-        description="Greyscale for publication"
+        description="Greyscale for publication. (You should probably use a different basemap)."
         )
 
     map_dpi = widgets.RadioButtons(        
@@ -175,6 +175,14 @@ def make_map_interface():
         description="Marker size for inscriptions"
         )
 
+    map_will_cite = widgets.RadioButtons(        
+        options=[('I will cite this software in the research I am producing, please remove the large credit line', True),
+        ('Keep Citation in Output', False)],
+        value=False,
+        layout={'width': 'max-content'},
+        description="Citation"
+        )
+
     map_dimensions = widgets.RadioButtons(
         options=[('Default', None), ('A3', (16.5, 11.7)), ('A4', (11.7, 8.3)), ('A5', (8.3, 5.8))],
         layout={'width': 'max-content'},
@@ -182,7 +190,7 @@ def make_map_interface():
         )
 
     
-    display(HTML("<h1>Export Map</h1>"), map_refresh, map_data, map_title, map_shapefile, map_show_provinces, map_basemap_multicolour, map_show_roads, map_show_cities, map_filetype, map_dpi, map_inscription_ids, map_append_inscriptions, map_dimensions, map_inscription_markersize, map_greyscale, map_button)
+    display(HTML("<h1>Export Map</h1>"), map_refresh, map_data, map_title, map_shapefile, map_show_provinces, map_basemap_multicolour, map_show_roads, map_show_cities, map_filetype, map_dpi, map_inscription_ids, map_append_inscriptions, map_dimensions, map_inscription_markersize, map_greyscale, map_will_cite, map_button)
     display(HTML("<h2>Exported Map Output</h2>"), out)    
     
     def map_on_button_clicked(b):
@@ -225,7 +233,8 @@ def make_map_interface():
                      dpi=map_dpi.value,
                      partial_provinces=map_show_provinces.value,
                      map_inscription_markersize=map_inscription_markersize.value,
-                     map_greyscale=map_greyscale.value
+                     map_greyscale=map_greyscale.value,
+                     will_cite=map_will_cite.value
                      )
             #datestring=datetime.datetime.now().strftime("%Y%m%d")
             # output_filename=f"epigraphy_scraper_maps_output_{datestring}"

@@ -28,6 +28,10 @@ To launch, click on the following icon:
 
 ---
 
+## Cite this software
+
+Ballsun-Stanton B., Heřmánková P., Laurence R. *Lat Epig* (version 2.0). GitHub. URL: <https://github.com/mqAncientHistory/Lat-Epig/> DOI: 10.5281/zenodo.5211341
+
 ## Data Sources
 ### Inscriptions
 

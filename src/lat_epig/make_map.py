@@ -50,7 +50,7 @@ import matplotlib.patheffects as pe
 # TO DISABLE SSL CHECKING 
 # $ export CURL_CA_BUNDLE=""; ./make_map.py
 
-
+CITATION = 'Ballsun-Stanton B., Heřmánková P., Laurence R. "Lat Epig" (version 2.0). GitHub.\nhttps://github.com/mqAncientHistory/Lat-Epig/     https://doi.org/10.5281/zenodo.5211341'
 DATA_DIR = "output"
 DATA_FILENAME = "2020-08-18-term1_petra-249.tsv"
 #DATA_FILE = DATA_DIR / DATA_FILENAME
@@ -163,7 +163,8 @@ def make_map(data_file,
              map_dimensions=None,
              partial_provinces=False,
              map_inscription_markersize=5,
-             map_greyscale=False):
+             map_greyscale=False, 
+             will_cite=False):
 
 
   
@@ -227,6 +228,12 @@ def make_map(data_file,
 Results: {map_metadata_list[4]} Date scraped: {map_metadata_list[0]}-{map_metadata_list[1]}-{map_metadata_list[2]}
 Data from Epigraphik-Datenbank Clauss / Slaby <http://manfredclauss.de/>
 Ancient World Mapping Center “{escaped_provinceshapefilename}” <http://awmc.unc.edu/wordpress/map-files/>"""
+  if not will_cite:
+
+    fig.text(0.5, 0, CITATION,
+        verticalalignment='bottom', horizontalalignment='center',        
+        fontsize=6)  
+
   
 
   #print(f"making map with title {map_title_text}")
