@@ -19,13 +19,11 @@ This  programe extracts the output of a search query from the [Epigraphik-Datenb
 
 ## Cite this software
 
-Ballsun-Stanton B., Heřmánková P., Laurence R. *Lat Epig* (version 2.0). GitHub. URL: <https://github.com/mqAncientHistory/Lat-Epig/> DOI: 10.5281/zenodo.5211341
+Ballsun-Stanton B., Heřmánková P., Laurence R. *Lat Epig* (version 2.0). GitHub. URL: <https://github.com/mqAncientHistory/Lat-Epig/> DOI: [10.5281/zenodo.5211341](https://doi.org/10.5281/zenodo.5211341)
 
 ## Run Lat Epig with a single click
 
-*Launch Lat-Epig on myBinder (as Voila application)*
-
-To launch, click on the following icon: 
+*Launch Lat-Epig on myBinder (as Voila application) by click on the following icon:* 
 [![LatEpig on myBinder (VOILA)](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/mqAncientHistory/Lat-Epig/HEAD?urlpath=voila/render/EpigraphyScraper.ipynb)
 
 No need for powerful computer, as the tool runs on external servers with a single click. This option is ideal if you want to test the tool or do small searches (with up to 1000 results). Searches with more than 1000+ results will still run, however, the interactive map may not be created. For creation of interactive maps based on large searches we recommend to use some of the other options (see below).
@@ -63,7 +61,7 @@ The [Epigraphik-Datenbank  Clauss / Slaby (EDCS)](http://www.manfredclauss.de/) 
 
 ---
 
-## Other options how to run `Lat Epig`
+## Other options how to run *Lat Epig*
 
 ### 1. To run as Jupyter Notebook on myBinder:
 
