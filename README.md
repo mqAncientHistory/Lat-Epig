@@ -3,7 +3,7 @@
 *The Lat-Epig inteface allows you to query the EDCS and save the search result in a TSV (tab separated value) file and plot the results on a map of the Roman Empire without any prior knowledge of programming.*
 
 <p align="center">
-  <img src="https://github.com/mqAncientHistory/EpigraphyScraperNotebook/blob/main/images/2021-08-16-term1_viator-690-Provinces_in_AD_117-Citiesall-Roadsall-multicolour-DPI600-.png" width="100%" alt="Lat Epig map showing inscriptions containing the term viator (a passer-by), Petra Hermankova, 16/08/2021, epigraphic data: Epigraphic Database Clauss-Slaby" style="border:1px solid black"/>
+  <img src="https://github.com/mqAncientHistory/Lat-Epig/blob/main/images/2021-08-16-term1_viator-690-Provinces_in_AD_117-Citiesall-Roadsall-multicolour-DPI600-.png" width="100%" alt="Lat Epig map showing inscriptions containing the term viator (a passer-by), Petra Hermankova, 16/08/2021, epigraphic data: Epigraphic Database Clauss-Slaby" style="border:1px solid black"/>
 </p>
 
 ---
@@ -24,7 +24,7 @@ This  programe extracts the output of a search query from the [Epigraphik-Datenb
 No need for powerful computer, as the tool runs on external servers with a single click. This option is ideal if you want to test the tool or do small searches (with up to 1000 results). Searches with more than 1000+ results will still run, however, the interactive map may not be created. For creation of interactive maps based on large searches we recommend to use some of the other options (see below).
 
 To launch, click on the following icon: 
-[![LatEpig on myBinder (VOILA)](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/mqAncientHistory/EpigraphyScraperNotebook/HEAD?urlpath=voila/render/EpigraphyScraper.ipynb)
+[![LatEpig on myBinder (VOILA)](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/mqAncientHistory/Lat-Epig/HEAD?urlpath=voila/render/EpigraphyScraper.ipynb)
 
 ---
 
@@ -63,7 +63,7 @@ The [Epigraphik-Datenbank  Clauss / Slaby (EDCS)](http://www.manfredclauss.de/) 
 
 ### 1. To run as Jupyter Notebook on myBinder:
 
-Click here: [![Lat Epig on myBinder (Jupyter)](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/mqAncientHistory/EpigraphyScraperNotebook/HEAD?urlpath=notebooks/EpigraphyScraper.ipynb)
+Click here: [![Lat Epig on myBinder (Jupyter)](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/mqAncientHistory/Lat-Epig/HEAD?urlpath=notebooks/EpigraphyScraper.ipynb)
 
 When it starts, click the fast-forward button, or choose the Kernel menu and choose `Restart & Run All`.
 
@@ -109,4 +109,4 @@ _Optional_
 Running `voila --enable_nbextensions=True  --VoilaConfiguration.file_whitelist="['.*']" EpigraphyScraper.ipynb ` may provide a cleaner UI than Jupyter Notebook.
 
 
-For feedback, or to report bugs, please use the [Github Issues](https://github.com/mqAncientHistory/EpigraphyScraperNotebook/issues).
+For feedback, or to report bugs, please use the [Github Issues](https://github.com/mqAncientHistory/Lat-Epig/issues).
