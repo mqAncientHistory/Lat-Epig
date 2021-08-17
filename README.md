@@ -23,7 +23,7 @@ Ballsun-Stanton B., Heřmánková P., Laurence R. *Lat Epig* (version 2.0). GitH
 
 ## Run Lat Epig with a single click
 
-*Launch Lat-Epig on myBinder (as Voila application) by click on the following icon:* 
+*To launch Lat-Epig on myBinder (as Voila application) click on the following icon* 
 [![LatEpig on myBinder (VOILA)](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/mqAncientHistory/Lat-Epig/HEAD?urlpath=voila/render/EpigraphyScraper.ipynb)
 
 No need for powerful computer, as the tool runs on external servers with a single click. This option is ideal if you want to test the tool or do small searches (with up to 1000 results). Searches with more than 1000+ results will still run, however, the interactive map may not be created. For creation of interactive maps based on large searches we recommend to use some of the other options (see below).
