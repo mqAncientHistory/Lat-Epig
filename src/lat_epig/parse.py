@@ -48,6 +48,24 @@ COLUMNORDER = ["EDCS-ID",  #1
                "extra_text",  #20
                "extra_html",  #21
                "raw dating"] #22
+
+
+FILENAME_TERM = {
+  'EDCS': 'EDCS',
+  'publication': 'pub',
+  'province': 'prov',
+  'place': 'place',
+  'operator': 'op',
+  'term2': 'term2',
+  'dating_from': 'from',
+  'dating_to': 'to',
+  'inscription_genus': 'genus',
+  'and_not_inscription_genus': 'not_genus',
+  'to_file': 'to_file',
+  'from_file': 'from_file',
+  'debug': 'debug',
+  'term1':'term1'  
+}               
 SUPPRESS_FILTER = "Link zurueck zur Suchseite"
 
 @yaspin(text="Scraping site...")
@@ -70,11 +88,14 @@ def scrape(args, prevent_write=False, show_inscription_transform=False):
     if args.__dict__[k] is not None:
       if k != "debug":
         if (k == "operator" and args.__dict__[k] != "and"):
-          searchString.append("{}_{}".format(k, args.__dict__[k]))
+          searchString.append("{}_{}".format(FILENAME_TERM[k], args.__dict__[k]))
         elif (k != "operator"):
-          searchString.append("{}_{}".format(k, args.__dict__[k]))
+          searchString.append("{}_{}".format(FILENAME_TERM[k], args.__dict__[k]))
+
+
   cleanSearchString='+'.join(searchString)
   cleanSearchString=re.sub("[^A-Za-z0-9+_%-]","", cleanSearchString)
+  cleanSearchString=re.sub(r"\+term1_%","", cleanSearchString)
   #print("Output filename: {}-{}-#inscriptions.tsv".format(datetime.date.today().isoformat(), cleanSearchString))
   
   #print("Searching for: \"%s\"." %  (searchTerm, primaryResult))
@@ -427,7 +448,7 @@ def scrape(args, prevent_write=False, show_inscription_transform=False):
       writer.writerows(output)
     
     #print("Done!")
-    return(os.path.join("output", "{}-{}-{}.tsv").format(datetime.date.today().isoformat().replace(":",""), cleanSearchString, inscriptions))
+    return(os.path.join("output", "{}-EDCS_via_Lat_Epig-{}-{}.tsv").format(datetime.date.today().isoformat().replace(":",""), cleanSearchString, inscriptions))
   
   print("Debug mode on")
   pprint(output)
