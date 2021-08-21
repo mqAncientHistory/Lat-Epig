@@ -217,7 +217,7 @@ def makeScrapeInterface():
 
             if and_not_inscription_genus.value:
                 args.and_not_inscription_genus=and_not_inscription_genus.value
-                and_not_inscription_genus.value=""
+                and_not_inscription_genus.value=[]
 
             if dating_from.value:
                 args.dating_from=dating_from.value
@@ -233,7 +233,7 @@ def makeScrapeInterface():
 
             if inscription_genus.value:
                 args.inscription_genus=inscription_genus.value
-                inscription_genus.value=""
+                inscription_genus.value=[]
 
             if operator.value:
                 args.operator=operator.value
@@ -245,7 +245,7 @@ def makeScrapeInterface():
 
             if province.value:
                 args.province=province.value
-                province.value=""
+                province.value=[]
 
 
             if publication.value:
