@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 
 setup(name='lat-epig',
-      version='2.0',
+      version='2.0.2',
       description='This programme extracts the output of a search query from the [Epigraphik-Datenbank  Clauss / Slaby (EDCS)](http://www.manfredclauss.de/) in a reproducible manner and saves it as a TSV file. The output can be also plotted to a map of the Roman Empire, along with the system of Roman Provinces, roads, and cities.',
       url='https://github.com/mqAncientHistory/Lat-Epig',
       author='Brian Ballsun-Stanton',
@@ -12,7 +12,20 @@ setup(name='lat-epig',
           "wheel",
           "numpy",
           "cython",
-          "pyshp"         
+          "pyshp",
+          "mechanicalsoup",
+          "bs4",            
+          "clint",
+          "yaspin",         
+          "geopandas",
+          "frictionless",
+          "pandas",
+          "geoplot",
+          "shapely",
+          "contextily",
+          "cartopy",
+          "cartopy",
+          "matplotlib"
       ],
       classifiers=[
         "Programming Language :: Python :: 3",
