@@ -270,20 +270,28 @@ def makeScrapeInterface():
             OUTPUTS = Path("output")
 
             file_outputs = {}
+            json_file_outputs = {}
             for output in OUTPUTS.glob("*.tsv"):
-                file_outputs[output.stat().st_mtime] = (output.name, output)
+                file_outputs[f"{output.stat().st_mtime}{output.name}"] = (output.name, output)
+            for output in OUTPUTS.glob("*.json"):
+                json_file_outputs[f"{output.stat().st_mtime}{output.name}"] = (output.name, output)
             output_keys = sorted(file_outputs, reverse=True)
-            
+            #print(json_file_outputs)
             filenames = []
             for key in output_keys:
                 filenames.append(file_outputs[key])
 
-            
+            json_filenames = []
+            json_output_keys = sorted(json_file_outputs, reverse=True)
+            for key in json_output_keys:
+                json_filenames.append(json_file_outputs[key])
             #print(filename)
             # display(HTML("<a href='/tree/output/' target='_blank'>Full File List</a>"))
             display(HTML("<ul>"))
             for zipfile in filenames:
-                display(HTML(f"<li><a href='{zipfile[1]}'>{zipfile[0]}</a></li>"))
+                json_file=json_filenames.pop(0)[1]
+                #print(json_file)
+                display(HTML(f"<li><a href='{zipfile[1]}'>{zipfile[0]}</a> (<a href='{json_file}'>JSON</a>)</li>"))
             display(HTML("</ul>"))
     
     def genusbutton(on_button_clicked):
