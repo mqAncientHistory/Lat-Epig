@@ -22,9 +22,10 @@ import os
 import codecs
 from clint.textui import progress
 from yaspin import yaspin
-
+import textwrap
 from lat_epig.date_parse import parse_date
 from lat_epig.text_parse import clean_conservative_rules, clean_interpretive_rules, clean
+import json
 
 COLUMNORDER = ["EDCS-ID",  #1
                "publication",  #2
@@ -84,18 +85,54 @@ def scrape(args, prevent_write=False, show_inscription_transform=False):
 
   searchString = []
 
+  if "term1" in args.__dict__:
+    searchString.append("{}_{}".format(FILENAME_TERM['term1'], args.__dict__['term1']))
+
+  if ("operator" in args.__dict__ and args.__dict__['operator'] != "and"):
+    searchString.append("{}_{}".format(FILENAME_TERM['operator'], args.__dict__['operator']))
+
+  if "term2" in args.__dict__ and args.__dict__['term2']:
+    searchString.append("{}_{}".format(FILENAME_TERM['term2'], args.__dict__['term2']))
+
   for k in args.__dict__:
     if args.__dict__[k] is not None:
-      if k != "debug":
-        if (k == "operator" and args.__dict__[k] != "and"):
-          searchString.append("{}_{}".format(FILENAME_TERM[k], args.__dict__[k]))
-        elif (k != "operator"):
-          searchString.append("{}_{}".format(FILENAME_TERM[k], args.__dict__[k]))
+      
+
+      if k != "debug" and k != "term1" and k!="term2" and k!="operator":
+        
+      
+        if type(args.__dict__[k]) == str:
+
+          arg_str = "{}_{}".format(FILENAME_TERM[k], args.__dict__[k])
+          #print(arg_str)
+          searchString.append(arg_str)
+        else:
+          if len(args.__dict__[k]) < 3:
+            results = '|'.join(args.__dict__[k])
+          else:
+            words = []
+            for word in args.__dict__[k]:
+              
+              if len(word) > 6:
+                if f"{word[:3]}\u1DC3" in words:
+                  words.append(f"{word}")
+                else:
+                  words.append(f"{word[:3]}\u1DC3")
+              else:
+                words.append(word)
+            results = '|'.join(words)
+          arg_str = "{}_{}".format(FILENAME_TERM[k], results)
+          #print(arg_str)
+          searchString.append(arg_str)            
 
 
   cleanSearchString='+'.join(searchString)
-  cleanSearchString=re.sub("[^A-Za-z0-9+_%-]","", cleanSearchString)
+  cleanSearchString=re.sub("[^A-Za-z0-9+_%|\u1DC3-]","", cleanSearchString)
   cleanSearchString=re.sub(r"\+term1_%","", cleanSearchString)
+  if len(cleanSearchString) > 150:
+    print("Filename too long, truncating...")
+    cleanSearchString=f"{cleanSearchString[:150]}+++"
+  #print(cleanSearchString)
   #print("Output filename: {}-{}-#inscriptions.tsv".format(datetime.date.today().isoformat(), cleanSearchString))
   
   #print("Searching for: \"%s\"." %  (searchTerm, primaryResult))
@@ -439,16 +476,22 @@ def scrape(args, prevent_write=False, show_inscription_transform=False):
 
   output = [item for item in output if item.get('EDCS-ID')]
   #output = filter()
-
+  basefilename="{}-EDCS_via_Lat_Epig-{}-{}".format(datetime.date.today().isoformat().replace(":",""), cleanSearchString, len(output),"utf-8-sig")
   os.makedirs("output", exist_ok=True)
   if not prevent_write:
-    with codecs.open(os.path.join("output", "{}-{}-{}.tsv").format(datetime.date.today().isoformat().replace(":",""), cleanSearchString, len(output),"utf-8-sig"), 'w', encoding='utf-8') as tsvfile:
+    with codecs.open(os.path.join("output", f"{basefilename}.json"), 'w', encoding='utf-8') as jsonfile:
+      data = {'metadata':args.__dict__,
+              'date':datetime.datetime.now().isoformat(),
+              'data':output}
+      json.dump(data, jsonfile)
+
+    with codecs.open(os.path.join("output", f"{basefilename}.tsv"), 'w', encoding='utf-8') as tsvfile:
       writer = csv.DictWriter(tsvfile, fieldnames=COLUMNORDER, delimiter="\t")
       writer.writeheader()
       writer.writerows(output)
     
     #print("Done!")
-    return(os.path.join("output", "{}-EDCS_via_Lat_Epig-{}-{}.tsv").format(datetime.date.today().isoformat().replace(":",""), cleanSearchString, inscriptions))
+    return(os.path.join("output", f"{basefilename}.tsv"))
   
   print("Debug mode on")
   pprint(output)
@@ -503,7 +546,7 @@ def main():
     parser.add_argument('-df',  "--dating-from")
     parser.add_argument('-dt',  "--dating-to")
     parser.add_argument('-ig',  "--inscription-genus", action='append', help="To include more than one genus, -ig more than once.")
-    parser.add_argument('-!ig',  "--and-not-inscription-genus")
+    parser.add_argument('-ng',  "--and-not-inscription-genus", action='append', help="To exclude more than one genus, -ng more than once.")
     parser.add_argument("--to-file", help="save the search results as a webpage on the machine. Debug tool")
     parser.add_argument("--from-file", help="use the saved webpage instead of going to the manfred claus server. Debug.")
     parser.add_argument("--debug", action='store_true', help='Add the primary result debug column. Default (false)')
