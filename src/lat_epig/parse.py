@@ -85,13 +85,13 @@ def scrape(args, prevent_write=False, show_inscription_transform=False):
 
   searchString = []
 
-  if "term1" in args.__dict__:
+  if "term1" in args.__dict__ and "%" not in args.__dict__['term1']:
     searchString.append("{}_{}".format(FILENAME_TERM['term1'], args.__dict__['term1']))
 
   if ("operator" in args.__dict__ and args.__dict__['operator'] != "and"):
     searchString.append("{}_{}".format(FILENAME_TERM['operator'], args.__dict__['operator']))
 
-  if "term2" in args.__dict__ and args.__dict__['term2']:
+  if "term2" in args.__dict__ and args.__dict__['term2'] and "%" not in args.__dict__['term2']:
     searchString.append("{}_{}".format(FILENAME_TERM['term2'], args.__dict__['term2']))
 
   for k in args.__dict__:
@@ -107,27 +107,27 @@ def scrape(args, prevent_write=False, show_inscription_transform=False):
           #print(arg_str)
           searchString.append(arg_str)
         else:
-          if len(args.__dict__[k]) < 3:
-            results = '|'.join(args.__dict__[k])
-          else:
-            words = []
-            for word in args.__dict__[k]:
-              
-              if len(word) > 6:
-                if f"{word[:3]}\u1DC3" in words:
-                  words.append(f"{word}")
-                else:
-                  words.append(f"{word[:3]}\u1DC3")
-              else:
-                words.append(word)
-            results = '|'.join(words)
-          arg_str = "{}_{}".format(FILENAME_TERM[k], results)
+          words = []
+          for w in args.__dict__[k]:
+            phrase = []
+            for word in w.split(" ")[:3]:
+              if cleanword := re.sub(r"[^A-Za-z]+","",word[:2]):
+                phrase.append(cleanword)
+            words.append('.'.join(phrase))
+          # if args.__dict__[k] and len(args.__dict__[k]) < 3:
+          #   results = '|'.join(args.__dict__[k])
+          # else:
+          #   words = args.__dict__[k][:1]
+
+          results = ','.join(words)
+          
+          arg_str = "{}_{}({})".format(FILENAME_TERM[k], len(args.__dict__[k]), results)
           #print(arg_str)
           searchString.append(arg_str)            
 
 
   cleanSearchString='+'.join(searchString)
-  cleanSearchString=re.sub("[^A-Za-z0-9+_%|\u1DC3-]","", cleanSearchString)
+  cleanSearchString=re.sub("[^A-Za-z0-9+_,()|-]","", cleanSearchString)
   cleanSearchString=re.sub(r"\+term1_%","", cleanSearchString)
   if len(cleanSearchString) > 150:
     print("Filename too long, truncating...")
