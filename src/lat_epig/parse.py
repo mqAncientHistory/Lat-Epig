@@ -107,21 +107,27 @@ def scrape(args, prevent_write=False, show_inscription_transform=False):
           #print(arg_str)
           searchString.append(arg_str)
         else:
-          words = []
-          for w in args.__dict__[k]:
-            phrase = []
-            for word in w.split(" ")[:3]:
-              if cleanword := re.sub(r"[^A-Za-z]+","",word[:2]):
-                phrase.append(cleanword)
-            words.append('.'.join(phrase))
+          if len(args.__dict__[k]) > 2:
+            words = []
+
+            for w in args.__dict__[k]:
+              phrase = []
+              for word in w.split(" ")[:3]:
+                if cleanword := re.sub(r"[^A-Za-z]+","",word[:2]):
+                  phrase.append(cleanword)
+              words.append('.'.join(phrase))
+            results = ','.join(words)
+            arg_str = "{}_{}({})".format(FILENAME_TERM[k], len(args.__dict__[k]), results)
+          else:
+            words = args.__dict__[k]
           # if args.__dict__[k] and len(args.__dict__[k]) < 3:
           #   results = '|'.join(args.__dict__[k])
           # else:
           #   words = args.__dict__[k][:1]
 
-          results = ','.join(words)
-          
-          arg_str = "{}_{}({})".format(FILENAME_TERM[k], len(args.__dict__[k]), results)
+            results = ','.join(words)
+            
+            arg_str = "{}_{}".format(FILENAME_TERM[k], results)
           #print(arg_str)
           searchString.append(arg_str)            
 
