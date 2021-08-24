@@ -21,6 +21,7 @@ import random
 import simplejson as json
 import textwrap
 from yaspin import yaspin
+from folium.plugins import MarkerCluster
 
 
 def makeDataframe(data_file, epsg=3857):
@@ -99,7 +100,7 @@ def make_interactive_map(data_file):
 
 
 
-  output_maps ={}
+  #output_maps ={}
 
   xmin, ymin, xmax, ymax = (0,0,10000,10000)
 
@@ -114,7 +115,7 @@ def make_interactive_map(data_file):
   xmax = min(xmax, map_xmax)
   ymax = min(ymax, map_ymax)
   
-  output_maps[data_file] = df.to_json()
+  #output_maps[data_file] = df.to_json()
 
 
 
@@ -147,15 +148,46 @@ def make_interactive_map(data_file):
   #https://stackoverflow.com/a/45081821
   r = lambda: (random.randint(0,255))
 
+  marker_cluster = MarkerCluster().add_to(scrape_map)
+  #print(df)
+  #df.apply(lambda x: print(x))
+  items = df.to_dict(orient='records')
+  for item in items:
+   # pprint(item)
+    folium.Marker(
+      location=[item['Latitude'], item['Longitude']],
+      max_width="600",
+      popup = folium.Popup(f"""
+<dl>
+<dt>EDCS-ID:</dt>
+<dd>{item['EDCS-ID']}</dd>
+<dt>EDCS Link:</dt>
+<dd>{item['EDCS Link']}</dd>
+<dt>raw dating:</dt>
+<dd>{item['raw dating']}</dd>
+<dt>Province:</dt>
+<dd>{item['province']}</dd>
+<dt>Place:</dt>
+<dd>{item['place']}</dd>
+<dt>Material:</dt>
+<dd>{item['Material']}</dd>
+</dl>
+<b>cleaned inscription:</b>
+<p style='width:400px;'>{item['cleaned inscription']}</p>
+"""),
+      tooltip = folium.Tooltip(textwrap.shorten(item['cleaned inscription'], width=40))
 
-  for map_json in output_maps:
+      ).add_to(marker_cluster)
+  #for map_json in output_maps:
       # https://github.com/python-visualization/folium/issues/1385
-      folium.features.GeoJson(output_maps[map_json],
-                              name=f"{map_json}",
-                              popup=folium.GeoJsonPopup(["EDCS-ID","EDCS Link","raw dating","province", "place", "Material", "cleaned inscription"])
-                             ).add_to(scrape_map)
+      # folium.features.GeoJson(output_maps[map_json],
+      #                         name=f"{map_json}",
+      #                         popup=folium.GeoJsonPopup(["EDCS-ID","EDCS Link","raw dating","province", "place", "Material", "cleaned inscription"])
+      #                        ).add_to(marker_cluster)
+  #    print(map_json)
 
 
+  #return None
   def province_style(arg):
       return {
           'weight': 2,

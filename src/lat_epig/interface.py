@@ -8,6 +8,8 @@ import threading
 import glob
 import argparse
 from pathlib import Path
+from html import escape
+
 
 class Parseargs:
     
@@ -290,8 +292,11 @@ def makeScrapeInterface():
             display(HTML("<ul>"))
             for zipfile in filenames:
                 json_file=json_filenames.pop(0)[1]
-                #print(json_file)
-                display(HTML(f"<li><a href='{zipfile[1]}'>{zipfile[0]}</a> (<a href='{json_file}'>JSON</a>)</li>"))
+                print(json_file)
+                tsv=escape(str(zipfile[1]))
+                json_href=escape(str(json_file))
+                print(tsv, json_href)
+                display(HTML(f"<li><a href='{tsv}'>{zipfile[0]}</a> (<a href='{json_href}'>JSON</a>)</li>"))
             display(HTML("</ul>"))
     
     def genusbutton(on_button_clicked):

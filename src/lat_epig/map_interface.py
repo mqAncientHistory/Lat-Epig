@@ -53,8 +53,8 @@ def make_map_interface():
 
     def get_outputs():
         outputs = {}
-        for output in OUTPUTS.glob("*.tsv"):
-            outputs[output.stat().st_mtime] = (output.name, output)
+        for output in OUTPUTS.glob("*.json"):
+            outputs[output.stat().st_mtime] = (re.sub(".json","",output.name), output)
         output_keys = sorted(outputs, reverse=True)
         
         filenames = []
