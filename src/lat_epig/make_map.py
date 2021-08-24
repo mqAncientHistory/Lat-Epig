@@ -31,13 +31,13 @@ from collections import defaultdict
 from cartopy.mpl.gridliner import LONGITUDE_FORMATTER, LATITUDE_FORMATTER
 from matplotlib.backends.backend_pdf import PdfPages
 from matplotlib.colors import ListedColormap, LinearSegmentedColormap
-
-
+import json
+import re
 from matplotlib import cm
 
 import psutil
 import matplotlib.patheffects as pe
-
+import textwrap
 
 #from blume.table import table
 #from blume.taybell import table
@@ -130,8 +130,17 @@ def makeDataframe(data_file, epsg=3857):
   # https://frictionlessdata.io/tooling/python/extracting-data/
   # Handles multiline columns cleanly.
   data_filename = os.path.basename(data_file)
-  import_rows = extract(data_file)
-  import_dataframe = pandas.DataFrame(import_rows)
+  #import_rows = extract(data_file)
+  with open(data_file) as data:
+    json_data = json.load(data)
+  import_dataframe = pandas.DataFrame(json_data['data'])
+  import_datestamp = json_data['date']
+  import_metadata = {k:v for k,v in json_data['metadata'].items() if v}
+  if "term2" not in import_metadata:
+    del import_metadata['operator']
+  #print(import_dataframe)
+  print(import_datestamp)
+  print(import_metadata)
 
   #cities_3857 = geopandas.read_file(CITIES_SHP).to_crs(epsg=3857)
 
@@ -145,7 +154,7 @@ def makeDataframe(data_file, epsg=3857):
     pprint(point_geodataframe)
 
   point_geodataframe_3857 = point_geodataframe.to_crs(epsg=epsg)
-  return point_geodataframe_3857
+  return point_geodataframe_3857, import_datestamp, import_metadata
 
 @yaspin(text="Making maps...")
 def make_map(data_file, 
@@ -190,7 +199,7 @@ def make_map(data_file,
 
   geopandas.options.use_pygeos = True
 
-  point_dataframe_3857 = makeDataframe(data_file)
+  point_dataframe_3857, import_datestamp, import_metadata = makeDataframe(data_file)
 
   print("Loaded data...")
   #pprint(point_dataframe_3857[["geometry", "Longitude", "Latitude" ]])
@@ -218,14 +227,30 @@ def make_map(data_file,
   #     #projection=geoplot.crs.Orthographic(), 
   #     figsize=(8, 4)
   # )
-  if not map_title_text:  
-    map_title_text = data_file.name.replace("-"," ").replace("_"," ").replace(".tsv","")
   
   map_metadata_list=data_file.name.replace(".tsv","").split("-")
-  search_params = map_metadata_list[3].replace("_"," ").replace("term1","Term 1 =").replace("term2","Term 2 =").replace("%","All").replace("+","; ").replace(r" +"," ")
+  param_list = []
+  if "term1" in import_metadata:
+    param_list.append(f"Term 1: {import_metadata['term1']}")
+    del import_metadata['term1']
+  if "term2" in import_metadata:
+    param_list.append(f"Operator: {import_metadata['operator']}")
+    param_list.append(f"Term 2: {import_metadata['term2']}")
+    del import_metadata['operator']
+    del import_metadata['term2']
+  for key, val in import_metadata:
+    if type(val) == str:
+      param_list.append(f"{key}: {val}")
+    else:
+      param_list.append(f"{key}: {', '.join(val)}")
+
+  search_params = textwrap.wrap(', '.join(param_list), width=120)
+  if not map_title_text:  
+    map_title_text = search_params
+  
   escaped_provinceshapefilename = province_shapefilename.replace("_", r"_")
-  map_metadata = rf"""Search Parameters: {search_params}
-Results: {map_metadata_list[4]} Date scraped: {map_metadata_list[0]}-{map_metadata_list[1]}-{map_metadata_list[2]}
+  map_metadata = rf"""Search: {search_params}
+Results: {map_metadata_list[5].replace(".json","")} Date scraped: {re.sub(r"T.*$","",import_datestamp)}
 Data from Epigraphik-Datenbank Clauss / Slaby <http://manfredclauss.de/>
 Ancient World Mapping Center “{escaped_provinceshapefilename}” <http://awmc.unc.edu/wordpress/map-files/>"""
   if not will_cite:
@@ -368,7 +393,7 @@ Ancient World Mapping Center “{escaped_provinceshapefilename}” <http://awmc.
   ax.autoscale_view(tight=True)
 
   province_shapefilename=province_shapefilename.replace(" ","_").replace(".shp","")
-  datafile_base_name = data_file.name.replace('.tsv','')
+  datafile_base_name = data_file.name.replace('.json','')
   map_filename=f"output_maps/{datafile_base_name}{f'-{province_shapefilename}' if provinces else ''}{f'-Cities{cities}' if cities else ''}{f'-Roads{roads}' if roads else ''}{f'-IDs' if show_ids else ''}{f'-index' if append_inscriptions else ''}{f'-multicolour' if basemap_multicolour else ''}-DPI{dpi}-{'-for_publication' if map_greyscale else ''}"
   
   
@@ -383,11 +408,11 @@ Ancient World Mapping Center “{escaped_provinceshapefilename}” <http://awmc.
     plt.close()
     print("Saved map...")
   else:
-    figdate = [int(x) for x in data_file.name.replace("-"," ").replace("_"," ").replace(".tsv","").split( )[0:3]]
+    figdate = [int(x) for x in data_file.name.replace("-"," ").replace("_"," ").replace(".json","").split( )[0:3]]
     with PdfPages(f"{map_filename}.{filetype}", metadata={"Title":map_title_text,
                                                           "Subject":map_metadata,
                                                           "Creator":"Lat Epig by Ballsun-Stanton, Heřmánková, and Laurence",
-                                                          "Keywords":' '.join(data_file.name.replace("-"," ").replace("_"," ").replace(".tsv","").split( )[3:]),
+                                                          "Keywords":' '.join(data_file.name.replace("-"," ").replace("_"," ").replace(".json","").split( )[3:]),
                                                           "CreationDate": datetime.datetime(figdate[0], figdate[1], figdate[2])
                                                           }) as pdf:
       #https://matplotlib.org/stable/api/backend_pdf_api.html#matplotlib.backends.backend_pdf.PdfPages
@@ -493,7 +518,7 @@ def make_recent_map():
 
   def get_outputs():
         outputs = {}
-        for output in OUTPUTS.glob("*.tsv"):
+        for output in OUTPUTS.glob("*.json"):
             outputs[output.stat().st_mtime] = (output.name, output)
         output_keys = sorted(outputs, reverse=True)
         
