@@ -99,7 +99,7 @@ parso==0.8.2
 petl==1.7.4
 pexpect==4.8.0
 pickleshare==0.7.5
-Pillow==8.3.1
+Pillow==8.3.2
 pip-review==1.1.0
 pipupgrade==1.9.0
 pluggy==0.13.1
