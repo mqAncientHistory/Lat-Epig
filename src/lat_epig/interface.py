@@ -209,7 +209,7 @@ def makeScrapeInterface():
     
     out = widgets.Output(layout={'border': '1px solid black'})
 
-    display(HTML("<h1>Lat Epig 2.0</h1>"), term1, operator, term2, EDCS,publication, place, dating_from, dating_to, HTML("<div>Shift or Control click to select multiple items in the following lists</div>"),province, genus_button, inscription_genus, and_not_inscription_genus, button, out)
+    display(HTML("<h1>Lat Epig v2.0</h1>"), term1, operator, term2, EDCS,publication, place, dating_from, dating_to, HTML("<div>Shift or Control click to select multiple items in the following lists</div>"),province, genus_button, inscription_genus, and_not_inscription_genus, button, out)
     
     
     
@@ -265,7 +265,7 @@ def makeScrapeInterface():
 
          #   with widgets.Output(layout={'border': '1px solid black'}) as out:
 
-            display(HTML("<p>Getting the inscriptions. This may take a few minutes (or hours), depending on the number of search results.</p>"))
+            display(HTML("<p>Getting the inscriptions. This may take a few minutes (or hours), depending on the number of search results. To get ca. 1000 results take usually less than 5 minutes. Go get a nice cup of coffee!</p>"))
             
             filename=parse.scrape(args)
 
