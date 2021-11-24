@@ -31,24 +31,24 @@ COLUMNORDER = ["EDCS-ID",  #1
                "publication",  #2
                "province",  #3
                "place",  #4
-               "dating from", #5
-               "dating to",  #6
-               "date not before",  #7
-               "date not after",  #8
+               "dating_from", #5
+               "dating_to",  #6
+               "date_not_before",  #7
+               "date_not_after",  #8
                "status",  #9
                "inscription",  #10
-               "inscription conservative cleaning", #11
-               "inscription interpretive cleaning",  #12
-               "Material",  #13
-               "Comment",  #14
-               "Latitude",  #15
-               "Longitude",  #16
+               "inscription_conservative_cleaning", #11
+               "inscription_interpretive_cleaning",  #12
+               "material",  #13
+               "comment",  #14
+               "latitude",  #15
+               "longitude",  #16
                "language",  #17
                "photo",  #18
                "partner_link",  #19
                "extra_text",  #20
                "extra_html",  #21
-               "raw dating"] #22
+               "raw_dating"] #22
 
 
 FILENAME_TERM = {
@@ -175,9 +175,9 @@ def scrape(args, prevent_write=False, show_inscription_transform=False):
           longitude=re.search("longitude='([-0-9.]+)'", str(maplink['href']))
           place=re.search("ort='([^&]+)'", str(maplink['href']))
           if latitude:
-            item['Latitude']=latitude.group(1)
+            item['latitude']=latitude.group(1)
           if longitude:
-            item['Longitude']=longitude.group(1)
+            item['longitude']=longitude.group(1)
           if place:
             item['place']=place.group(1)
         # Extra super hardcoded because I don't even know why.
@@ -204,7 +204,7 @@ def scrape(args, prevent_write=False, show_inscription_transform=False):
         html = re.sub(r"<b>publication:</b>[ \n]*(.*)<b>EDCS",r"<div class='publication'>\1</div><b>EDCS", html) 
     else:
         html = re.sub(r"<b>publication:</b>",r"", html) 
-    html = re.sub(r"<b>dating:</b>(.*)<b>EDCS-ID",r"<div class='raw dating'>\1</div><b>EDCS-ID", html)
+    html = re.sub(r"<b>dating:</b>(.*)<b>EDCS-ID",r"<div class='raw_dating'>\1</div><b>EDCS-ID", html)
     html = re.sub(r"<br/>\n([^<]*)<br/>",r"<div class='inscription'>\1</div>", html)
     html = re.sub(r"<br/>\n([^<]*)</p>",r"<div class='inscription'>\1</div></p>", html)
     html = re.sub(r"\n"," ", html)
@@ -216,8 +216,8 @@ def scrape(args, prevent_write=False, show_inscription_transform=False):
     html = re.sub(r"<b>place:</b>[ \n]*(.*)<div",r"<div class='place'>\1</div><div", html)
     html = re.sub(r"<b>province:</b>([^<]*)",r"<div class='province'>\1</div>", html)
     html = re.sub(r"<b>inscription genus / personal status:</b>([^<]*)",r"<div class='status'>\1</div>", html)
-    html = re.sub(r"<b>material:</b>([^<]*)",r"<div class='Material'>\1</div>", html)
-    html = re.sub(r"<b>comment:</b>(.*)</p>",r"<div class='Comment'>\1</div>", html)
+    html = re.sub(r"<b>material:</b>([^<]*)",r"<div class='material'>\1</div>", html)
+    html = re.sub(r"<b>comment:</b>(.*)</p>",r"<div class='comment'>\1</div>", html)
   
     
     bs = bs4.BeautifulSoup(html, 'lxml')
@@ -239,18 +239,18 @@ def scrape(args, prevent_write=False, show_inscription_transform=False):
 
 
     terms = {"publication:":"publication",
-             "raw dating":"raw dating",
+             "raw_dating":"raw_dating",
              "place:": "place",
              "EDCS-ID:": "EDCS-ID",
              "province:":"province",
              "inscription genus / personal status:": "status",
-             "material:": "Material",
-             "comment:": "Comment",
+             "material:": "material",
+             "comment:": "comment",
              "text:": "inscription",
              }
 
 
-        #COLUMNORDER = ["EDCS-ID", "publication", "province", "place", "dating not before", "dating not after", "inscription status", "inscription", "Links", "Latitude", "Longitude", "TM Place"]
+        #COLUMNORDER = ["EDCS-ID", "publication", "province", "place", "dating not before", "dating not after", "inscription status", "inscription", "Links", "latitude", "longitude", "TM Place"]
     for key in terms:             
       bs, item = itemExtract(bs, key, terms[key], item)
     
@@ -258,7 +258,7 @@ def scrape(args, prevent_write=False, show_inscription_transform=False):
 
     # dating possibilities -100 to -1;  -70 to -31
     # dating ID: 72200182
-    item['dating from'] = item['dating to'] = item['date not before'] = item['date not after'] = None
+    item['dating_from'] = item['dating_to'] = item['date_not_before'] = item['date_not_after'] = None
 
     parse_date(item, debug)
 
@@ -269,7 +269,7 @@ def scrape(args, prevent_write=False, show_inscription_transform=False):
       if debug:
         print("details found")
         pprint(pub.get_text())
-      item['Comment'] = pub.get_text().replace('<br/>','\\n').strip()
+      item['comment'] = pub.get_text().replace('<br/>','\\n').strip()
       pub.extract()
 
 
@@ -320,12 +320,12 @@ def scrape(args, prevent_write=False, show_inscription_transform=False):
       if debug:
         pprint(item['inscription'])
 
-      item['inscription conservative cleaning'] = clean(text=item['inscription'],
+      item['inscription_conservative_cleaning'] = clean(text=item['inscription'],
                                                         mode="conservative",
                                                         rules=clean_conservative_rules(),
                                                         debug=debug,
                                                         show_inscription_transform=show_inscription_transform)
-      item['inscription interpretive cleaning'] = clean(text=item['inscription'],
+      item['inscription_interpretive_cleaning'] = clean(text=item['inscription'],
                                                         mode="interpretive",
                                                         rules=clean_interpretive_rules(),
                                                         debug=debug,
@@ -531,7 +531,7 @@ def main():
     # search text 1: 
     #    and       or       and not    
     # search text 2: 
-    # dating from: 
+    # dating_from: 
     #    to:    
     # inscription genus /
     # personal status: 
