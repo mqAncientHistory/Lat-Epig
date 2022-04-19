@@ -1,6 +1,6 @@
 #Download base image ubuntu 20.04
 #https://www.howtoforge.com/tutorial/how-to-create-docker-images-with-dockerfile/
-FROM ubuntu:22.04
+FROM ubuntu:21.10
 # FROM jupyter/scipy-notebook:016833b15ceb
 # FROM python:3.9
 # FROM armandokeller/cartopy:first
@@ -78,7 +78,7 @@ WORKDIR ${HOME}
 
 
 # Add Tini. Tini operates as a process subreaper for jupyter. This prevents kernel crashes.
-ENV TINI_VERSION v0.6.0
+ENV TINI_VERSION v0.19.0
 ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini /usr/bin/tini
 RUN chmod +x /usr/bin/tini
 ENTRYPOINT ["/usr/bin/tini", "--"]
