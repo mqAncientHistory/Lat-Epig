@@ -1,6 +1,6 @@
 #Download base image ubuntu 20.04
 #https://www.howtoforge.com/tutorial/how-to-create-docker-images-with-dockerfile/
-FROM ubuntu:20.04
+FROM ubuntu:22.04
 # FROM jupyter/scipy-notebook:016833b15ceb
 # FROM python:3.9
 # FROM armandokeller/cartopy:first
