@@ -2,7 +2,7 @@
 #https://www.howtoforge.com/tutorial/how-to-create-docker-images-with-dockerfile/
 FROM ubuntu:20.04
 # FROM jupyter/scipy-notebook:016833b15ceb
-# FROM python:3.8
+# FROM python:3.9
 # FROM armandokeller/cartopy:first
 # FROM node:15.8.0-alpine3.10
 LABEL maintainer="brian.ballsun-stanton@mq.edu.au"
@@ -85,8 +85,8 @@ ENTRYPOINT ["/usr/bin/tini", "--"]
 # https://github.com/jupyter-widgets/ipywidgets/issues/1683#issuecomment-328952119
 
 
-RUN python3 -m pip install  --user --no-cache-dir numpy==1.21.1 cython wheel pyshp==2.1.3 && \
-python3 -m pip install shapely --no-cache-dir --no-binary shapely==1.7.1 && \
+RUN python3 -m pip install  --user --no-cache-dir numpy==1.22.3 cython wheel pyshp==2.2.0 && \
+python3 -m pip install shapely --no-cache-dir --no-binary shapely==1.8.1.post1 && \
 python3 -m pip install  --user --no-cache-dir -r requirements.txt && \
 python3 -m pip install  --user --no-cache-dir --editable . && \
 bash ./setupJupyter.sh && \

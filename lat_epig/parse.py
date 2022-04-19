@@ -424,7 +424,7 @@ def scrape(args, prevent_write=False, show_inscription_transform=False):
   #print("end", endbutton)
   [button.extract() for button in endbutton]
 
-  inscriptionsFound = resultsSoup.findAll(text=re.compile("inscriptions found[^0-9]+([0-9]+)"))
+  inscriptionsFound = resultsSoup.findAll(string=re.compile("inscriptions found[^0-9]+([0-9]+)"))
   [inscription.parent.parent.extract() for inscription in inscriptionsFound]
 
   #print(resultsSoup)

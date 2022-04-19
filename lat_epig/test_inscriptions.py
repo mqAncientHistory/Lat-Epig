@@ -10,8 +10,8 @@ def test_inscription_dubious_dot_subscript():
 
   test_output = scrape(args, prevent_write=True, show_inscription_transform=True)
   assert "ẹ" in test_output[0]['inscription']
-  assert "ẹ" not in test_output[0]['inscription interpretive cleaning'] 
-  assert "ẹ" not in test_output[0]['inscription conservative cleaning']
+  assert "ẹ" not in test_output[0]['inscription_interpretive_cleaning'] 
+  assert "ẹ" not in test_output[0]['inscription_conservative_cleaning']
 
 def test_inscription_three_both():
   # ./parse.py -e 65300182 % --debug
@@ -19,8 +19,8 @@ def test_inscription_three_both():
 
   test_output = scrape(args, prevent_write=True, show_inscription_transform=True)
   assert "[3]" in test_output[0]['inscription']
-  assert "[3]" not in test_output[0]['inscription interpretive cleaning'] 
-  assert "[3]" not in test_output[0]['inscription conservative cleaning']
+  assert "[3]" not in test_output[0]['inscription_interpretive_cleaning'] 
+  assert "[3]" not in test_output[0]['inscription_conservative_cleaning']
 
 def test_inscription_three_middle():
   # ./parse.py -e 09000264 20700224 % --debug
@@ -28,8 +28,8 @@ def test_inscription_three_middle():
 
   test_output = scrape(args, prevent_write=True, show_inscription_transform=True)
   assert "mo[numentum 3 vi]/olaverit" in test_output[0]['inscription']
-  assert "mo[numentum 3 vi]/olaverit" not in test_output[0]['inscription conservative cleaning'] 
-  assert "mo[numentum 3 vi]/olaverit" not in test_output[0]['inscription interpretive cleaning']
+  assert "mo[numentum 3 vi]/olaverit" not in test_output[0]['inscription_conservative_cleaning'] 
+  assert "mo[numentum 3 vi]/olaverit" not in test_output[0]['inscription_interpretive_cleaning']
 
 def test_inscription_six():
   # ./parse.py -e 31900104  % --debug
@@ -37,8 +37,8 @@ def test_inscription_six():
 
   test_output = scrape(args, prevent_write=True, show_inscription_transform=True)
   assert "[6]" in test_output[0]['inscription']
-  assert "[6]" not in test_output[0]['inscription interpretive cleaning']
-  assert "[6]" not in test_output[0]['inscription conservative cleaning']
+  assert "[6]" not in test_output[0]['inscription_interpretive_cleaning']
+  assert "[6]" not in test_output[0]['inscription_conservative_cleaning']
 
 
 def test_inscription_one():
@@ -47,8 +47,8 @@ def test_inscription_one():
 
   test_output = scrape(args, prevent_write=True, show_inscription_transform=True)
   assert "[1]" in test_output[0]['inscription']
-  assert "[1]" not in test_output[0]['inscription interpretive cleaning']
-  assert "[1]" not in test_output[0]['inscription conservative cleaning']
+  assert "[1]" not in test_output[0]['inscription_interpretive_cleaning']
+  assert "[1]" not in test_output[0]['inscription_conservative_cleaning']
 
 
 ### EXTRA QUOTES - find better example inscription
@@ -58,8 +58,8 @@ def test_inscription_one():
 
 #  test_output = scrape(args, prevent_write=True, show_inscription_transform=True)
 #  assert "[\u0022]" in test_output[0]['inscription']
-#  assert "[\u0022]" not in test_output[0]['inscription interpretive cleaning']
-#  assert "[\u0022]" not in test_output[0]['inscription conservative cleaning']
+#  assert "[\u0022]" not in test_output[0]['inscription_interpretive_cleaning']
+#  assert "[\u0022]" not in test_output[0]['inscription_conservative_cleaning']
 
 ### EXTRA BACKSLASH - find better example inscription
 #def test_inscription_quotes():
@@ -68,8 +68,8 @@ def test_inscription_one():
 
 #  test_output = scrape(args, prevent_write=True, show_inscription_transform=True)
 #  assert "[\u005C]" in test_output[0]['inscription']
-#  assert "[\u005C]" not in test_output[0]['inscription interpretive cleaning']
-#  assert "[\u005C]" not in test_output[0]['inscription conservative cleaning']
+#  assert "[\u005C]" not in test_output[0]['inscription_interpretive_cleaning']
+#  assert "[\u005C]" not in test_output[0]['inscription_conservative_cleaning']
 
 
 def test_inscription_expanded_abbreviations():
@@ -78,9 +78,9 @@ def test_inscription_expanded_abbreviations():
 
   test_output = scrape(args, prevent_write=True, show_inscription_transform=True)
   assert "D(is) M(anibus)" in test_output[0]['inscription']
-  assert "D(is) M(anibus)" not in test_output[0]['inscription conservative cleaning']
-  assert "D M " in test_output[0]['inscription conservative cleaning']
-  assert "Dis Manibus" in test_output[0]['inscription interpretive cleaning']
+  assert "D(is) M(anibus)" not in test_output[0]['inscription_conservative_cleaning']
+  assert "D M " in test_output[0]['inscription_conservative_cleaning']
+  assert "Dis Manibus" in test_output[0]['inscription_interpretive_cleaning']
 
 
 def test_inscription_suppresion():
@@ -89,9 +89,9 @@ def test_inscription_suppresion():
 
   test_output = scrape(args, prevent_write=True, show_inscription_transform=True)
   assert "praetoria{e}" in test_output[0]['inscription']
-  assert "praetoria{e}" not in test_output[0]['inscription conservative cleaning']
-  assert "praetoriae " in test_output[0]['inscription conservative cleaning']
-  assert "praetoria" in test_output[0]['inscription interpretive cleaning']
+  assert "praetoria{e}" not in test_output[0]['inscription_conservative_cleaning']
+  assert "praetoriae " in test_output[0]['inscription_conservative_cleaning']
+  assert "praetoria" in test_output[0]['inscription_interpretive_cleaning']
 
 
 def test_inscription_restoration():
@@ -100,9 +100,9 @@ def test_inscription_restoration():
 
   test_output = scrape(args, prevent_write=True, show_inscription_transform=True)
   assert "nillae c[oniugi]" in test_output[0]['inscription']
-  assert "nillae c[oniugi]" not in test_output[0]['inscription conservative cleaning']
-  assert "nillae c " in test_output[0]['inscription conservative cleaning']
-  assert "nillae coniugi" in test_output[0]['inscription interpretive cleaning']
+  assert "nillae c[oniugi]" not in test_output[0]['inscription_conservative_cleaning']
+  assert "nillae c " in test_output[0]['inscription_conservative_cleaning']
+  assert "nillae coniugi" in test_output[0]['inscription_interpretive_cleaning']
 
 def test_inscription_substitution_edh():
   
@@ -111,8 +111,8 @@ def test_inscription_substitution_edh():
   test_output = scrape(args, prevent_write=True, show_inscription_transform=True)
 
   assert "<F=P>urius" in test_output[0]['inscription']
-  assert "Purius" in test_output[0]['inscription conservative cleaning'] 
-  assert "Furius" in test_output[0]['inscription interpretive cleaning'] 
+  assert "Purius" in test_output[0]['inscription_conservative_cleaning'] 
+  assert "Furius" in test_output[0]['inscription_interpretive_cleaning'] 
 
 
 def test_inscription_substitution():
@@ -121,8 +121,8 @@ def test_inscription_substitution():
 
   test_output = scrape(args, prevent_write=True, show_inscription_transform=True)
   assert "sanc<t=I>issi<ma=AM>" in test_output[0]['inscription']
-  assert "sanc<t=I>issi<ma=AM>" not in test_output[0]['inscription conservative cleaning']
-  assert "sanc<t=I>issi<ma=AM>" not in test_output[0]['inscription interpretive cleaning']
+  assert "sanc<t=I>issi<ma=AM>" not in test_output[0]['inscription_conservative_cleaning']
+  assert "sanc<t=I>issi<ma=AM>" not in test_output[0]['inscription_interpretive_cleaning']
 
 def test_inscription_que():
   # ./parse.py -e 54601011  % --debug
@@ -130,10 +130,10 @@ def test_inscription_que():
 
   test_output = scrape(args, prevent_write=True, show_inscription_transform=True)
   assert "libertabusque" in test_output[0]['inscription']
-  assert "libertabusque" not in test_output[0]['inscription conservative cleaning']
-  assert "libertabusque" not in test_output[0]['inscription interpretive cleaning']
-  assert "libertabus que " in test_output[0]['inscription conservative cleaning']
-  assert "libertabus que " in test_output[0]['inscription interpretive cleaning']
+  assert "libertabusque" not in test_output[0]['inscription_conservative_cleaning']
+  assert "libertabusque" not in test_output[0]['inscription_interpretive_cleaning']
+  assert "libertabus que " in test_output[0]['inscription_conservative_cleaning']
+  assert "libertabus que " in test_output[0]['inscription_interpretive_cleaning']
 
 def test_inscription_vir():
   # ./parse.py -e 24900101  % --debug
@@ -141,10 +141,10 @@ def test_inscription_vir():
 
   test_output = scrape(args, prevent_write=True, show_inscription_transform=True)
   assert "IIIIvir" in test_output[0]['inscription']
-  assert "IIIIvir" not in test_output[0]['inscription conservative cleaning']
-  assert "IIIIvir" not in test_output[0]['inscription interpretive cleaning']
-  assert "IIII vir " in test_output[0]['inscription conservative cleaning']
-  assert "IIII vir " in test_output[0]['inscription interpretive cleaning']
+  assert "IIIIvir" not in test_output[0]['inscription_conservative_cleaning']
+  assert "IIIIvir" not in test_output[0]['inscription_interpretive_cleaning']
+  assert "IIII vir " in test_output[0]['inscription_conservative_cleaning']
+  assert "IIII vir " in test_output[0]['inscription_interpretive_cleaning']
 
 # Template
 #def test_inscription_XXX():
@@ -153,5 +153,5 @@ def test_inscription_vir():
 #
 #  test_output = scrape(args, prevent_write=True, show_inscription_transform=True)
 #  assert "[3]" in test_output[0]['inscription']
-#  assert "[3]" not in test_output[0]['inscription interpretive cleaning']
+#  assert "[3]" not in test_output[0]['inscription_interpretive_cleaning']
 

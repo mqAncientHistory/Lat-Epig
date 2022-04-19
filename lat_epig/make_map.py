@@ -145,10 +145,10 @@ def makeDataframe(data_file, epsg=3857):
   #cities_3857 = geopandas.read_file(CITIES_SHP).to_crs(epsg=3857)
 
   point_geodataframe = geopandas.GeoDataFrame(
-  import_dataframe[import_dataframe.Longitude.notnull()],
+  import_dataframe[import_dataframe.longitude.notnull()],
   geometry=geopandas.points_from_xy(
-    import_dataframe[import_dataframe.Longitude.notnull()].Longitude,
-    import_dataframe[import_dataframe.Longitude.notnull()].Latitude),
+    import_dataframe[import_dataframe.longitude.notnull()].longitude,
+    import_dataframe[import_dataframe.longitude.notnull()].latitude),
   crs="EPSG:4326")
   if DEBUG:
     pprint(point_geodataframe)
@@ -252,7 +252,7 @@ def make_map(data_file,
   map_metadata = rf"""Search: {search_params}
 Results: {map_metadata_list[5].replace(".json","")} Date scraped: {re.sub(r"T.*$","",import_datestamp)}
 Data from Epigraphik-Datenbank Clauss / Slaby <http://manfredclauss.de/>
-Ancient World Mapping Center “{escaped_provinceshapefilename}” <http://awmc.unc.edu/wordpress/map-files/>"""
+Ancient World Mapping Center "{escaped_provinceshapefilename}" <http://awmc.unc.edu/wordpress/map-files/>"""
   if not will_cite:
 
     fig.text(0.5, 0, CITATION,
