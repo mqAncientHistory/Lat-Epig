@@ -85,11 +85,11 @@ ENTRYPOINT ["/usr/bin/tini", "--"]
 # https://github.com/jupyter-widgets/ipywidgets/issues/1683#issuecomment-328952119
 
 
-RUN python3 -m pip install  --user --no-cache-dir numpy==1.22.3 cython wheel pyshp==2.2.0 && \
-python3 -m pip install shapely --no-cache-dir --no-binary shapely==1.8.1.post1 && \
-python3 -m pip install  --user --no-cache-dir -r requirements.txt && \
-python3 -m pip install  --user --no-cache-dir --editable . && \
-bash ./setupJupyter.sh && \
+RUN python3 -m pip install  --user --no-cache-dir numpy==1.22.3 cython wheel pyshp==2.2.0
+RUN python3 -m pip install  --user shapely --no-cache-dir --no-binary shapely==1.8.1.post1
+RUN python3 -m pip install  --user --no-cache-dir -r requirements.txt
+RUN python3 -m pip install  --user --no-cache-dir --editable .
+RUN bash ./setupJupyter.sh && \
 chown -R ${NB_USER} ${HOME}
 
 USER ${NB_USER}

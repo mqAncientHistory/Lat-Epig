@@ -41,12 +41,12 @@ def makeDataframe(data_file, epsg=3857):
     #cities_3857 = geopandas.read_file(CITIES_SHP).to_crs(epsg=3857)
 
     point_geodataframe = geopandas.GeoDataFrame(
-    import_dataframe[import_dataframe.Longitude.notnull()],
+    import_dataframe[import_dataframe.longitude.notnull()],
     geometry=geopandas.points_from_xy(
-    import_dataframe[import_dataframe.Longitude.notnull()].Longitude,
-    import_dataframe[import_dataframe.Longitude.notnull()].Latitude),
+    import_dataframe[import_dataframe.longitude.notnull()].longitude,
+    import_dataframe[import_dataframe.longitude.notnull()].latitude),
     crs="EPSG:4326")
-    point_geodataframe[['Latitude', 'Longitude']] = point_geodataframe[['Latitude', 'Longitude']].apply(pandas.to_numeric)
+    point_geodataframe[['latitude', 'longitude']] = point_geodataframe[['latitude', 'longitude']].apply(pandas.to_numeric)
     
     def linkify(edcs_id):
         myid=edcs_id.replace("EDCS-","")
@@ -58,7 +58,7 @@ def makeDataframe(data_file, epsg=3857):
 
     point_geodataframe['EDCS Link'] = point_geodataframe['EDCS-ID'].apply(linkify)
 
-    point_geodataframe['cleaned inscription'] = point_geodataframe['inscription interpretive cleaning'].apply(lambda x: textwrap.shorten(x or 'null', width=255))
+    point_geodataframe['cleaned inscription'] = point_geodataframe['inscription_interpretive_cleaning'].apply(lambda x: textwrap.shorten(x or 'null', width=255))
     
     point_geodataframe_3857 = point_geodataframe.to_crs(epsg=epsg)
     return point_geodataframe_3857
@@ -155,7 +155,7 @@ def make_interactive_map(data_file):
   for item in items:
    # pprint(item)
     folium.Marker(
-      location=[item['Latitude'], item['Longitude']],
+      location=[item['latitude'], item['longitude']],
       max_width="600",
       popup = folium.Popup(f"""
 <dl>
@@ -164,13 +164,13 @@ def make_interactive_map(data_file):
 <dt>EDCS Link:</dt>
 <dd>{item['EDCS Link']}</dd>
 <dt>raw dating:</dt>
-<dd>{item['raw dating']}</dd>
+<dd>{item['raw_dating']}</dd>
 <dt>Province:</dt>
 <dd>{item['province']}</dd>
 <dt>Place:</dt>
 <dd>{item['place']}</dd>
 <dt>Material:</dt>
-<dd>{item['Material']}</dd>
+<dd>{item['material']}</dd>
 </dl>
 <b>cleaned inscription:</b>
 <p style='width:400px;'>{item['cleaned inscription']}</p>

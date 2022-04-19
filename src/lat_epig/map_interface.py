@@ -137,8 +137,8 @@ def make_map_interface():
         )
 
     map_filetype = widgets.RadioButtons(
-        options=['pdf', 'png', 'tiff', 'eps', 'svg'],
-        value='pdf',
+        options=['png', 'tiff', 'eps', 'svg'],
+        value='png',
         layout={'width': 'max-content'},
         description="Filetype"
         )
