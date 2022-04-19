@@ -66,8 +66,8 @@ def test_material():
   args = argparse.Namespace(EDCS='32001159', publication=None, province=None, place=None, operator='and', term2=None, dating_from=None, dating_to=None, inscription_genus=None, and_not_inscription_genus=None, to_file=None, from_file=None, debug=True, term1='%')
 
   test_output = scrape(args, prevent_write=True, show_inscription_transform=True)
-  assert '[]' not in test_output[0]['Material']
-  assert "lapis" in test_output[0]['Material']
+  assert '[]' not in test_output[0]['material']
+  assert "lapis" in test_output[0]['material']
 
 def test_comment():
   # ./parse.py -e 36400015  % --debug
@@ -76,7 +76,7 @@ def test_comment():
 
   test_output = scrape(args, prevent_write=True, show_inscription_transform=True)
   assert "comment DOI: 10.3406/crai.2005.22934" not in test_output[0]['inscription']
-  assert "comment DOI: 10.3406/crai.2005.22934" in test_output[0]['Comment']
+  assert "comment DOI: 10.3406/crai.2005.22934" in test_output[0]['comment']
 
 
 # Petra continue from here
