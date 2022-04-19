@@ -51,7 +51,7 @@ import textwrap
 # $ export CURL_CA_BUNDLE=""; ./make_map.py
 
 CITATION = 'Ballsun-Stanton B., Heřmánková P., Laurence R. "Lat Epig" (version 2.0). GitHub.\nhttps://github.com/mqAncientHistory/Lat-Epig/     https://doi.org/10.5281/zenodo.5211341'
-DATA_DIR = "output"
+DATA_DIR = "../../output"
 DATA_FILENAME = "2020-08-18-term1_petra-249.tsv"
 #DATA_FILE = DATA_DIR / DATA_FILENAME
 DEBUG = False
@@ -165,10 +165,10 @@ def make_map(data_file,
              provinces=True, 
              roads=True, 
              cities=True,
-             filetype='pdf',
+             filetype='png',
              show_ids=False,
              append_inscriptions=False,
-             dpi=1200,
+             dpi=80,
              map_dimensions=None,
              partial_provinces=False,
              map_inscription_markersize=5,
@@ -207,7 +207,7 @@ def make_map(data_file,
 
 
 
-  fig = plt.figure(figsize=map_dimensions, dpi=dpi)
+  fig = plt.figure(dpi=dpi)
 
   if map_greyscale:
     print("greyscale")
@@ -244,10 +244,9 @@ def make_map(data_file,
     else:
       param_list.append(f"{key}: {', '.join(val)}")
 
-  search_params = textwrap.wrap(', '.join(param_list), width=120)
-  if not map_title_text:  
+  search_params = textwrap.wrap(', '.join(param_list), width=120)[0]
+  if not map_title_text:
     map_title_text = search_params
-  
   escaped_provinceshapefilename = province_shapefilename.replace("_", r"_")
   map_metadata = rf"""Search: {search_params}
 Results: {map_metadata_list[5].replace(".json","")} Date scraped: {re.sub(r"T.*$","",import_datestamp)}
@@ -345,42 +344,21 @@ Ancient World Mapping Center "{escaped_provinceshapefilename}" <http://awmc.unc.
 
     # https://stackoverflow.com/a/50270936
     #point_dataframe_3857.apply(lambda x: ax.annotate(s=x['EDCS-ID'], xy=x.geometry.coords[0], xytext=(3,3), textcoords="offset points"))
-
   legend = ax.legend(fontsize='small')
   legend.legendHandles[1]._sizes = [30]
   legend.legendHandles[2]._sizes = [30]
 
 
-  # for layer in WMS_LAYERS:
-  #   print("foo")
-  #   current_layer = WMS_LAYERS[layer]['wms']
-  #   pprint(layer)
-  #   pprint(current_layer.getOperationByName('GetMap').methods)
-  #   pprint(current_layer.getOperationByName('GetMap').formatOptions)
-
-  #layermap_3857 = wms.getmap(layers=WMS_LAYERS.keys(),
-  #                           srs="EPSG:3857",
-  #                           )
-
 
   plt.axis('off')
 
 
-  # ax.add_artist(ScaleBar(1, 
-  #                        units="km", 
-  #                        length_fraction=0.15, 
-  #                        location="lower left", 
-  #                        font_properties={"size": "xx-small"}))
 
   x, y, arrow_length = 0.005, 0.1, 0.075
   ax.annotate('N', xy=(x, y), xytext=(x, y-arrow_length),
               arrowprops=dict(facecolor='black', arrowstyle='->'),#width=.05, headwidth=2),
               ha='center', va='center', fontsize=5,
               xycoords=ax.transAxes)
-  # point_geodataframe.plot(ax=ax, color='red')
-  #https://stackoverflow.com/a/53735672
-
-  # print("\n\n***\n\nBRIAN", fig.bbox, (bounded_prov.total_bounds[2] - bounded_prov.total_bounds[0]))
   if (buffer.total_bounds[2] - buffer.total_bounds[0]) < 1000000:
    scale = 100
   else:
@@ -395,19 +373,15 @@ Ancient World Mapping Center "{escaped_provinceshapefilename}" <http://awmc.unc.
   province_shapefilename=province_shapefilename.replace(" ","_").replace(".shp","")
   datafile_base_name = data_file.name.replace('.json','')
   map_filename=f"output_maps/{datafile_base_name}{f'-{province_shapefilename}' if provinces else ''}{f'-Cities{cities}' if cities else ''}{f'-Roads{roads}' if roads else ''}{f'-IDs' if show_ids else ''}{f'-index' if append_inscriptions else ''}{f'-multicolour' if basemap_multicolour else ''}-DPI{dpi}-{'-for_publication' if map_greyscale else ''}"
-  
-  
   ax.spines['geo'].set_visible(False)
 
-  #fig.set_size_inches(11.7,8.3) # dpi=80
-
-  #ax.get_tightbbox()
-  #ax.outline_patch.set_visible(False)
   if filetype != 'pdf':
+    print(f"making {filetype} {dpi}")
     plt.savefig(f"{map_filename}.{filetype}", dpi=dpi,bbox_inches='tight')
     plt.close()
     print("Saved map...")
   else:
+    print("Saving to pdf")
     figdate = [int(x) for x in data_file.name.replace("-"," ").replace("_"," ").replace(".json","").split( )[0:3]]
     with PdfPages(f"{map_filename}.{filetype}", metadata={"Title":map_title_text,
                                                           "Subject":map_metadata,
@@ -416,6 +390,9 @@ Ancient World Mapping Center "{escaped_provinceshapefilename}" <http://awmc.unc.
                                                           "CreationDate": datetime.datetime(figdate[0], figdate[1], figdate[2])
                                                           }) as pdf:
       #https://matplotlib.org/stable/api/backend_pdf_api.html#matplotlib.backends.backend_pdf.PdfPages
+      print("argh?")
+      fig.set_size_inches(8.3, 11.7) # dpi=80
+      #fig.set_size_inches(bbox.width/dpi, bbox.height/dpi) # dpi=80
       pdf.savefig(fig, dpi=dpi,bbox_inches='tight')
       plt.close()
       print("Saved map...")
@@ -499,7 +476,7 @@ Ancient World Mapping Center "{escaped_provinceshapefilename}" <http://awmc.unc.
 
 
 
-        pdf.savefig(fig,dpi=dpi, bbox_inches='tight')
+        pdf.savefig(fig, bbox_inches='tight')
         plt.close()
         print("Saved inscription(s)...")
       #pdf.savefig()
@@ -541,10 +518,10 @@ def make_recent_map():
   print(f"making {output_tsv} pdf")
   make_map(data_file=output_tsv,           
            show_ids=False,
-           filetype='pdf',
+           filetype='png',
            province_shapefilename="roman_empire_ad_117.shp",
            append_inscriptions=True,
-           dpi=300
+           dpi=80
            )
 
   #pre_geo_data = {'objects':[], 'geometry':[]}
