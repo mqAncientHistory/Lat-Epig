@@ -41,8 +41,8 @@ setup(name='lat-epig',
         'Source': 'https://github.com/mqAncientHistory/Lat-Epig',
         'Tracker': 'https://github.com/mqAncientHistory/Lat-Epig/issues',
       },
-      package_dir={'lat_epig'},
-      packages=find_packages(where='lat_epig'),      
+      package_dir={'':'src'},
+      packages=find_packages(where='src'),      
       zip_safe=False,
       include_package_data=True
       
