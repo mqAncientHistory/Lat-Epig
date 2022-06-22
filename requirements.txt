@@ -98,7 +98,7 @@ nest-asyncio==1.5.5
 networkx==2.8
 notebook==6.4.10
 notebook-shim==0.1.0
-numpy==1.21.5
+numpy==1.22.0
 openpyxl==3.0.9
 OWSLib==0.25.0
 packaging==21.3
