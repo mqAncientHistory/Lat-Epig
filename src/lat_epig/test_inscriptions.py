@@ -146,6 +146,20 @@ def test_inscription_vir():
   assert "IIII vir " in test_output[0]['inscription_conservative_cleaning']
   assert "IIII vir " in test_output[0]['inscription_interpretive_cleaning']
 
+
+def test_inscription_conservative_restoration():
+  # ./parse.py -e 66200107  % --debug
+  args = argparse.Namespace(EDCS='66200107', publication=None, province=None, place=None, operator='and', term2=None, dating_from=None, dating_to=None, inscription_genus=None, and_not_inscription_genus=None, to_file=None, from_file=None, debug=True, term1='%')
+
+  test_output = scrape(args, prevent_write=True, show_inscription_transform=True)
+  assert "[3]ν τὸν λαμ/[πρότατον ὑπατικ]όν Ἄππιος Κυ/[3 τὸν ἑαυτοῦ πά]τρωνα" in test_output[0]['inscription']
+  assert "ν τὸν λαμόν Ἄππιος Κυτρωνα" not in test_output[0]['inscription_conservative_cleaning']
+  assert "ν τὸν λαμόν Ἄππιος Κυτρωνα" not in test_output[0]['inscription_interpretive_cleaning']
+  assert "ν τὸν λαμ όν Ἄππιος Κυ τρωνα" in test_output[0]['inscription_conservative_cleaning']
+  assert "ν τὸν λαμπρότατον ὑπατικόν Ἄππιος Κυ τὸν ἑαυτοῦ πάτρωνα" in test_output[0]['inscription_interpretive_cleaning']
+
+
+
 # Template
 #def test_inscription_XXX():
 #  # ./parse.py -e 09000264  % --debug
