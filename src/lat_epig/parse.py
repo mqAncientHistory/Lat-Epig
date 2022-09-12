@@ -14,7 +14,9 @@ import csv
 #import cStringIO
 import codecs
 import argparse
-import tkinter as tk
+import tk
+import clint
+import yaspin
 from lxml import etree
 from pprint import pprint
 import datetime
