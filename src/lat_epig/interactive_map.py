@@ -170,8 +170,6 @@ def make_interactive_map(data_file):
 <dl>
 <dt>EDCS-ID:</dt>
 <dd>{item['EDCS-ID']}</dd>
-<dt>EDCS Link:</dt>
-<dd>{item['EDCS Link']}</dd>
 <dt>raw dating:</dt>
 <dd>{item['raw_dating']}</dd>
 <dt>Province:</dt>
