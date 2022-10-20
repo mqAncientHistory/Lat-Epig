@@ -23,8 +23,8 @@ Ballsun-Stanton B., Heřmánková P., Laurence R. *Lat Epig* (version 2.0). GitH
 
 ## Run Lat Epig with a single click
 
-*To launch Lat-Epig on myBinder (as Voila application) click on the following icon* 
-[![LatEpig on myBinder (VOILA)](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/mqAncientHistory/Lat-Epig/HEAD?urlpath=voila/render/EpigraphyScraper.ipynb)
+*To launch Lat-Epig on myBinder click on the following icon* 
+[![LatEpig on myBinder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/mqAncientHistory/Lat-Epig/HEAD?urlpath=notebooks/EpigraphyScraper.ipynb)
 
 No need for powerful computer, as the tool runs on external servers with a single click. This option is ideal if you want to test the tool or do small searches (with up to 1000 results). Searches with more than 1000+ results will still run, however, the interactive map may not be created. For creation of interactive maps based on large searches we recommend to use some of the other options (see below).
 
@@ -71,7 +71,7 @@ When it starts, click the fast-forward button, or choose the Kernel menu and cho
 
 _This option should be used for testing, smaller searches, or demonstration of the Lat Epig. Large searches may take long and may not render properly (as the memory on the myBinder is limited). If you need to perform large seraches, we recommend using the Docker option._
 
-### 2. To run on your computer as Voila in Docker:
+### 2. To run on your computer in Docker:
 
 1. Install docker on your computer.
  - [Windows instructions](https://hub.docker.com/editions/community/docker-ce-desktop-windows)
@@ -86,7 +86,7 @@ _This option should be used for testing, smaller searches, or demonstration of t
 1. Now run the following to start the Lat Epig within Docker. You will need a stable internet connection.
 `docker run -p 8888:8888 denubis/lat-epig-scraper:main`
 1. Go to your browser (Firefox, Chrome...) and paste in 
-`http://localhost:8888/voila/render/EpigraphyScraper.ipynb` and you should see the Lat Epig interface.
+`http://localhost:8888/notebooks/EpigraphyScraper.ipynb` and you should see the Lat Epig interface.
 
 *Note: If your computer is low on memory, we recommend using Firefox instead of Chrome. If you have troubles starting Docker, close Chrome, and all non-essential software and try again with Firefox browser.*
 
