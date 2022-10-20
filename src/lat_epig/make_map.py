@@ -431,7 +431,7 @@ Ancient World Mapping Center
     else:
         scale = 1_000
 
-    # scale_bar(ax, length=scale, location=(0.5, 0.01))
+    scale_bar(ax, length=scale, location=(0.5, 0.01))
     # https://geopandas.org/en/stable/gallery/matplotlib_scalebar.html#Geographic-coordinate-system-(degrees)
     # ax.add_artist(ScaleBar(10))
 
