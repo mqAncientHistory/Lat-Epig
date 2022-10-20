@@ -28,7 +28,7 @@ def clean_conservative_rules():
         "inscription_suppresion_conservative": {"patt":re.compile(r'[\{*\}]', re.UNICODE),
                                    "replace":r""},
         "inscription_restoration_conservative": {"patt":re.compile(r'\[[^[]*\]', re.UNICODE),
-                                   "replace":r""},
+                                   "replace":r" "},
         "inscription_substitution_edh_conservative": {"patt":re.compile(r'(\<)([α-ωΑ-Ωa-zA-Z])=([α-ωΑ-Ωa-zA-Z])(\>)', re.UNICODE),
                                    "replace":r"\3"},
          "inscription_substitution_edh_conservative_missing": {"patt":re.compile(r'(\<)([α-ωΑ-Ωa-zA-Z])*=([α-ωΑ-Ωa-zA-Z])(\>)', re.UNICODE),
