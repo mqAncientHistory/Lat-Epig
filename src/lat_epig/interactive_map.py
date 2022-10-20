@@ -178,6 +178,8 @@ def make_interactive_map(data_file):
 <dd>{item['place']}</dd>
 <dt>Material:</dt>
 <dd>{item['material']}</dd>
+<dt>Status:</dt>
+<dd>{item['status']}</dd>
 </dl>
 <b>Inscription:</b>
 <p style='width:400px;'>{item['inscription']}</p>
