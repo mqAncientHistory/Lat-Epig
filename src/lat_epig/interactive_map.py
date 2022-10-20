@@ -179,8 +179,10 @@ def make_interactive_map(data_file):
 <dt>Material:</dt>
 <dd>{item['material']}</dd>
 </dl>
-<b>cleaned inscription:</b>
-<p style='width:400px;'>{item['cleaned inscription']}</p>
+<b>Inscription:</b>
+<p style='width:400px;'>{item['inscription']}</p>
+<b>Cleaned Inscription:</b>
+<p style='width:400px;'>{item['inscription_conservative_cleaning']}</p>
 """
             ),
             tooltip=folium.Tooltip(
