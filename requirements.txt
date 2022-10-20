@@ -171,7 +171,7 @@ threadpoolctl==3.1.0
 tinycss2==1.2.1
 toml==0.10.2
 tomli==2.0.1
-tornado==6.2
+tornado==6.1
 tqdm==4.64.1
 traitlets==5.5.0
 typer==0.6.1
