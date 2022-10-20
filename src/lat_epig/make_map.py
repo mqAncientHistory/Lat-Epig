@@ -253,8 +253,10 @@ def make_map(
     escaped_provinceshapefilename = province_shapefilename.replace("_", r"_")
     map_metadata = rf"""Search: {search_params}
 Results: {map_metadata_list[5].replace(".json","")} Date scraped: {re.sub(r"T.*$","",import_datestamp)}
-Data from Epigraphik-Datenbank Clauss / Slaby <http://manfredclauss.de/>
-Ancient World Mapping Center "{escaped_provinceshapefilename}" <http://awmc.unc.edu/wordpress/map-files/>"""
+Data from Epigraphik-Datenbank Clauss / Slaby 
+Ancient World Mapping Center 
+"{escaped_provinceshapefilename}" 
+<http://awmc.unc.edu/wordpress/map-files/>"""
     if not will_cite:
 
         fig.text(
@@ -269,7 +271,7 @@ Ancient World Mapping Center "{escaped_provinceshapefilename}" <http://awmc.unc.
     # print(f"making map with title {map_title_text}")
     # print(f"making map with metadata {map_metadata_list} rendered as \n{map_metadata}")
     plt.tight_layout()
-    plt.suptitle(map_metadata, fontsize=3, y=0.10)
+    plt.suptitle(map_metadata, fontsize=3, y=0.1, x=0.9)
     plt.title(map_title_text, fontsize=12, y=1)
     plt.rc("font", **{"family": "serif"})
 
@@ -429,7 +431,7 @@ Ancient World Mapping Center "{escaped_provinceshapefilename}" <http://awmc.unc.
     else:
         scale = 1_000
 
-    scale_bar(ax, length=scale, location=(0.05, 0.05))
+    scale_bar(ax, length=scale, location=(0.5, 0.01))
     # https://geopandas.org/en/stable/gallery/matplotlib_scalebar.html#Geographic-coordinate-system-(degrees)
     # ax.add_artist(ScaleBar(10))
 
