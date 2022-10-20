@@ -170,7 +170,7 @@ def make_interactive_map(data_file):
 <dl>
 <dt>EDCS-ID:</dt>
 <dd>{item['EDCS-ID']}</dd>
-<dt>raw dating:</dt>
+<dt>Raw Dating:</dt>
 <dd>{item['raw_dating']}</dd>
 <dt>Province:</dt>
 <dd>{item['province']}</dd>
@@ -183,13 +183,13 @@ def make_interactive_map(data_file):
 </dl>
 <b>Inscription:</b>
 <p style='width:400px;'>{item['inscription']}</p>
-<b>Cleaned Inscription:</b>
+<b>Cleaned Inscription (Conservative):</b>
 <p style='width:400px;'>{item['inscription_conservative_cleaning']}</p>
+<b>Cleaned Inscription (Interpretive):</b>
+<p style='width:400px;'>{item['inscription_interpretive_cleaning']}</p>
 """
             ),
-            tooltip=folium.Tooltip(
-                textwrap.shorten(item["cleaned inscription"], width=40)
-            ),
+            tooltip=folium.Tooltip(textwrap.shorten(item["EDCS-ID"], width=40)),
         ).add_to(marker_cluster)
     # for map_json in output_maps:
     # https://github.com/python-visualization/folium/issues/1385
