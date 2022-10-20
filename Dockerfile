@@ -55,6 +55,7 @@ python3-pyshp \
 python3-numpy \
 python3-rasterio \
 python3-gdal \
+python3-tk \
 cython3 \
 python3-wheel \
 libproj-dev \

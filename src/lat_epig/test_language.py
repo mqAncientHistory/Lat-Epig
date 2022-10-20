@@ -23,7 +23,7 @@ def test_language_with_imbalanced_doublequote():
 
   test_output = scrape(args, prevent_write=True, show_inscription_transform=True)
   assert '"GR' not in test_output[0]['inscription']
-  assert "GR" in test_output[0]['language']
+  assert '' in test_output[0]['language']
 
 
 def test_language_with_trailing_imbalanced_doublequote():
@@ -38,5 +38,6 @@ def test_language_with_trailing_imbalanced_doublequote():
 
   test_output = scrape(args, prevent_write=True, show_inscription_transform=True)
   assert 'GR"' not in test_output[0]['inscription']
-  assert "PA, GR" in test_output[0]['language']
+  assert "PA" in test_output[0]['language']
+  assert "PALMYR" not in test_output[0]['language']
   
