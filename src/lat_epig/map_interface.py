@@ -107,14 +107,14 @@ def make_map_interface():
 
     map_show_provinces = widgets.RadioButtons(
         options=[("All Provinces", True),
-                 ("Provinces near points", False)],
+                 ("Provinces near inscriptions", False)],
         value=True,
         layout={'width': 'max-content'},
         description="Show Provinces")
 
     map_show_roads = widgets.RadioButtons(
         options=[("All Roman Roads", 'all'),
-                 ("Roads around points", "points"),
+                 ("Roads around inscriptions", "points"),
                  ("No Roads", None)],
         value="all",
         layout={'width': 'max-content'},
@@ -122,7 +122,7 @@ def make_map_interface():
 
     map_show_cities = widgets.RadioButtons(
         options=[("All Cities", 'all'),
-                 ("Cities around points", "points"),
+                 ("Cities around inscriptions", "points"),
                  ("No Cities", None)],
         value="all",
         layout={'width': 'max-content'},
@@ -133,12 +133,12 @@ def make_map_interface():
         options=[('Light Brown', False), ('Multicoloured', True)],
         value=True,
         layout={'width': 'max-content'},
-        description="Basemap<br/>Styling"
+        description="Basemap Styling"
         )
 
     map_filetype = widgets.RadioButtons(
-        options=['png', 'tiff', 'eps', 'svg'],
-        value='png',
+        options=['PNG', 'TIFF', 'EPS', 'SVG'],
+        value='PNG',
         layout={'width': 'max-content'},
         description="Filetype"
         )
@@ -152,13 +152,13 @@ def make_map_interface():
     map_append_inscriptions = widgets.Checkbox(        
         value=False,
         layout={'width': 'max-content'},
-        description="(PDF Only) Append Inscriptions"
+        description="Append Inscriptions (PDF Only)"
         )
 
     map_greyscale = widgets.Checkbox(        
         value=False,
         layout={'width': 'max-content'},
-        description="Greyscale for publication. (You should probably use a different basemap)."
+        description="Greyscale map. (Note: You should probably use a different basemap)."
         )
 
     map_dpi = widgets.RadioButtons(        
@@ -176,7 +176,7 @@ def make_map_interface():
         )
 
     map_will_cite = widgets.RadioButtons(        
-        options=[('I will cite this software in the research I am producing, please remove the large credit line', True),
+        options=[('I will cite this software in the research I am producing, please, remove the large credit line from the map.', True),
         ('Keep Citation in Output', False)],
         value=False,
         layout={'width': 'max-content'},
