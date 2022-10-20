@@ -65,7 +65,7 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "# Latin Epigraphy Scraper v2.0\n",
+    "# Lat Epig\n",
     "\n",
     "*The Jupyter Notebook inteface for the LatEpig tool allows you to query all the inscriptions from EDCS in a reproducible manner:  it saves the search result in a TSV file and plots the results on a map of the Roman Empire without any prior knowledge of programming.* \n",
     "\n",
@@ -164,13 +164,24 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 2,
+   "execution_count": 1,
    "metadata": {
     "init_cell": true,
     "scrolled": false
    },
    "outputs": [
     {
+<<<<<<< HEAD
+     "ename": "ModuleNotFoundError",
+     "evalue": "No module named 'lat_epig'",
+     "output_type": "error",
+     "traceback": [
+      "\u001b[1;31m--------------------------------------------\u001b[0m",
+      "\u001b[1;31mModuleNotFoundError\u001b[0mTraceback (most recent call last)",
+      "\u001b[1;32m<ipython-input-1-6d692b9496d8>\u001b[0m in \u001b[0;36m<module>\u001b[1;34m\u001b[0m\n\u001b[0;32m      1\u001b[0m \u001b[1;32mimport\u001b[0m \u001b[0mwarnings\u001b[0m\u001b[1;33m\u001b[0m\u001b[1;33m\u001b[0m\u001b[0m\n\u001b[0;32m      2\u001b[0m \u001b[0mwarnings\u001b[0m\u001b[1;33m.\u001b[0m\u001b[0mfilterwarnings\u001b[0m\u001b[1;33m(\u001b[0m\u001b[1;34m'ignore'\u001b[0m\u001b[1;33m)\u001b[0m\u001b[1;33m\u001b[0m\u001b[1;33m\u001b[0m\u001b[0m\n\u001b[1;32m----> 3\u001b[1;33m \u001b[1;32mfrom\u001b[0m \u001b[0mlat_epig\u001b[0m\u001b[1;33m.\u001b[0m\u001b[0minterface\u001b[0m \u001b[1;32mimport\u001b[0m \u001b[0mmakeScrapeInterface\u001b[0m\u001b[1;33m,\u001b[0m \u001b[0mParseargs\u001b[0m                    \u001b[1;31m# loads the user friendly GUI\u001b[0m\u001b[1;33m\u001b[0m\u001b[1;33m\u001b[0m\u001b[0m\n\u001b[0m\u001b[0;32m      4\u001b[0m \u001b[0mmakeScrapeInterface\u001b[0m\u001b[1;33m(\u001b[0m\u001b[1;33m)\u001b[0m\u001b[1;33m\u001b[0m\u001b[1;33m\u001b[0m\u001b[0m\n",
+      "\u001b[1;31mModuleNotFoundError\u001b[0m: No module named 'lat_epig'"
+     ]
+=======
      "data": {
       "text/html": [
        "<h1>Lat Epig v2.0</h1>"
@@ -185,7 +196,7 @@
     {
      "data": {
       "application/vnd.jupyter.widget-view+json": {
-       "model_id": "1323fad361bc4e239b7d684a42728fd6",
+       "model_id": "f92c898b930f4daf9fc181c3510c182e",
        "version_major": 2,
        "version_minor": 0
       },
@@ -199,7 +210,7 @@
     {
      "data": {
       "application/vnd.jupyter.widget-view+json": {
-       "model_id": "3f59d42b3a014f7293e8c086efed4c21",
+       "model_id": "10f6859a5604488d9f7c0a7b3b9f08b5",
        "version_major": 2,
        "version_minor": 0
       },
@@ -213,7 +224,7 @@
     {
      "data": {
       "application/vnd.jupyter.widget-view+json": {
-       "model_id": "361ca5da41d84b30abc41a6b24443b35",
+       "model_id": "c77c21c722f24282afabfc977706505e",
        "version_major": 2,
        "version_minor": 0
       },
@@ -227,7 +238,7 @@
     {
      "data": {
       "application/vnd.jupyter.widget-view+json": {
-       "model_id": "82a0605eb85f4a5bb8296e13d0f6fc4a",
+       "model_id": "90adf2ade3ab4903b552bbc8a9bcfef7",
        "version_major": 2,
        "version_minor": 0
       },
@@ -241,7 +252,7 @@
     {
      "data": {
       "application/vnd.jupyter.widget-view+json": {
-       "model_id": "bccc42b4d8c74de7bd9b5a0d5d855906",
+       "model_id": "367595c0aec94da58ef03c58825b6921",
        "version_major": 2,
        "version_minor": 0
       },
@@ -255,7 +266,7 @@
     {
      "data": {
       "application/vnd.jupyter.widget-view+json": {
-       "model_id": "578772cb514842fcbb9c57513f219ffa",
+       "model_id": "3a5e025c46e540dda07169d064aa7e56",
        "version_major": 2,
        "version_minor": 0
       },
@@ -269,7 +280,7 @@
     {
      "data": {
       "application/vnd.jupyter.widget-view+json": {
-       "model_id": "27e3e13692f44871b248a2e9d85f00ff",
+       "model_id": "3f201371f0a24b3db40c978444839058",
        "version_major": 2,
        "version_minor": 0
       },
@@ -283,7 +294,7 @@
     {
      "data": {
       "application/vnd.jupyter.widget-view+json": {
-       "model_id": "cfc6b8e2e86140a9b3495358c4e80402",
+       "model_id": "f0e1316f90c34ff1b88f3a09354a1d15",
        "version_major": 2,
        "version_minor": 0
       },
@@ -309,7 +320,7 @@
     {
      "data": {
       "application/vnd.jupyter.widget-view+json": {
-       "model_id": "265e41817eac4e9d91df40558be8afb8",
+       "model_id": "09fee3e2edab4b70bdb68b71151b1d58",
        "version_major": 2,
        "version_minor": 0
       },
@@ -323,7 +334,7 @@
     {
      "data": {
       "application/vnd.jupyter.widget-view+json": {
-       "model_id": "9fcd97d485c3470aa395465a02c8e163",
+       "model_id": "45ff73a363ce42db863afea498c4a9b8",
        "version_major": 2,
        "version_minor": 0
       },
@@ -337,7 +348,7 @@
     {
      "data": {
       "application/vnd.jupyter.widget-view+json": {
-       "model_id": "4cae26498f68491594f03dbc038b1211",
+       "model_id": "f08f8c2efbbc40fe8da9ebf67db972f8",
        "version_major": 2,
        "version_minor": 0
       },
@@ -351,7 +362,7 @@
     {
      "data": {
       "application/vnd.jupyter.widget-view+json": {
-       "model_id": "3ef945d0701b4e479fe065b1f0e5d6b3",
+       "model_id": "3c79ca0910eb4963bf90a0a580e9d4b7",
        "version_major": 2,
        "version_minor": 0
       },
@@ -365,7 +376,7 @@
     {
      "data": {
       "application/vnd.jupyter.widget-view+json": {
-       "model_id": "17a56d0e4e274d50a875c6d451bcc749",
+       "model_id": "443beadd4fff4dfb864c4fd59f03e1f8",
        "version_major": 2,
        "version_minor": 0
       },
@@ -379,7 +390,7 @@
     {
      "data": {
       "application/vnd.jupyter.widget-view+json": {
-       "model_id": "9fa6853d38394a76bed2a1250868d873",
+       "model_id": "cfd3fc2325be4ef4b2aae72545603e08",
        "version_major": 2,
        "version_minor": 0
       },
@@ -389,6 +400,7 @@
      },
      "metadata": {},
      "output_type": "display_data"
+>>>>>>> scrapeprovince
     }
    ],
    "source": [
@@ -435,7 +447,7 @@
     {
      "data": {
       "application/vnd.jupyter.widget-view+json": {
-       "model_id": "258876ec6da74ce8b5679fc83b40c04d",
+       "model_id": "e7789946fb8747c1aaac01a015317c02",
        "version_major": 2,
        "version_minor": 0
       },
@@ -449,7 +461,7 @@
     {
      "data": {
       "application/vnd.jupyter.widget-view+json": {
-       "model_id": "4ee19833a3d346159e49403f705e85a7",
+       "model_id": "8228f805211a41bba3900451e46ed096",
        "version_major": 2,
        "version_minor": 0
       },
@@ -463,7 +475,7 @@
     {
      "data": {
       "application/vnd.jupyter.widget-view+json": {
-       "model_id": "9243c248f5a44a91bffe45aaf470cf14",
+       "model_id": "cb768ba2ad4d474a867f99cd114872df",
        "version_major": 2,
        "version_minor": 0
       },
@@ -477,7 +489,7 @@
     {
      "data": {
       "application/vnd.jupyter.widget-view+json": {
-       "model_id": "477214342cc64752a4b9da33b4fdb93c",
+       "model_id": "058c0215c86944d0a46f77004e10c5a4",
        "version_major": 2,
        "version_minor": 0
       },
@@ -491,7 +503,7 @@
     {
      "data": {
       "application/vnd.jupyter.widget-view+json": {
-       "model_id": "8b59b021bf6a45e8b67b6a9193ad3860",
+       "model_id": "ac72d01910444a278742d6cc912331c3",
        "version_major": 2,
        "version_minor": 0
       },
@@ -505,7 +517,7 @@
     {
      "data": {
       "application/vnd.jupyter.widget-view+json": {
-       "model_id": "1dbbead0d96c492888d10c417ae9a8ef",
+       "model_id": "be3e12f908f542c096ef24475fd7c665",
        "version_major": 2,
        "version_minor": 0
       },
@@ -519,7 +531,7 @@
     {
      "data": {
       "application/vnd.jupyter.widget-view+json": {
-       "model_id": "271fb322e9184875b3a12255e9ea071c",
+       "model_id": "99b35729c65c42e3b8caf19db580dd89",
        "version_major": 2,
        "version_minor": 0
       },
@@ -533,7 +545,7 @@
     {
      "data": {
       "application/vnd.jupyter.widget-view+json": {
-       "model_id": "425b00c7c60a400c9f3ef2646054cec4",
+       "model_id": "92a79c08e1ba4308a25482626d1e76b7",
        "version_major": 2,
        "version_minor": 0
       },
@@ -547,7 +559,7 @@
     {
      "data": {
       "application/vnd.jupyter.widget-view+json": {
-       "model_id": "9807ac26e33c40878a483a265eabdd88",
+       "model_id": "7f5d2945e9e64420af860d928dd5f683",
        "version_major": 2,
        "version_minor": 0
       },
@@ -561,7 +573,7 @@
     {
      "data": {
       "application/vnd.jupyter.widget-view+json": {
-       "model_id": "ef75bf5eb18d4d549fbfeca2587cf5f6",
+       "model_id": "494e7a19eca3473eb9fdae09d636397b",
        "version_major": 2,
        "version_minor": 0
       },
@@ -575,7 +587,7 @@
     {
      "data": {
       "application/vnd.jupyter.widget-view+json": {
-       "model_id": "d8ec103c6f7b43579b7c6989ed31df9a",
+       "model_id": "1695122115ac4b28913c5ae34139040d",
        "version_major": 2,
        "version_minor": 0
       },
@@ -589,7 +601,7 @@
     {
      "data": {
       "application/vnd.jupyter.widget-view+json": {
-       "model_id": "bcf281ee10194042a3cc993cf409ebb0",
+       "model_id": "cbe480b757804fe184e9023479cc83f8",
        "version_major": 2,
        "version_minor": 0
       },
@@ -603,7 +615,7 @@
     {
      "data": {
       "application/vnd.jupyter.widget-view+json": {
-       "model_id": "3fbcb40daf5d4053bb9800cf61e75644",
+       "model_id": "dfbd2a53289c44049d5be26ca28b755c",
        "version_major": 2,
        "version_minor": 0
       },
@@ -617,7 +629,7 @@
     {
      "data": {
       "application/vnd.jupyter.widget-view+json": {
-       "model_id": "e21363e43bdc46f4b729cba47b96a95a",
+       "model_id": "f6ca125c2fc849deb3fcbb58287c8256",
        "version_major": 2,
        "version_minor": 0
       },
@@ -631,7 +643,7 @@
     {
      "data": {
       "application/vnd.jupyter.widget-view+json": {
-       "model_id": "5672624cc4bf443db1f36d90e63dd995",
+       "model_id": "f5244c7260cf42dcb1003f07aba36639",
        "version_major": 2,
        "version_minor": 0
       },
@@ -645,7 +657,7 @@
     {
      "data": {
       "application/vnd.jupyter.widget-view+json": {
-       "model_id": "536d600515f8492c84f7c9a27e227904",
+       "model_id": "3486025e885342fe90efe6d6e2bbe007",
        "version_major": 2,
        "version_minor": 0
       },
@@ -659,7 +671,7 @@
     {
      "data": {
       "application/vnd.jupyter.widget-view+json": {
-       "model_id": "7a036c5de34248eab6f9d4e00e200098",
+       "model_id": "87db0ece33ac43d7a135d2a535a55fa9",
        "version_major": 2,
        "version_minor": 0
       },
@@ -685,7 +697,7 @@
     {
      "data": {
       "application/vnd.jupyter.widget-view+json": {
-       "model_id": "4ca28837b94147d7be2a85d0ba8b85eb",
+       "model_id": "b3d9b1a4c3cd43ac88a56b2a21402352",
        "version_major": 2,
        "version_minor": 0
       },
@@ -709,7 +721,8 @@
     "make_map_interface()\n",
     "# else:\n",
     "#     display(HTML(\"<h1>PDF Map</h1>PDF Map currently disabled on binder because of memory issues. <br/>You should, if you want a PDF map, <a href='https://github.com/mqAncientHistory/EpigraphyScraperNotebook/blob/master/README.md#instructions-how-to-use-the-tool'>Install lat_epig locally in Docker</a> instead.\"))\n",
-    "# print(\"Currently disabled due to bugs.\")\n"
+    "\n",
+    "#print(\"Currently disabled due to bugs.\")\n"
    ]
   },
   {
@@ -752,7 +765,7 @@
     {
      "data": {
       "application/vnd.jupyter.widget-view+json": {
-       "model_id": "595a95a302f342308dba922b09ddaa8b",
+       "model_id": "d43d428e5f454c869ba4f19f5b8e9301",
        "version_major": 2,
        "version_minor": 0
       },
@@ -766,7 +779,7 @@
     {
      "data": {
       "application/vnd.jupyter.widget-view+json": {
-       "model_id": "701150594af54750b5d6950a1b9747f8",
+       "model_id": "c1c5c8263d514bec8531a26bd9e144d9",
        "version_major": 2,
        "version_minor": 0
       },
@@ -780,7 +793,7 @@
     {
      "data": {
       "application/vnd.jupyter.widget-view+json": {
-       "model_id": "52794fb67ac6438e95f0fbe2e7b4b2a0",
+       "model_id": "53d700fea61845d585b5f16cc470adbd",
        "version_major": 2,
        "version_minor": 0
       },
@@ -806,7 +819,7 @@
     {
      "data": {
       "application/vnd.jupyter.widget-view+json": {
-       "model_id": "034536a0dee9449bb68d7c29a1a709aa",
+       "model_id": "6f9f4ba76c6a4f3f81931f11941d9991",
        "version_major": 2,
        "version_minor": 0
       },
@@ -871,7 +884,11 @@
    "name": "python",
    "nbconvert_exporter": "python",
    "pygments_lexer": "ipython3",
+<<<<<<< HEAD
+   "version": "3.9.0"
+=======
    "version": "3.10.4"
+>>>>>>> scrapeprovince
   },
   "toc": {
    "base_numbering": 1,
