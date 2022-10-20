@@ -82,7 +82,6 @@ jupyterlab-pygments==0.2.2
 jupyterlab-widgets==3.0.3
 jupyterlab_server==2.16.1
 kiwisolver==1.4.4
--e git+ssh://git@github.com/mqAncientHistory/EpigraphyScraperNotebook.git@97b5a36e28810e78acf1738eca02cd81ecac11c0#egg=lat_epig
 linear-tsv==1.1.0
 lxml==4.9.1
 mapclassify==2.4.3
