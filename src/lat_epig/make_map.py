@@ -24,7 +24,7 @@ import contextily as ctx
 
 from yaspin import yaspin
 
-# from lat_epig.scalebar import scale_bar
+from lat_epig.scalebar import scale_bar
 
 import cartopy.crs as ccrs
 import textwrap
@@ -429,7 +429,7 @@ Ancient World Mapping Center "{escaped_provinceshapefilename}" <http://awmc.unc.
     else:
         scale = 1_000
 
-    # ax.add_artist(scale_bar(ax, (0.05, 0.05), scale)
+    scale_bar(ax, length=scale, location=(0.05, 0.05))
     # https://geopandas.org/en/stable/gallery/matplotlib_scalebar.html#Geographic-coordinate-system-(degrees)
     # ax.add_artist(ScaleBar(10))
 
@@ -444,7 +444,7 @@ Ancient World Mapping Center "{escaped_provinceshapefilename}" <http://awmc.unc.
     #     dx=distance_meters,
     #     location="lower right",  # in relation to the whole plot
     #     label_loc="left",
-    #     scale_loc="bottom",  # in relation to the line
+    #     scale_loc="top",  # in relation to the line
     # )
     # ax.add_artist(scale1)
 

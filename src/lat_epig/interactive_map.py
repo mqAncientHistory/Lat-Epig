@@ -56,15 +56,17 @@ def makeDataframe(data_file, epsg=3857):
 
     def linkify(edcs_id):
         myid = edcs_id.replace("EDCS-", "")
+        # Suddenly broken
         return f"""<form name='epi' action='http://db.edcs.eu/epigr/epi_ergebnis.php' method='POST' target="_blank">
           <input type="hidden" id="p_edcs_id" name="p_edcs_id" value="{myid}"/>
           <input type="hidden" name="r_sortierung" value="Provinz" />
           <input type="hidden" name="s_sprache" value="en"/>
+          <input type="hidden" name="r_auswahl" checked="" value="und"/>
           <input type="submit" name="cmdsubmit" value="Open in EDCS" >
           </form>
         """
 
-    point_geodataframe["EDCS Link"] = point_geodataframe["EDCS-ID"].apply(linkify)
+    # point_geodataframe["EDCS Link"] = point_geodataframe["EDCS-ID"].apply(linkify)
 
     point_geodataframe["cleaned inscription"] = point_geodataframe[
         "inscription_interpretive_cleaning"
