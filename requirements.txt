@@ -91,11 +91,11 @@ matplotlib-inline==0.1.6
 matplotlib-scalebar==0.8.1
 MechanicalSoup==1.2.0
 mercantile==1.2.1
-mistune==2.0.4
+mistune==0.8.4
 munch==2.5.0
 nbclassic==0.4.5
-nbclient==0.6.8
-nbconvert==7.2.2
+nbclient==0.5.13
+nbconvert==6.5.4
 nbformat==5.7.0
 nest-asyncio==1.5.6
 networkx==2.8.7
@@ -178,7 +178,7 @@ typer==0.6.1
 unicodecsv==0.14.1
 urllib3==1.26.12
 validators==0.20.0
-voila @ git+https://github.com/voila-dashboards/voila@052b9b8ceb228a652947fbe10d60f35015d03224
+voila==0.3.6
 wcwidth==0.2.5
 webencodings==0.5.1
 websocket-client==1.4.1
