@@ -8,5 +8,5 @@ echo "init_Cell"
 jupyter nbextension enable init_cell/main 
 echo "dashboards"
 #jupyter labextension install @voila-dashboards/jupyterlab-preview 
-echo "serverextension"
+#echo "serverextension"
 jupyter serverextension enable voila --sys-prefix

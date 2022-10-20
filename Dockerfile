@@ -2,9 +2,10 @@
 #https://www.howtoforge.com/tutorial/how-to-create-docker-images-with-dockerfile/
 #FROM osgeo/proj:sha-9d4aa1fb
 #FROM osgeo/gdal:ubuntu-full-latest@sha256:190726a777cb30d9700bf2a68fe54104f0890575b5c96d190fa4a5cf172242b0
-#FROM python:3.9
+# FROM ubuntu:22.04
+# FROM python:3.10
 #FROM node:16
-FROM ubuntu:22.04
+FROM jupyter/scipy-notebook:latest
 
 # FROM jupyter/scipy-notebook:016833b15ceb
 # FROM armandokeller/cartopy:first
@@ -17,58 +18,57 @@ ARG DEBIAN_FRONTEND=noninteractive
 # https://askubuntu.com/a/769429
 
 
-RUN sed -i '/^#\sdeb-src /s/^#//' "/etc/apt/sources.list" && \
-apt-get update && \
-# apt-get install curl gnupg ca-certificates -y --no-install-recommends && \
-apt-get install -y --no-install-recommends \
-curl \
-gnupg \
-ca-certificates \
-apt-transport-https \
-apt-utils \
-build-essential \
-curl \
-git \
-libbz2-dev \
-libc6 \
-libffi-dev \
-libgcc-s1 \
-liblzma-dev \
-libncurses5-dev \
-libreadline-dev \
-libsqlite3-dev \
-libssl-dev \
-libstdc++6 \
-libxml2-dev \
-libxmlsec1-dev \
-libxslt-dev \
-make \
-openssh-client \
-wget \
-nodejs \
-zlib1g-dev \
-python3  \
-python3-dev \
-python3-cartopy \
-python3-shapely \
-python3-pyshp \
-python3-numpy \
-python3-rasterio \
-python3-gdal \
-python3-tk \
-cython3 \
-python3-wheel \
-libproj-dev \
-proj-bin \
-proj-data \
-geos-bin \
-gdal-bin \
-gdal-data \
-libgdal-dev \
-libgeos-dev \
-tini \
-python3-pip && \
-update-ca-certificates 
+# RUN sed -i '/^#\sdeb-src /s/^#//' "/etc/apt/sources.list" && \
+# apt-get update && \
+# # apt-get install curl gnupg ca-certificates -y --no-install-recommends && \
+# apt-get install -y --no-install-recommends \
+# curl \
+# gnupg \
+# ca-certificates \
+# apt-transport-https \
+# apt-utils \
+# build-essential \
+# curl \
+# git \
+# libbz2-dev \
+# libc6 \
+# libffi-dev \
+# libgcc-s1 \
+# liblzma-dev \
+# libncurses5-dev \
+# libreadline-dev \
+# libsqlite3-dev \
+# libssl-dev \
+# libstdc++6 \
+# libxml2-dev \
+# libxmlsec1-dev \
+# libxslt-dev \
+# make \
+# openssh-client \
+# wget \
+# nodejs \
+# zlib1g-dev \
+# python3  \
+# python3-dev \
+# python3-cartopy \
+# python3-shapely \
+# python3-pyshp \
+# python3-numpy \
+# python3-rasterio \
+# python3-gdal \
+# cython3 \
+# python3-wheel \
+# libproj-dev \
+# proj-bin \
+# proj-data \
+# geos-bin \
+# gdal-bin \
+# gdal-data \
+# libgdal-dev \
+# libgeos-dev \
+# tini \
+# python3-pip && \
+# update-ca-certificates 
 
 # nodejs \
 # curl -fsSL https://deb.nodesource.com/setup_18.x | bash - && \
@@ -78,7 +78,7 @@ USER root
 
 ARG NB_USER=jovyan
 
-RUN useradd -m ${NB_USER}
+# RUN useradd -m ${NB_USER}
 ENV PYTHONPATH "/home/jovyan/work/"
 ENV PATH="/home/jovyan/work/:/home/jovyan/.local/bin/:${PATH}"
 
@@ -102,12 +102,14 @@ WORKDIR ${HOME}
 ENTRYPOINT ["/usr/bin/tini", "--"]
 # https://github.com/jupyter-widgets/ipywidgets/issues/1683#issuecomment-328952119
 
+#FROM continuumio/miniconda3
+RUN conda install -c conda-forge cartopy
 
 #RUN python3 -m pip install --user   --no-cache-dir cython wheel 
 #RUN python3 -m pip install --user pyshp --no-cache-dir --no-binary pyshp==2.2.0
 #RUN python3 -m pip install --user  shapely --no-cache-dir --no-binary shapely==1.8.1.post1
 #RUN python3 -m pip install --user  cartopy --no-cache-dir --no-binary cartopy==0.20.2
-RUN python3 -m pip install  pygeos --no-cache-dir --no-binary pygeos==0.12.0 && \
+RUN python3 -m pip install  pygeos --no-cache-dir pygeos==0.13.0 && \
 python3 -m pip install --user  --no-cache-dir -r requirements.txt && \
 python3 -m pip install --user  --no-cache-dir --editable . && \
 bash ./setupJupyter.sh && \
