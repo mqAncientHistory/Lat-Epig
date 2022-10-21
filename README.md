@@ -15,7 +15,7 @@
 
 ## Description 
 
-This programme allows to extracts the output of a search query from the [Epigraphik-Datenbank  Clauss / Slaby (EDCS)](http://www.manfredclauss.de/) in a reproducible manner and saves it as a TSV file (i.e, tab separated value) that can be easily opened in your favourite spreadsheet software, or as a JSON file. The search results can be also plotted to a map of the Roman Empire, along with the system of the Roman Provinces, roads, and cities. More on the used datasets in the `Data Sources` section.
+This programme allows to extracts the output of a search query from the [Epigraphik-Datenbank  Clauss / Slaby (EDCS)](http://www.manfredclauss.de/) in a reproducible manner and saves it as a TSV file (i.e. *tab separated value*) that can be easily opened in your favourite spreadsheet software, or as a JSON file. The search results can be also plotted to a map of the Roman Empire, along with the system of the Roman Provinces, roads, and cities. More on the used datasets in the `Data Sources` section.
 
 
 ## Cite this software
