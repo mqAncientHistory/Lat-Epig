@@ -1,6 +1,7 @@
 # Welcome to the Latin Epigraphy Scraper (*LatEpig*) v2.0
 
-![Project_status](https://img.shields.io/badge/status-finalised-development-brightgreen "Project status logo")
+![Project_status](https://img.shields.io/badge/status-finalised%20development-brightgreen%20%22Project%20status%20logo%22 "Project status logo")
+![Version](https://img.shields.io/badge/version-2.0-blue "Version")
 
 *The **LatEpig** tool allows you to query all the inscriptions from the Epigraphic Database Clauss Slaby (www.manfredclauss.de) in a reproducible manner: it saves the search results in a TSV and a JSON file and plots them on an interactive map of the Roman Empire without any prior knowledge of programming in a matter of minutes.*
 
