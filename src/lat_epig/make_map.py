@@ -422,7 +422,7 @@ Ancient World Mapping Center
     # ax.legend()
     legend = ax.legend()
     for handle in legend.legendHandles:
-        legend.legendHandles[handle]._sizes = [30]
+        handle._sizes = [30]
     # legend.legendHandles[2]._sizes = [30]
 
     plt.axis("off")
