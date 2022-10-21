@@ -180,6 +180,10 @@ def make_map(
     will_cite=False,
 ):
 
+    if filetype == "PDF with inscriptions":
+        filetype = "PDF"
+        append_inscriptions = True
+        print(filetype, append_inscriptions)
     if not os.path.exists("output_maps"):
         os.makedirs("output_maps")
 
@@ -271,8 +275,9 @@ Ancient World Mapping Center
     # print(f"making map with title {map_title_text}")
     # print(f"making map with metadata {map_metadata_list} rendered as \n{map_metadata}")
     plt.tight_layout()
-    plt.suptitle(map_metadata, fontsize=3, y=0.1, x=0.9)
-    plt.title(map_title_text, fontsize=12, y=1)
+    plt.suptitle(map_metadata, fontsize=3, y=0.1, x=0.85)
+    title = plt.title(map_title_text, fontsize=12, y=0.95, backgroundcolor="white")
+
     plt.rc("font", **{"family": "serif"})
 
     print("Initialised plot...")
@@ -347,31 +352,36 @@ Ancient World Mapping Center
             )
         print("Plotted provinces...")
     if roads:
+        bounded_roads = None
         if roads == "points":
             bounded_roads = roads_3857.cx[xmin:xmax, ymin:ymax]
-        else:
+        elif roads == "all":
             bounded_roads = roads_3857
-        bounded_roads.plot(
-            ax=ax, linewidth=0.2, alpha=1, color="gray", zorder=2, label="Roads"
-        )
-        print("Plotted roads...")
+
+        if roads == "points" or roads == "all":
+            bounded_roads.plot(
+                ax=ax, linewidth=0.2, alpha=1, color="gray", zorder=2, label="Roads"
+            )
+            print("Plotted roads...")
 
     if cities:
+        bounded_cities = None
         if cities == "points":
             bounded_cities = cities_geodataframe_3857.cx[xmin:xmax, ymin:ymax]
-        else:
+        elif cities == "all":
             bounded_cities = cities_geodataframe_3857
-        bounded_cities.plot(
-            ax=ax,
-            marker="+",
-            markersize=2,
-            linewidth=0.25,
-            alpha=0.25,
-            color="black",
-            zorder=3,
-            label="Cities",
-        )
-        print("Plotted cities...")
+        if cities == "points" or cities == "all":
+            bounded_cities.plot(
+                ax=ax,
+                marker="+",
+                markersize=2,
+                linewidth=0.25,
+                alpha=0.25,
+                color="black",
+                zorder=3,
+                label="Cities",
+            )
+            print("Plotted cities...")
 
     if searchterm:
         searchterm = f"Inscription:\n{searchterm}"
@@ -409,9 +419,11 @@ Ancient World Mapping Center
 
         # https://stackoverflow.com/a/50270936
         # point_dataframe_3857.apply(lambda x: ax.annotate(s=x['EDCS-ID'], xy=x.geometry.coords[0], xytext=(3,3), textcoords="offset points"))
-    legend = ax.legend(fontsize="small")
-    legend.legendHandles[1]._sizes = [30]
-    legend.legendHandles[2]._sizes = [30]
+    # ax.legend()
+    legend = ax.legend()
+    for handle in legend.legendHandles:
+        legend.legendHandles[handle]._sizes = [30]
+    # legend.legendHandles[2]._sizes = [30]
 
     plt.axis("off")
 
@@ -462,9 +474,11 @@ Ancient World Mapping Center
     map_filename = f"output_maps/{datafile_base_name}{f'-{province_shapefilename}' if provinces else ''}{f'-Cities{cities}' if cities else ''}{f'-Roads{roads}' if roads else ''}{f'-IDs' if show_ids else ''}{f'-index' if append_inscriptions else ''}{f'-multicolour' if basemap_multicolour else ''}-DPI{dpi}-{'-for_publication' if map_greyscale else ''}"
     ax.spines["geo"].set_visible(False)
 
-    if filetype != "pdf":
+    if filetype != "PDF":
         print(f"making {filetype} {dpi}")
-        plt.savefig(f"{map_filename}.{filetype}", dpi=dpi, bbox_inches="tight")
+        if map_dimensions:
+            fig.set_size_inches(map_dimensions[1], map_dimensions[0])  # dpi=80
+        plt.savefig(f"{map_filename}.{filetype}", dpi=dpi)  # , bbox_inches="tight")
         plt.close()
         print("Saved map...")
     else:
@@ -492,15 +506,14 @@ Ancient World Mapping Center
             },
         ) as pdf:
             # https://matplotlib.org/stable/api/backend_pdf_api.html#matplotlib.backends.backend_pdf.PdfPages
-            print("argh?")
-            fig.set_size_inches(8.3, 11.7)  # dpi=80
-            # fig.set_size_inches(bbox.width/dpi, bbox.height/dpi) # dpi=80
-            pdf.savefig(fig, dpi=dpi, bbox_inches="tight")
+            # print("argh?")
+            if map_dimensions:
+                fig.set_size_inches(map_dimensions[1], map_dimensions[0])  # dpi=80
+            # fig.set_size_inches(bbox.width / dpi, bbox.height / dpi)  # dpi=80
+            pdf.savefig(fig, dpi=dpi)  # , bbox_inches="tight")
             plt.close()
             print("Saved map...")
-            if append_inscriptions and point_dataframe_3857.size >= 250:
-                print("Too many inscriptions to attach to PDF, use your TSV instead.")
-            elif append_inscriptions:
+            if append_inscriptions:
                 print("Appending inscriptions...")
 
                 def chunks(lst, n):
@@ -516,7 +529,7 @@ Ancient World Mapping Center
                     point_dataframe_3857[
                         [
                             "EDCS-ID",
-                            "inscription interpretive cleaning",
+                            "inscription",
                             "province",
                             "place",
                             "geom_4326",

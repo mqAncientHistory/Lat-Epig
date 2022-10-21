@@ -5,6 +5,10 @@ already_mapped_data/
 output_maps/
 *.zip
 
+.ipynb_checkpoints/
+.pytest_cache/
+
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
