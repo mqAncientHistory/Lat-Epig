@@ -23,7 +23,7 @@ This programme allows to extracts the output of a search query from the [Epigrap
 
 ## Cite this software
 
-**Ballsun-Stanton B., Heřmánková P., Laurence R. *Lat Epig* (version 2.0). GitHub. URL: <https://github.com/mqAncientHistory/Lat-Epig/> DOI: [10.5281/zenodo.5211341](https://doi.org/10.5281/zenodo.5211341)**
+**Ballsun-Stanton B., Heřmánková P., Laurence R. *LatEpig* (version 2.0). GitHub. URL: <https://github.com/mqAncientHistory/Lat-Epig/> DOI: [10.5281/zenodo.5211341](https://doi.org/10.5281/zenodo.5211341)**
 
 If you're using this tool in your research, <!-- Place this tag where you want the button to render. -->
 <a class="github-button" href="https://github.com/mqAncientHistory/Lat-Epig" data-color-scheme="no-preference: light; light: light; dark: dark;" data-icon="octicon-star" data-show-count="true" aria-label="Star mqAncientHistory/Lat-Epig on GitHub">Star</a> us on Github! (This way, we don't need to put tracking pixels into this notebook to get a sense of how many folks are using our tool!) 
