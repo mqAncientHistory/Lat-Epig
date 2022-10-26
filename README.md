@@ -1,4 +1,7 @@
-# Welcome to Latin Epigraphy Scraper (*LatEpig*) v2.0
+# Welcome to the Latin Epigraphy Scraper (*LatEpig*) v2.0
+
+![Project_status](https://img.shields.io/badge/status-finalised%20development-brightgreen%20%22Project%20status%20logo%22 "Project status logo")
+![Version](https://img.shields.io/badge/version-2.0-blue "Version")
 
 *The **LatEpig** tool allows you to query all the inscriptions from the Epigraphic Database Clauss Slaby (www.manfredclauss.de) in a reproducible manner: it saves the search results in a TSV and a JSON file and plots them on an interactive map of the Roman Empire without any prior knowledge of programming in a matter of minutes.*
 
@@ -15,12 +18,12 @@
 
 ## Description 
 
-This programme allows to extracts the output of a search query from the [Epigraphik-Datenbank  Clauss / Slaby (EDCS)](http://www.manfredclauss.de/) in a reproducible manner and saves it as a TSV file (i.e, tab separated value) that can be easily opened in your favourite spreadsheet software, or as a JSON file. The search results can be also plotted to a map of the Roman Empire, along with the system of the Roman Provinces, roads, and cities. More on the used datasets in the `Data Sources` section.
+This programme allows to extracts the output of a search query from the [Epigraphik-Datenbank  Clauss / Slaby (EDCS)](http://www.manfredclauss.de/) in a reproducible manner and saves it as a TSV file (i.e. *tab separated value*) that can be easily opened in your favourite spreadsheet software, or as a JSON file. The search results can be also plotted to a map of the Roman Empire, along with the system of the Roman Provinces, roads, and cities. More on the used datasets in the `Data Sources` section.
 
 
 ## Cite this software
 
-**Ballsun-Stanton B., Heřmánková P., Laurence R. *Lat Epig* (version 2.0). GitHub. URL: <https://github.com/mqAncientHistory/Lat-Epig/> DOI: [10.5281/zenodo.5211341](https://doi.org/10.5281/zenodo.5211341)**
+**Ballsun-Stanton B., Heřmánková P., Laurence R. *LatEpig* (version 2.0). GitHub. URL: <https://github.com/mqAncientHistory/Lat-Epig/> DOI: [10.5281/zenodo.5211341](https://doi.org/10.5281/zenodo.5211341)**
 
 If you're using this tool in your research, <!-- Place this tag where you want the button to render. -->
 <a class="github-button" href="https://github.com/mqAncientHistory/Lat-Epig" data-color-scheme="no-preference: light; light: light; dark: dark;" data-icon="octicon-star" data-show-count="true" aria-label="Star mqAncientHistory/Lat-Epig on GitHub">Star</a> us on Github! (This way, we don't need to put tracking pixels into this notebook to get a sense of how many folks are using our tool!) 
