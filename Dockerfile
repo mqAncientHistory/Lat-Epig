@@ -75,6 +75,10 @@ update-ca-certificates
 
 USER root
 
+COPY fix-permissions /usr/local/bin/fix-permissions
+RUN chmod a+rx /usr/local/bin/fix-permissions
+
+
 ARG NB_USER=jovyan
 
 RUN useradd -m ${NB_USER}
@@ -98,7 +102,7 @@ WORKDIR ${HOME}
 # ENV TINI_VERSION v0.19.0
 # ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini /usr/bin/tini
 # RUN chmod +x /usr/bin/tini
-ENTRYPOINT ["/usr/bin/tini", "--"]
+ENTRYPOINT ["/usr/bin/tini", "-g",  "--"]
 # https://github.com/jupyter-widgets/ipywidgets/issues/1683#issuecomment-328952119
 
 
@@ -121,16 +125,32 @@ USER ${NB_USER}
 
 ENV JUPYTER_ENABLE_LAB=yes
 
-RUN jupyter trust EpigraphyScraper.ipynb 
+RUN jupyter trust EpigraphyScraper.ipynb Map.ipynb
 
 #CMD ["jupyter", "lab", "--port=8888", "--no-browser", "--ip=0.0.0.0", "--allow-root", "Epigraphy Scraper.ipynb"]
 #voila --enable_nbextensions=True  --VoilaConfiguration.file_whitelist="['.*']" EpigraphyScraper.ipynb 
 
 #https://github.com/ideonate/jhsingle-native-proxy/blob/master/docker-examples/jupyterhub-singleuser-voila-native/Dockerfile
-EXPOSE 8888
+EXPOSE 8888/tcp
 
-CMD ["jupyter", "notebook", "--ServerApp.ip='*'", "--ServerApp.token=''", "--ServerApp.password=''",  "--no-browser"]
+#CMD ["jupyter", "notebook", "--ServerApp.ip='*'", "--ServerApp.token=''", "--ServerApp.password=''",  "--no-browser"]
 
+# https://github.com/jupyter/docker-stacks/blob/main/base-notebook/Dockerfile
+
+USER root
+COPY jupyter_notebook_config.py /etc/jupyter/
+
+
+# RUN sed -re "s/c.ServerApp/c.NotebookApp/g" \
+#     /etc/jupyter/jupyter_server_config.py > /etc/jupyter/jupyter_notebook_config.py && \
+#     fix-permissions /etc/jupyter/
+USER ${NB_USER}
+
+#CMD ["jupyter", "notebook", "--ip=0.0.0.0", "--no-browser"]
+
+CMD ["jupyter-notebook", "--NotebookApp.ip=0.0.0.0", "--NotebookApp.token=''", "--NotebookApp.password=''", "--no-browser"]
+
+RUN echo "The Notebook should now be running. If you have built this locally, visit http://localhost:8888. "
 # , \     
 # 	 "--VoilaConfiguration.base_url={base_url}/", \
 # 	 "--VoilaConfiguration.server_url=/"]
