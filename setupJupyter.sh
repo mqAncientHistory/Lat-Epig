@@ -9,4 +9,4 @@ jupyter nbextension enable init_cell/main
 echo "dashboards"
 #jupyter labextension install @voila-dashboards/jupyterlab-preview 
 #echo "serverextension"
-jupyter serverextension enable voila --sys-prefix
+# jupyter serverextension enable voila --sys-prefix
