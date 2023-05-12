@@ -188,7 +188,7 @@ def make_map(
         os.makedirs("output_maps")
 
     cities_rows = extract(CITIES_DATA)
-    cities_dataframe = pandas.DataFrame(cities_rows)
+    cities_dataframe = pandas.DataFrame(cities_rows["hanson2016_cities_oxrep"])
 
     # https://cmdlinetips.com/2018/02/how-to-subset-pandas-dataframe-based-on-values-of-a-column/
 

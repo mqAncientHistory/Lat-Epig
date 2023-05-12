@@ -106,11 +106,8 @@ ENTRYPOINT ["/usr/bin/tini", "-g",  "--"]
 # https://github.com/jupyter-widgets/ipywidgets/issues/1683#issuecomment-328952119
 
 
-#RUN python3 -m pip install --user   --no-cache-dir cython wheel 
-#RUN python3 -m pip install --user pyshp --no-cache-dir --no-binary pyshp==2.2.0
-#RUN python3 -m pip install --user  shapely --no-cache-dir --no-binary shapely==1.8.1.post1
-#RUN python3 -m pip install --user  cartopy --no-cache-dir --no-binary cartopy==0.20.2
-RUN python3 -m pip install  pygeos --no-cache-dir --no-binary pygeos==0.13.0 && \
+
+RUN python3 -m pip install  pygeos --no-cache-dir --no-binary pygeos==0.14.0 && \
 python3 -m pip install --user  --no-cache-dir -r requirements.txt && \
 python3 -m pip install --user  --no-cache-dir --editable . && \
 bash ./setupJupyter.sh && \
@@ -118,7 +115,7 @@ chown -R ${NB_USER} ${HOME}
 
 USER ${NB_USER}
 
-#RUN pip3 install --upgrade frictionless geoplot jupyterlab jupyter_client pandas geopandas && jupyter nbextension enable --py widgetsnbextension --sys-prefix && jupyter labextension install @jupyter-widgets/jupyterlab-manager
+#RUN pip3 install --upgrade frictionless geoplot jupyterlab jupyter_client pandas geopandas && jupyter nbextension enable --py widgetsnbextension --sys-prefix && jupyter labextension install @jupyter-widgets/jupyterlab-manager && jupyter nbextension install --py --user hide_code && jupyter nbextension enable --py --user hide_code && jupyter serverextension enable --py --user hide_code
 #RUN pip3 install ipywidgets frictionless \
 #  && jupyter nbextension enable --py widgetsnbextension --sys-prefix \
 #  && jupyter labextension install @jupyter-widgets/jupyterlab-manager

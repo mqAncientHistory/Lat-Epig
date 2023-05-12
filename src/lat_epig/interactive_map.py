@@ -36,20 +36,29 @@ def makeDataframe(data_file, epsg=3857):
     data_filename = os.path.basename(data_file)
     # print(f"Making {data_filename}\n\troads: {roads}\n\tprovinces: {provinces}\n\tcities: {cities}\n")
     import_rows = extract(data_file)
+    # Get the first key from the dict import_rows
+    import_key = list(import_rows.keys())[0]
 
-    # pprint(import_rows[0])
-    import_dataframe = pandas.DataFrame(import_rows)
+    pprint(import_rows[import_key])
+    import_dataframe = pandas.DataFrame(import_rows[import_key])
 
     # cities_3857 = geopandas.read_file(CITIES_SHP).to_crs(epsg=3857)
 
+    # Let's make our geometry from import_dataframe long lat.
+
+    point_geometry = geopandas.points_from_xy(
+        import_dataframe[import_dataframe.longitude.notnull()].longitude,
+        import_dataframe[import_dataframe.longitude.notnull()].latitude,
+    )
+
     point_geodataframe = geopandas.GeoDataFrame(
         import_dataframe[import_dataframe.longitude.notnull()],
-        geometry=geopandas.points_from_xy(
-            import_dataframe[import_dataframe.longitude.notnull()].longitude,
-            import_dataframe[import_dataframe.longitude.notnull()].latitude,
-        ),
+        geometry=point_geometry,
         crs="EPSG:4326",
-    )
+    ) # type: ignore
+    # pprint(point_geodataframe)
+    
+
     point_geodataframe[["latitude", "longitude"]] = point_geodataframe[
         ["latitude", "longitude"]
     ].apply(pandas.to_numeric)
@@ -93,12 +102,46 @@ def make_interactive_map(data_file):
     CITIES_DATA = Path("cities") / "Hanson2016_Cities_OxREP.csv"
 
     cities_rows = extract(CITIES_DATA)
-    cities_dataframe = pandas.DataFrame(cities_rows)
+    # pprint(cities_rows)
+    #  {'hanson2016_cities_oxrep': [{'Ancient Toponym': 'Abae',
+                            #   'Barrington Atlas Rank': '4 or 5',
+                            #   'Barrington Atlas Reference': '55 D3',
+                            #   'Country': 'Greece',
+                            #   'End Date': 'NULL',
+                            #   'Latitude (Y)': Decimal('38.583333'),
+                            #   'Longitude (X)': Decimal('22.933333'),
+                            #   'Modern Toponym': 'Kalapodi',
+                            #   'Primary Key': 'Hanson2016_1',
+                            #   'Province': 'Achaea',
+                            #   'Select Bibliography': 'BNP; Hansen 2006; Hansen '
+                            #                          'and Nielsen 2004; PECS; '
+                            #                          'Sear 2006.',
+                            #   'Start Date': -600},
+                            #  {'Ancient Toponym': 'Acharnae',
+                            #   'Barrington Atlas Rank': '3',
+                            #   'Barrington Atlas Reference': '59 B2',
+                            #   'Country': 'Greece',
+                            #   'End Date': 'NULL',
+                            #   'Latitude (Y)': Decimal('38.083473'),
+                            #   'Longitude (X)': Decimal('23.734088'),
+                            #   'Modern Toponym': 'Acharnes',
+                            #   'Primary Key': 'Hanson2016_2',
+                            #   'Province': 'Achaea',
+                            #   'Select Bibliography': 'BNP; DGRG; PECS; Sear '
+                            #                          '2006.',
+                            #   'Start Date': -600},
+    # make a dataframe from cities_rows, which is a dict with the key being 'hanson2016_cities_oxrep'
+                                
+    cities_dataframe = pandas.DataFrame(cities_rows["hanson2016_cities_oxrep"])
+    # pprint(cities_dataframe)
 
     # https://cmdlinetips.com/2018/02/how-to-subset-pandas-dataframe-based-on-values-of-a-column/
 
     roads_4326 = geopandas.read_file(ROMAN_ROADS_SHP).to_crs(epsg=4326)
     provinces_4326 = geopandas.read_file(PROVINCES_SHP).to_crs(epsg=4326)
+
+    # list keys from cities_dataframe
+    # pprint(list(cities_dataframe.keys()))
 
     cities_geodataframe_4326 = geopandas.GeoDataFrame(
         cities_dataframe,
