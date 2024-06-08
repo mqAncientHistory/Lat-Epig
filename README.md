@@ -111,6 +111,7 @@ The [Epigraphik-Datenbank  Clauss / Slaby (EDCS)](http://www.manfredclauss.de/) 
 
 1. The shapefile of the cities used in the map is based on Hanson, J. W. (2016). *Cities Database (OXREP databases)*. Version 1.0. Accessed (date): <http://oxrep.classics.ox.ac.uk/databases/cities/>. DOI: <https://doi.org/10.5287/bodleian:eqapevAn8>. More info is available through Hanson, J. W. (2016b). *An Urban Geography of the Roman World, 100 B.C. to A.D. 300.* Oxford: Archaeopress.
 
+---
 
 ### Metadata for the files produced by *LatEpig*
 
