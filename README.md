@@ -119,9 +119,10 @@ Each TSV and JSON file contains the information from EDCS separated into 22 attr
 
 Note that the *file name* in both formats contains the date of your search, the source of the data and how it was accessed (EDCS via *LatEpig*) and any search parameters or their combinations you have used (*Term 1, Term 2, Dating from*...) and the number of inscriptions found. This way you will always remember what you have searched for and when you share the file with a colleague or students, they can always replicate your search to see if any new inscriptions were added to EDCS. The same applies to the publication quality maps (experimental feature) produced by *LatEpig*: they all contain the search parameters by default, alongside the origin of information and credit - all in the spirit of the best research practice and FAIR data principles.
 
+
 ### Generation of new attributes
 
-#### Customised cleaning of the epigraphic text and unit testing [#unittests]
+#### Customised cleaning of the epigraphic text and unit testing
 
 The text of the inscription is available in three different formats as three separate attributes: 
 1. ‘inscription’ - the original text as presented by EDCS with all original markup and symbols, including the Leiden Conventions  markup for editions of inscriptions; 
@@ -130,7 +131,8 @@ The text of the inscription is available in three different formats as three sep
 
 For details, see the structure of [both cleaning functions](https://github.com/mqAncientHistory/Lat-Epig/blob/main/src/lat_epig/text_parse.py) and [their unit tests](https://github.com/mqAncientHistory/Lat-Epig/blob/main/src/lat_epig/test_inscriptions.py).
 
-**Unit tests** for selected attributes, and overall functionality: [dates](https://github.com/mqAncientHistory/Lat-Epig/blob/main/src/lat_epig/test_dates.py), [language](https://github.com/mqAncientHistory/Lat-Epig/blob/main/src/lat_epig/test_language.py),[, [data access](https://github.com/mqAncientHistory/Lat-Epig/blob/main/src/lat_epig/test_scrape.py). 
+#### Unit tests
+- for selected attributes, and overall functionality: [dates](https://github.com/mqAncientHistory/Lat-Epig/blob/main/src/lat_epig/test_dates.py), [language](https://github.com/mqAncientHistory/Lat-Epig/blob/main/src/lat_epig/test_language.py), [data access](https://github.com/mqAncientHistory/Lat-Epig/blob/main/src/lat_epig/test_scrape.py). 
 
 
 For feedback, or to report bugs, please use the [Github Issues](https://github.com/mqAncientHistory/Lat-Epig/issues).
