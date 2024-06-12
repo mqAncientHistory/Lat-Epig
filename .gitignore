@@ -4,6 +4,10 @@ index.html?.*
 already_mapped_data/
 output_maps/
 *.zip
+*.RData
+*.Rhistory
+
+
 
 .ipynb_checkpoints/
 .pytest_cache/
@@ -130,3 +134,4 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+.Rproj.user

@@ -1,0 +1,494 @@
+---
+title: 'Case study: Viator inscriptions in viator'
+author: 
+- Petra Hermankova^[Aarhus University, Denmark, https://orcid.org/0000-0002-6349-0540]
+date: "`r format(Sys.Date())`"
+output:
+  html_document:
+    theme: united
+    toc: yes
+    toc_float: true
+    number_sections: true
+    toc_depth: 3
+    df_print: paged
+---
+
+_Purpose of this script is a basic exploration of the contents of viator inscriptions and its attributes, that contain reference to the term 'viator'._
+
+# Initial setup
+
+```{r setup, echo=TRUE, message=FALSE, warning = FALSE}
+
+knitr::opts_chunk$set(message = FALSE, warning = FALSE)
+
+library(tidyverse)
+library(jsonlite)
+library(tidytext)
+library(reticulate)
+
+```
+
+```{r loading data}
+# read in JSON
+list_json <- jsonlite::fromJSON("2024-06-11-viator_via_Lat_Epig-term1_viator-697.json")
+viator <- as_tibble(list_json$data)
+
+# read in TSV
+viator2 <- read_tsv("2024-06-11-viator_via_Lat_Epig-term1_viator-697.tsv")
+
+```
+
+# Preprocessing of the LatEpig dataset
+
+## Type of inscription 
+
+First we need to split the categorisation of the `status` attribute:
+
+Division the status keywords into their own attributes, base on their purpose:
+1. inscription type
+2. notation of a societal status of a person on the inscription
+3. details about process of inscribing, execution
+
+```{r}
+inscription_type_list <- c("tituli sepulcrales", "tituli fabricationis", "inscriptiones christianae", "tituli sacri", "tituli possessionis", "tituli operum", "miliaria", "tituli honorarii", "carmina", "signacula", "diplomata militaria", "leges", "defixiones", "termini", "reges", "signacula medicorum", "senatus consulta")
+
+inscribing_process_list <- c("sigilla impressa", "litterae erasae", "litterae in litura", "tesserae nummulariae")
+
+status_notation_list<- c("viri", "tria nomina", "mulieres", "nomen singulare", "liberti/libertae", "milites", "Augusti/Augustae", "ordo senatorius", "servi/servae", "officium/professio", "ordo decurionum", "sacerdotes pagani", "praenomen et nomen", "ordo equester", "seviri Augustales", "sacerdotes christiani")
+```
+
+
+```{r}
+viator <- viator %>% 
+  mutate(inscr_type = str_extract_all(pattern = paste(inscription_type_list, collapse="|"), string = viator$status)) %>% 
+  mutate(status_notation = str_extract_all(pattern = paste(status_notation_list, collapse="|"), string = viator$status)) %>% 
+  mutate(inscr_process = str_extract_all(pattern = paste(inscribing_process_list, collapse="|"), string = viator$status))
+```
+
+## Convert character (0) to NA
+
+```{r}
+viator$inscr_type <- lapply(viator$inscr_type, function(x) if(identical(x, character(0))) NA_character_ else x)
+viator$status_notation <- lapply(viator$status_notation, function(x) if(identical(x, character(0))) NA_character_ else x)
+viator$inscr_process <- lapply(viator$inscr_process, function(x) if(identical(x, character(0))) NA_character_ else x)
+```
+
+### Overview of types of inscriptions
+
+```{r}
+viator_insctype<- unnest_longer(viator, col = "inscr_type")
+```
+
+```{r}
+viator_insctype %>% 
+  count(inscr_type, sort=T)
+```
+
+
+
+# Text of an inscription 
+- using the interpretive cleaned version
+```{r}
+# exploring the interpretive text of all inscriptions
+text <- viator$inscription_interpretive_cleaning 
+
+# displaying the first 6 records
+head(text)
+```
+
+## Textual context
+
+```{r}
+# capturing context - 2 words before the term and 2 words after the term, including spaces, splitting lowercase viator from the personal name Viator
+viator<- viator %>% 
+  mutate(viator_in_context_10w = str_extract(viator$inscription_interpretive_cleaning, "(\\w*\\s){0,2}\\b[V|v]iator\\S{0,4}\\b(\\w*\\s){0,3}"))  %>% 
+  mutate(viator_lowercase = str_extract(viator$inscription_interpretive_cleaning, "(\\w*\\s){0,2}\\bviator\\S{0,4}\\b(\\w*\\s){0,3}")) %>% 
+  mutate(viator_uppercase = str_extract(viator$inscription_interpretive_cleaning, "(\\w*\\s){0,2}\\bViator\\S{0,4}\\b(\\w*\\s){0,3}"))
+```
+
+```{r}
+# how many have viator in lowercase
+length(na.omit(viator$viator_lowercase))
+
+```
+
+```{r}
+# how many have Viator in uppercase, as a personal name 
+length(na.omit(viator$viator_uppercase))
+
+```
+
+### Most common words
+```{r}
+context_tokenized<- viator %>% 
+  unnest_tokens(word, inscription_interpretive_cleaning, token = stringr::str_split, pattern = " ") %>% 
+  drop_na(word)
+
+# this function converts all words to lowercase, thus the Viator and viator distinction is lost. That's why we distinguish them in the previous steps.
+```
+
+```{r}
+context_tokenized %>% 
+  count(word, sort = TRUE) %>% 
+  head(20)
+```
+
+## Funerary inscriptions
+
+```{r}
+sepulcrales_lowercase<- viator_insctype %>% 
+  filter(inscr_type == "tituli sepulcrales" & !is.na(viator_lowercase))
+
+```
+
+```{r}
+# save as CSV for manual evaluation
+
+write_csv(sepulcrales_lowercase, "LatEpig_viator_lowercase_tit_sepulcrales.csv")
+```
+
+### Manual evaluation / interpretation of the text
+
+Upon close reading of the text of 226 inscriptions, we have noticed the following patterns:
+
+1. `Viator` as passer-by, often addressed in adhortation to pause and learn about the date of the deceased, the most common verbs in imperative: `reste`(stop, pause), `siste` (stop), `consiste` (stop, stand still), `ave` (hail, farewell, salutation), `vale` (be well, saltutation), `scire` (know), `cognosce` (learn), in the first person singular `rogo te` (I ask you), or in plural imperative `avete vos viatores` (be well off travellers).
+
+2. `Viator` as a low-ranking official, part of the `cursus honorum` of the person mentioned in the texts as an attendant of Roman magistrates, either as a noun or adjective: `viator tribunicius`, `viator consulum / consularis`, `viator quaestorius`, `viatori apparitori`, `viatores collegii`, `decurialis viatoris`.
+
+3. Uncertain meaning due to the fragmentary preservation of the text
+
+```{r}
+# reading in manually evaluated dataset
+sepulcrales_eval<- read_csv("LatEpig_viator_lowercase_tit_sepulcrales_eval.csv")
+
+```
+
+
+```{r}
+# the ratio of the three groups
+
+sepulcrales_eval %>% 
+  count(viator_interpretation_manual, sort = T) %>% 
+  mutate(ratio = n/(sum(n)/100))
+```
+
+### Bigrams of sepulcral inscriptions
+
+To confirm the results of the close reading, we employ methods of distant reading, such as analysis of bigrams:
+
+```{r}
+sepulcrales_bigram <- sepulcrales_eval %>% 
+  unnest_tokens(bigram, inscription_interpretive_cleaning , token = "ngrams", n = 2)
+```
+
+```{r}
+# selecting bigrams that contain the pattern viator
+
+sepulcrales_bigram %>% 
+  count(bigram, sort = TRUE) %>% 
+  filter(bigram %in% str_subset(bigram, pattern = "viator"))
+```
+
+```{r}
+# overview of the manual evaluation and related bigrams
+
+sepulcrales_bigram %>% 
+  filter(bigram %in% str_subset(bigram, pattern = "viator")) %>% 
+  count(viator_interpretation_manual, bigram, sort = TRUE)
+```
+
+### Time dimension
+```{r}
+# selecting only those with a date
+
+sepulcrales_date <- sepulcrales_eval %>% 
+  select(date_not_before, date_not_after, viator_interpretation_manual, latitude, longitude) %>% 
+  filter(!is.na(date_not_before))
+```
+
+```{python}
+
+# using the tempun from Python package to plot the date intervals of the funerary inscriptions
+
+import geopandas as gpd # https://vincent.doba.fr/posts/20210407_install-fiona-on-windows/ & https://geopandas.org/getting_started/install.html Issues with geopandas on windows. The requirements.txt file might be able to install the packages, if not you should look into these geopandas links.
+import requests
+import seaborn as sns
+import matplotlib.colors as mcolors
+import matplotlib.pyplot as plt
+from scipy.stats import trapz
+import scipy
+#import nltk
+import json
+import tempun
+#import sddk
+import numpy as np
+import pandas as pd
+pd.options.display.max_columns = 1000  # to see all columns
+```
+
+
+```{python}
+# How many inscriptions have both dates?
+sepul_date = r.sepulcrales_date[(r.sepulcrales_date["date_not_before"].notnull()) | (r.sepulcrales_date["date_not_after"].notnull())]
+len(sepul_date)
+```
+
+```{python}
+# Generate a list of 1000 random dates for each inscription in the dataset
+sepul_date["random_dates"] = sepul_date.apply(lambda row: tempun.model_date(
+    row["date_not_before"], row["date_not_after"], size=1000,), axis=1)
+```
+
+```{python}
+# Count random dates in temporal timeblocks in a specified time range (from 200 BC to 600 AD, temporal blocks by 25 years)
+sepul_complete_simulations = tempun.timeblocks_from_randoms(
+    sepul_date["random_dates"], [-200, 600, 25])
+```
+
+```{python}
+len(sepul_complete_simulations)
+```
+
+The following figures makes more sense if you are adding more than one dataset to them. This document is just a sample on how it can be done in RStudio, so it only uses one dataset, but it still creates an overview of how the output graphs could look.
+
+```{python}
+# Figure 1
+# plot all the dataset to see the epigraphic production in time
+
+plt.style.use("seaborn-white")
+plt.rcParams['figure.dpi'] = 300
+plt.rcParams['font.size'] = 10
+
+tab_colors_list = list(mcolors.TABLEAU_COLORS.keys())
+
+fig, ax = plt.subplots(figsize=(14, 6), tight_layout=True)
+
+tempun.plot_timeblocks_data(
+    sepul_complete_simulations, ax=ax, color="blue", label=f"Viator inscriptions (n={len(sepul_date)})")
+    
+ax.set_xlabel("Year", weight="bold")
+ax.set_ylabel("Count", weight="bold")
+ax.set_title("Viator inscriptions over time (MonteCarlo simulation, N=1000)")
+ax.legend(title="EDCS / LatEpig inscriptions", title_fontsize="large", bbox_to_anchor=(1, 1), loc='upper right')
+
+#plt.axvline(x=212, linewidth=0.5, color = 'orange', linestyle='dashed')
+
+#fig.suptitle(f'Comparison of epigraphic production over time', fontsize=16,fontweight="bold")
+plt.savefig('Fig1_viator_over_time.png')
+
+fig
+```
+
+
+```{python}
+# Inscriptions by meaning of the viator term
+
+simulations_by_type_len_sepul = []
+
+for ins_type in r.sepulcrales_date["viator_interpretation_manual"].unique():
+    if ins_type != "NULL":
+        subset_df = sepul_date[sepul_date["viator_interpretation_manual"] == ins_type]
+        simulations_by_type_len_sepul.append((ins_type, len(subset_df)))
+simulations_by_type_len_sepul = sorted(
+    simulations_by_type_len_sepul, key=lambda x: x[1], reverse=True)
+simulations_by_type_len_sepul
+
+simulations_by_type_sepul = []
+
+for ins_type_tup in simulations_by_type_len_sepul[:3]:
+    subset_df = sepul_date[sepul_date["viator_interpretation_manual"]
+                          == ins_type_tup[0]]
+    simulations = tempun.timeblocks_from_randoms(
+        subset_df["random_dates"], [-200, 600, 25])
+    ins_type_N = len(subset_df)
+    simulations_by_type_sepul.append([ins_type_tup[0], ins_type_N, simulations])
+simulations_by_type_sepul = sorted(
+    simulations_by_type_sepul, key=lambda x: x[1], reverse=True)
+
+date_vars_by_instypes = []
+for ins_type_tup in simulations_by_type_len_sepul[:10]:
+    subset_df = sepul_date[sepul_date["viator_interpretation_manual"]
+                          == ins_type_tup[0]]
+    date_vars = []
+    for n in range(100):
+        date_vars.append(
+            [date_var[n] for date_var in subset_df["random_dates"] if date_var != None])
+    date_vars_by_instypes.append(date_vars)
+```
+
+```{python}
+simulations_by_type_len_sepul
+```
+
+```{python}
+# Figure 2
+
+plt.style.use("seaborn-white")
+plt.rcParams['figure.dpi'] = 300
+plt.rcParams['font.size'] = 10
+
+fig, ax = plt.subplots(figsize=(14, 6), tight_layout=True)
+#fig, [ax1, ax2] = plt.subplots(2, 1, figsize=(14, 12), tight_layout=True)
+
+for ins_type_sims, color in zip(simulations_by_type_sepul, tab_colors_list[:len(simulations_by_type_sepul)]):
+    tempun.plot_timeblocks_data(ins_type_sims[2], ax=ax, color=color)
+
+ax.set_xlabel("Year", weight="bold")
+ax.set_ylabel("Count", weight="bold")
+ax.set_title(f"Viator inscriptions by context over time (EDCS/LatEpig, n={len(sepul_date)})", weight="bold")
+
+markers = [plt.Line2D([0, 0], [0, 0], color=color, lw=4)
+           for color in tab_colors_list[:len(simulations_by_type_sepul)]]
+
+legend_labels_sepul = [tup[0] + " (n={})".format(str(tup[1])) for tup in simulations_by_type_sepul]
+
+ax.legend(markers, legend_labels_sepul, numpoints=1,  
+           title=f"Viator group by context (n={len(sepul_date)})", title_fontsize="large", bbox_to_anchor=(1, 1), loc='upper right')
+
+plt.savefig('Fig2_viator_typologies_comparison_over_time.png')
+fig
+```
+
+### Plotting on a map
+
+Here we are adding some definitions of the periods
+```{python}
+# periods definitions
+
+periods = {  # to avoid overlaps, startdates are postponed by one year, when needed
+    "Late Roman Republic": {"startdate": -200, "enddate": -26, "duration": 175},
+    "Julio-Claudian dyn.": {"startdate": -27, "enddate": 68, "duration": 95},
+    "Flavian dyn.": {"startdate": 69, "enddate": 96,"duration": 28},
+    "Nerva-Antonine dyn.": {"startdate": 97, "enddate": 192, "duration": 96},
+    "Severan dyn.": {"startdate": 193, "enddate": 235, "duration": 43},
+    "Military emperors": {"startdate": 236, "enddate": 284,"duration": 49},
+    "Tetrarchy-Constantine I": {"startdate": 285, "enddate": 337,"duration": 53},
+    "Late Roman Empire": {"startdate": 338, "enddate": 600,"duration": 263}
+}
+timeblocks_periods = [(periods[period]["startdate"],
+                       periods[period]["enddate"],
+                       periods[period]["duration"]) for period in periods]
+timeblocks_periods
+```
+
+```{python}
+def date_to_str(date):
+    if date < 0:
+        date = str(abs(date)) + " BC"
+    else:
+        date = "AD " + str(date)
+    return date
+
+
+periods_labels = []
+for period in periods.keys():
+    start = date_to_str(periods[period]["startdate"])
+    end = date_to_str(periods[period]["enddate"])
+    periods_labels.append(period + "\n({0}-{1})".format(start, end))
+periods_labels
+```
+
+In the following chunk we are loading a shapefile, that represents the Roman Empire at its largest extend in AD 117. This is used in the third figure. 
+```{python}
+# loading shapefile from Pleaides for the largest extent of the Roman Empire, AD 117
+# source: https://raw.githubusercontent.com/pelagios/magis-pleiades-regions/main/pleiades-regions-magis-pelagios.geojson
+pleiades_regions = gpd.read_file('pleiades-regions-magis-pelagios.geojson', driver='GeoJSON')
+RE_merged = pleiades_regions.unary_union
+```
+
+```{python}
+def get_date_var(randoms):
+    try:
+        return randoms[0]
+    except:
+        return None
+
+# selecting one random date out of the 1000 version
+sepul_date["date_var_1"] = sepul_date["random_dates"].apply(get_date_var)
+```
+
+
+```{python}
+sepul_date_pb = sepul_date[sepul_date["viator_interpretation_manual"] == "passer-by"]
+sepul_date_of = sepul_date[sepul_date["viator_interpretation_manual"] == "official"]
+len(sepul_date_pb)
+len(sepul_date_of)
+```
+
+```{python}
+sepul_date_df_by_
+```
+
+```{python}
+# passer-by
+sepul_date_df_by_periods_pb = []
+
+for period in timeblocks_periods:
+    sepul_date_sample_pb = sepul_date_pb[sepul_date_pb["date_var_1"].between(
+        period[0], period[1])]
+    # tranforming data as geodataframe
+    sepul_date_sample_pb = sepul_date_sample_pb[sepul_date_sample_pb["latitude"].notnull()]
+    sepul_date_sample_pb = gpd.GeoDataFrame(sepul_date_sample_pb, geometry=gpd.points_from_xy(sepul_date_sample_pb["longitude"], sepul_date_sample_pb["latitude"]))
+    # selecting only those dated and within borders of the Empire (the largest extent in AD 117)
+    sepul_date_sample_pb = sepul_date_sample_pb[sepul_date_sample_pb.within(RE_merged)]
+    sepul_date_df_by_periods_pb.append(sepul_date_sample_pb)
+```
+
+```{python}
+len(sepul_date_df_by_periods_pb)
+```
+
+```{python}
+# official
+sepul_date_df_by_periods_of = []
+
+for period in timeblocks_periods:
+    sepul_date_sample_of = sepul_date_of[sepul_date_of["date_var_1"].between(
+        period[0], period[1])]
+    # tranforming data as geodataframe
+    sepul_date_sample_of = sepul_date_sample_of[sepul_date_sample_of["latitude"].notnull()]
+    sepul_date_sample_of = gpd.GeoDataFrame(sepul_date_sample_of, geometry=gpd.points_from_xy(sepul_date_sample_of["longitude"], sepul_date_sample_of["latitude"]))
+    # selecting only those dated and within borders of the Empire (the largest extent in AD 117)
+    sepul_date_sample_of = sepul_date_sample_of[sepul_date_sample_of.within(RE_merged)]
+    sepul_date_df_by_periods_of.append(sepul_date_sample_of)
+```
+
+
+```{python}
+# Figure 3
+# plot all viator inscriptions with location in 8 plots grouped by period
+plt.style.use("seaborn-white")
+plt.rcParams['figure.dpi'] = 300
+plt.rcParams['font.size'] = 10
+
+
+fig, axs  = plt.subplots(4, 2, figsize=(7, 10), tight_layout=True)
+
+contexts_pct = {}
+    
+for df_sepul_pb, df_sepul_of, ax, period in zip(sepul_date_df_by_periods_pb, sepul_date_df_by_periods_of, axs.ravel(), periods_labels):
+    pleiades_regions.plot(ax=ax, color="lightgray")
+    df_sepul_pb.plot(markersize=2, color="darkblue", ax=ax, alpha=0.9, label=len(df_sepul_pb))
+    df_sepul_of.plot(markersize=2, color="red", ax=ax, alpha=0.9, label=len(df_sepul_of))
+    ax.set_title(period, fontsize=6)
+    ax.set_axis_off()
+    markers = [plt.Line2D([0,0],[0,0],color=color, marker=".", linestyle="") for color in ["darkblue", "red"]]
+    legend_labels = ["passer-by (n={0})".format(str(len(df_sepul_pb))),
+                    "official (n={0})".format(str(len(df_sepul_of)))]
+    
+    ax.legend(markers, legend_labels, numpoints=1, bbox_to_anchor=(0.6, 1), loc='upper left', fontsize=6)
+   
+plt.tight_layout(pad=0.10)
+plt.subplots_adjust(wspace=0, hspace=0.0)
+
+fig.title(f'Spatial distribution of viator inscriptions by historic period', loc='center', fontsize=12, fontweight="bold")
+plt.savefig('Fig3_viator_spatial_by_periods.png')
+fig
+```
+
+```{python}
+sepul_date_df_by_periods["viator_interpretation_manual"]
+```
+
+
+

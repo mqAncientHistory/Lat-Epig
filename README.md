@@ -25,6 +25,8 @@ This program allows to extraction of the output of a search query from the [Epig
 
 **Ballsun-Stanton B., Heřmánková P., Laurence R. *LatEpig* (version 2.0). GitHub. URL: <https://github.com/mqAncientHistory/Lat-Epig/> DOI: [10.5281/zenodo.5211341](https://doi.org/10.5281/zenodo.5211341)**
 
+**License**: [GNU General Public License v3.0](https://github.com/mqAncientHistory/Lat-Epig/blob/main/LICENSE)
+
 If you're using this tool in your research, <!-- Place this tag where you want the button to render. -->
 <a class="github-button" href="https://github.com/mqAncientHistory/Lat-Epig" data-color-scheme="no-preference: light; light: light; dark: dark;" data-icon="octicon-star" data-show-count="true" aria-label="Star mqAncientHistory/Lat-Epig on GitHub">Star</a> us on Github! (This way, we don't need to put tracking pixels into this notebook to get a sense of how many folks are using our tool!) 
 
@@ -125,9 +127,9 @@ Note that the *file name* in both formats contains the date of your search, the 
 #### Customised cleaning of the epigraphic text and unit testing
 
 The text of the inscription is available in three different formats as three separate attributes: 
-1. ‘inscription’ - the original text as presented by EDCS with all original markup and symbols, including the Leiden Conventions  markup for editions of inscriptions; 
-2. ‘inscription_conservative_cleaning’ - the result of the custom cleaning function embedded in the Lat/Epig software, producing a conservative version of the text of an inscription. The text is as close to the preserved state of the text, without restorations and expansions also known as the diplomatic edition (only the characters as they appear on the support, with minimal or no editorial intervention or interpretation)
-3. ‘inscription_interpretive_cleaning’ - the result of the custom cleaning function embedded in the Lat/Epig software, producing an interpretative version of the text of an inscription. The text contains all restorations and expansions to obtain as rich a version of the text as possible, interpunction between sentences is not preserved. This text version is most suitable for quantitative text analysis methods and NLP.
+1. ‘*inscription*’ - the original text as presented by EDCS with all original markup and symbols, including the Leiden Conventions  markup for editions of inscriptions; 
+2. ‘*inscription_conservative_cleaning*’ - the result of the custom cleaning function embedded in the Lat/Epig software, producing a conservative version of the text of an inscription. The text is as close to the preserved state of the text, without restorations and expansions also known as the diplomatic edition (only the characters as they appear on the support, with minimal or no editorial intervention or interpretation)
+3. ‘*inscription_interpretive_cleaning*’ - the result of the custom cleaning function embedded in the Lat/Epig software, producing an interpretative version of the text of an inscription. The text contains all restorations and expansions to obtain as rich a version of the text as possible, interpunction between sentences is not preserved. This text version is most suitable for quantitative text analysis methods and NLP.
 
 For details, see the structure of [both cleaning functions](https://github.com/mqAncientHistory/Lat-Epig/blob/main/src/lat_epig/text_parse.py) and [their unit tests](https://github.com/mqAncientHistory/Lat-Epig/blob/main/src/lat_epig/test_inscriptions.py).
 
