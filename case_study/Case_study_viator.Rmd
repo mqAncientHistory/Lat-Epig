@@ -50,11 +50,13 @@ Division the status keywords into their own attributes, base on their purpose:
 3. details about process of inscribing, execution
 
 ```{r}
-inscription_type_list <- c("tituli sepulcrales", "tituli fabricationis", "inscriptiones christianae", "tituli sacri", "tituli possessionis", "tituli operum", "miliaria", "tituli honorarii", "carmina", "signacula", "diplomata militaria", "leges", "defixiones", "termini", "reges", "signacula medicorum", "senatus consulta")
+inscription_type_list <- c("tituli sepulcrales", "tituli fabricationis", "inscriptiones christianae", "tituli sacri", "tituli possessionis", "tituli operum", "miliaria", "tituli honorarii", "signacula", "diplomata militaria", "leges", "defixiones", "termini", "reges", "signacula medicorum", "senatus consulta")
 
 inscribing_process_list <- c("sigilla impressa", "litterae erasae", "litterae in litura", "tesserae nummulariae")
 
 status_notation_list<- c("viri", "tria nomina", "mulieres", "nomen singulare", "liberti/libertae", "milites", "Augusti/Augustae", "ordo senatorius", "servi/servae", "officium/professio", "ordo decurionum", "sacerdotes pagani", "praenomen et nomen", "ordo equester", "seviri Augustales", "sacerdotes christiani")
+
+language_form_list<- c("carmina")
 ```
 
 
@@ -62,7 +64,8 @@ status_notation_list<- c("viri", "tria nomina", "mulieres", "nomen singulare", "
 viator <- viator %>% 
   mutate(inscr_type = str_extract_all(pattern = paste(inscription_type_list, collapse="|"), string = viator$status)) %>% 
   mutate(status_notation = str_extract_all(pattern = paste(status_notation_list, collapse="|"), string = viator$status)) %>% 
-  mutate(inscr_process = str_extract_all(pattern = paste(inscribing_process_list, collapse="|"), string = viator$status))
+  mutate(inscr_process = str_extract_all(pattern = paste(inscribing_process_list, collapse="|"), string = viator$status)) %>% 
+  mutate(inscr_lang = str_extract_all(pattern = paste(language_form_list, collapse="|"), string = viator$status))
 ```
 
 ## Convert character (0) to NA
@@ -71,6 +74,7 @@ viator <- viator %>%
 viator$inscr_type <- lapply(viator$inscr_type, function(x) if(identical(x, character(0))) NA_character_ else x)
 viator$status_notation <- lapply(viator$status_notation, function(x) if(identical(x, character(0))) NA_character_ else x)
 viator$inscr_process <- lapply(viator$inscr_process, function(x) if(identical(x, character(0))) NA_character_ else x)
+viator$inscr_lang <- lapply(viator$inscr_lang, function(x) if(identical(x, character(0))) NA_character_ else x)
 ```
 
 ### Overview of types of inscriptions
@@ -80,8 +84,10 @@ viator_insctype<- unnest_longer(viator, col = "inscr_type")
 ```
 
 ```{r}
+
 viator_insctype %>% 
-  count(inscr_type, sort=T)
+  count(inscr_type, sort=T) %>% 
+  mutate(ratio = n/(sum(n)/100))
 ```
 
 
@@ -108,13 +114,15 @@ viator<- viator %>%
 
 ```{r}
 # how many have viator in lowercase
-length(na.omit(viator$viator_lowercase))
+viator %>% 
+  filter(!is.na(viator_lowercase))
 
 ```
 
 ```{r}
 # how many have Viator in uppercase, as a personal name 
-length(na.omit(viator$viator_uppercase))
+viator %>% 
+  filter(is.na(viator_lowercase))
 
 ```
 
@@ -133,12 +141,28 @@ context_tokenized %>%
   head(20)
 ```
 
+## Lowercase inscriptions
+
+```{r}
+viator %>% 
+  filter(is.na(viator_lowercase))
+```
+
+
 ## Funerary inscriptions
+
+```{r}
+viator_insctype %>% 
+  filter(!is.na(viator_lowercase)) %>% 
+  count(inscr_type, sort=T) %>% 
+  mutate(ratio = n/(sum(n)/100))
+```
+
+
 
 ```{r}
 sepulcrales_lowercase<- viator_insctype %>% 
   filter(inscr_type == "tituli sepulcrales" & !is.na(viator_lowercase))
-
 ```
 
 ```{r}
@@ -147,7 +171,7 @@ sepulcrales_lowercase<- viator_insctype %>%
 write_csv(sepulcrales_lowercase, "LatEpig_viator_lowercase_tit_sepulcrales.csv")
 ```
 
-### Manual evaluation / interpretation of the text
+### Close reading of the text
 
 Upon close reading of the text of 226 inscriptions, we have noticed the following patterns:
 
@@ -172,7 +196,7 @@ sepulcrales_eval %>%
   mutate(ratio = n/(sum(n)/100))
 ```
 
-### Bigrams of sepulcral inscriptions
+### Distant reading
 
 To confirm the results of the close reading, we employ methods of distant reading, such as analysis of bigrams:
 
@@ -202,7 +226,7 @@ sepulcrales_bigram %>%
 # selecting only those with a date
 
 sepulcrales_date <- sepulcrales_eval %>% 
-  select(date_not_before, date_not_after, viator_interpretation_manual, latitude, longitude) %>% 
+  select(date_not_before, date_not_after, viator_interpretation_manual, latitude, longitude, province) %>% 
   filter(!is.na(date_not_before))
 ```
 
@@ -252,7 +276,7 @@ len(sepul_complete_simulations)
 The following figures makes more sense if you are adding more than one dataset to them. This document is just a sample on how it can be done in RStudio, so it only uses one dataset, but it still creates an overview of how the output graphs could look.
 
 ```{python}
-# Figure 1
+# Figure 0
 # plot all the dataset to see the epigraphic production in time
 
 plt.style.use("seaborn-white")
@@ -274,7 +298,7 @@ ax.legend(title="EDCS / LatEpig inscriptions", title_fontsize="large", bbox_to_a
 #plt.axvline(x=212, linewidth=0.5, color = 'orange', linestyle='dashed')
 
 #fig.suptitle(f'Comparison of epigraphic production over time', fontsize=16,fontweight="bold")
-plt.savefig('Fig1_viator_over_time.png')
+plt.savefig('Fig0_viator_over_time.png')
 
 fig
 ```
@@ -321,7 +345,7 @@ simulations_by_type_len_sepul
 ```
 
 ```{python}
-# Figure 2
+# Figure 1
 
 plt.style.use("seaborn-white")
 plt.rcParams['figure.dpi'] = 300
@@ -345,11 +369,11 @@ legend_labels_sepul = [tup[0] + " (n={})".format(str(tup[1])) for tup in simulat
 ax.legend(markers, legend_labels_sepul, numpoints=1,  
            title=f"Viator group by context (n={len(sepul_date)})", title_fontsize="large", bbox_to_anchor=(1, 1), loc='upper right')
 
-plt.savefig('Fig2_viator_typologies_comparison_over_time.png')
+plt.savefig('Fig1_viator_typologies_comparison_over_time.png')
 fig
 ```
 
-### Plotting on a map
+### Space dimension
 
 Here we are adding some definitions of the periods
 ```{python}
@@ -455,7 +479,7 @@ for period in timeblocks_periods:
 
 
 ```{python}
-# Figure 3
+# Figure 2
 # plot all viator inscriptions with location in 8 plots grouped by period
 plt.style.use("seaborn-white")
 plt.rcParams['figure.dpi'] = 300
@@ -468,27 +492,45 @@ contexts_pct = {}
     
 for df_sepul_pb, df_sepul_of, ax, period in zip(sepul_date_df_by_periods_pb, sepul_date_df_by_periods_of, axs.ravel(), periods_labels):
     pleiades_regions.plot(ax=ax, color="lightgray")
-    df_sepul_pb.plot(markersize=2, color="darkblue", ax=ax, alpha=0.9, label=len(df_sepul_pb))
-    df_sepul_of.plot(markersize=2, color="red", ax=ax, alpha=0.9, label=len(df_sepul_of))
+    df_sepul_pb.plot(markersize=3, color="darkblue", ax=ax, alpha=0.9, label=len(df_sepul_pb))
+    df_sepul_of.plot(markersize=3, color="red", ax=ax, alpha=0.9, label=len(df_sepul_of))
     ax.set_title(period, fontsize=6)
     ax.set_axis_off()
-    markers = [plt.Line2D([0,0],[0,0],color=color, marker=".", linestyle="") for color in ["darkblue", "red"]]
+    markers = [plt.Line2D([0,0],[0,0], color=color, marker=".", linestyle="") for color in ["darkblue", "red"]]
     legend_labels = ["passer-by (n={0})".format(str(len(df_sepul_pb))),
                     "official (n={0})".format(str(len(df_sepul_of)))]
     
-    ax.legend(markers, legend_labels, numpoints=1, bbox_to_anchor=(0.6, 1), loc='upper left', fontsize=6)
+    ax.legend(markers, legend_labels, numpoints=1, bbox_to_anchor=(0.6, 0.95), loc='upper left', fontsize=6)
    
-plt.tight_layout(pad=0.10)
+plt.tight_layout(pad=1.9)
 plt.subplots_adjust(wspace=0, hspace=0.0)
 
-fig.title(f'Spatial distribution of viator inscriptions by historic period', loc='center', fontsize=12, fontweight="bold")
-plt.savefig('Fig3_viator_spatial_by_periods.png')
+fig.suptitle(f'Spatial distribution of viator inscriptions by historic period', loc='center', fontsize=12, fontweight="bold")
+plt.savefig('Fig2_viator_spatial_by_periods.png')
 fig
 ```
 
-```{python}
-sepul_date_df_by_periods["viator_interpretation_manual"]
+
+#### Provinces
+
+```{r}
+# what provinces are the most commonly represented
+
+sepulcrales_date %>%
+  count(province, sort=T)
 ```
+ Provinces in time
+ 
+```{r}
+# when are dated the inscriptions from a given province - an overview of the date_not_after
+sepulcrales_date %>%
+  count(date_not_after, province, sort=F)
+```
+```{r}
+# when are dated the inscriptions from Moesia Inferior - an overview of the date_not_before
 
-
+sepulcrales %>% 
+  filter(province == "Moesia inferior") %>% 
+  select(inscription_interpretive_cleaning, date_not_before)
+```
 

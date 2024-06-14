@@ -95,7 +95,7 @@ The [Epigraphik-Datenbank  Clauss / Slaby (EDCS)](http://www.manfredclauss.de/) 
 
 #### Roman Empire Boundaries & Provinces
 
-[Ancient World Mapping Centre, political shading shapefiles](http://awmc.unc.edu/awmc/map_data/shapefiles/cultural_data/political_shading/), following the Barrington Atlas of Greek-Roman World, [AWMC.UNC.EDU ], under the Creative Commons Attribution-NonCommercial 4.0 International License. 
+[Ancient World Mapping Centre](http://awmc.unc.edu/) datasets available through (in 2024): [Cultural data](https://github.com/AWMC/geodata/tree/master/Cultural-Data). The GeoJson files are offered under the ODC Open Database License (http://opendatacommons.org/licenses/odbl/1.0/). Data is derived from the Barrington Atlas of the Greek and Roman World, and uses AWMC modifications to OpenStreetMap (https://www.openstreetmap.org/), which is under the ODC Open Database License. Previous versions were available through the AWMC website, under the Creative Commons Attribution-NonCommercial 4.0 International License.
 
 1. Roman Empire 60 BC (provinces or extent)
 1. Roman Empire in AD 14 (provinces or extent)
@@ -107,11 +107,11 @@ The [Epigraphik-Datenbank  Clauss / Slaby (EDCS)](http://www.manfredclauss.de/) 
 
 1. McCormick, M. et al. 2013. *Roman Road Network (version 2008)*, DARMC Scholarly Data Series, Data Contribution Series #2013-5. DARMC, Center for Geographic Analysis, Harvard University, Cambridge MA 02138.
 
-1. [Ancient World Mapping Centre, road shapefiles](http://awmc.unc.edu/awmc/map_data/shapefiles/ba_roads/), shapefile for roads, following the Barrington Atlas of Greek-Roman World, under the Creative Commons Attribution-NonCommercial 4.0 International License. Collection of shapefiles also vailable through the [UCD Digital Library](https://digital.ucd.ie/view/ucdlib:23000)
+1. [Ancient World Mapping Centre, road shapefiles](https://github.com/AWMC/geodata/tree/master/Cultural-Data/roads), The GeoJson files are offered under the ODC Open Database License (http://opendatacommons.org/licenses/odbl/1.0/). Data is derived from the Barrington Atlas of the Greek and Roman World, and uses AWMC modifications to OpenStreetMap (https://www.openstreetmap.org/), which is under the ODC Open Database License. 
 
 #### Cities
 
-1. The shapefile of the cities used in the map is based on Hanson, J. W. (2016). *Cities Database (OXREP databases)*. Version 1.0. Accessed (date): <http://oxrep.classics.ox.ac.uk/databases/cities/>. DOI: <https://doi.org/10.5287/bodleian:eqapevAn8>. More info is available through Hanson, J. W. (2016b). *An Urban Geography of the Roman World, 100 B.C. to A.D. 300.* Oxford: Archaeopress.
+1. The shapefile of the cities used in the map is based on Hanson, J. W. (2016). *Cities Database (OXREP databases)*. Version 1.0: <http://oxrep.classics.ox.ac.uk/databases/cities/>. DOI: <https://doi.org/10.5287/bodleian:eqapevAn8>. More info is available through Hanson, J. W. (2016b). *An Urban Geography of the Roman World, 100 B.C. to A.D. 300.* Oxford: Archaeopress.
 
 ---
 
@@ -141,9 +141,9 @@ For feedback, or to report bugs, please use the [Github Issues](https://github.c
 
 
 
-**Happy epigraphic explorations!**
+**We wish you happy epigraphic explorations!**
 
----
+
 
 
 
