@@ -154,10 +154,14 @@ For feedback, or to report bugs, please use the [Github Issues](https://github.c
   <figcaption>Interactive map displaying the result of the search ‘viator’, N=697 within the Roman Empire.</figcaption>
 </p>
 
+---
+
 <p align="center">
   <img src="https://github.com/mqAncientHistory/Lat-Epig/blob/main/images/Figure2_viator_interactivemap_detail_screenshot.png" width="100%" alt="Interactive map with a detailed overview of the inscription EDCS-28500185 dated between 271 and 330 CE from Pliska in Moesia Inferior (modern-day  Bulgaria). The text of the inscriptions invokes the passer-by to stop and read (“reste viator et lege”) about the life of Varius Sudicintis, a soldier, who died at age 40, and his dear mother Susa who commissioned the inscription. Other online sources, however, provide a variant reading: instead of Varius Sudicintis, the deceased was named Varsudicintis, see https://edh.ub.uni-heidelberg.de/edh/inschrift/HD042071." style="border:1px solid black"/>
   <figcaption>Interactive map with a detailed overview of the inscription EDCS-28500185 dated between 271 and 330 CE from Pliska in Moesia Inferior (modern-day  Bulgaria). The text of the inscriptions invokes the passer-by to stop and read (“reste viator et lege”) about the life of Varius Sudicintis, a soldier, who died at age 40, and his dear mother Susa who commissioned the inscription. Other online sources, however, provide a variant reading: instead of Varius Sudicintis, the deceased was named Varsudicintis, see https://edh.ub.uni-heidelberg.de/edh/inschrift/HD042071.</figcaption>
 </p>
+
+---
 
 <p align="center">
   <img src="https://github.com/mqAncientHistory/Lat-Epig/blob/main/images/Figure3_2024-06-14-EDCS_via_Lat_Epig-term1_viator-697-Provinces_in_AD_117_extent-Citiesall-Roadsall-DPI300-.png" width="100%" alt="Publication-ready map displaying the result of the search ‘viator’, N=697, with roads and cities, the borders of the Roman Empire in AD 117. The search parameters are automatically printed on the map, along with the data sources used for the map." style="border:1px solid black"/>
