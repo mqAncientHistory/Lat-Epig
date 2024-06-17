@@ -61,6 +61,7 @@ language_form_list<- c("carmina")
 
 
 ```{r}
+# processing the status labels
 viator <- viator %>% 
   mutate(inscr_type = str_extract_all(pattern = paste(inscription_type_list, collapse="|"), string = viator$status)) %>% 
   mutate(status_notation = str_extract_all(pattern = paste(status_notation_list, collapse="|"), string = viator$status)) %>% 
@@ -140,18 +141,42 @@ context_tokenized %>%
   count(word, sort = TRUE) %>% 
   head(20)
 ```
+## Uppercase inscriptions
+
+```{r}
+# basic filtering
+viator %>% 
+  filter(!is.na(viator_uppercase))
+```
+
+
+```{r}
+# in which provinces they are
+viator %>% 
+  filter(!is.na(viator_uppercase)) %>% 
+  count(province, sort=T)
+```
 
 ## Lowercase inscriptions
 
 ```{r}
+# basic filtering
 viator %>% 
-  filter(is.na(viator_lowercase))
+  filter(!is.na(viator_lowercase))
 ```
 
+```{r}
+# in which provinces they are
+viator %>% 
+  filter(!is.na(viator_lowercase)) %>% 
+  count(province, sort=T)
+```
 
 ## Funerary inscriptions
 
 ```{r}
+# some inscriptions appear multiple times, as they have multiple labels (status)
+
 viator_insctype %>% 
   filter(!is.na(viator_lowercase)) %>% 
   count(inscr_type, sort=T) %>% 
@@ -161,6 +186,8 @@ viator_insctype %>%
 
 
 ```{r}
+# filter only for epitaphs
+
 sepulcrales_lowercase<- viator_insctype %>% 
   filter(inscr_type == "tituli sepulcrales" & !is.na(viator_lowercase))
 ```
@@ -201,6 +228,7 @@ sepulcrales_eval %>%
 To confirm the results of the close reading, we employ methods of distant reading, such as analysis of bigrams:
 
 ```{r}
+# creating bigrams
 sepulcrales_bigram <- sepulcrales_eval %>% 
   unnest_tokens(bigram, inscription_interpretive_cleaning , token = "ngrams", n = 2)
 ```
