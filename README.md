@@ -25,7 +25,7 @@ This program allows to extraction of the output of a search query from the [Epig
 
 ## Cite this software
 
-**Ballsun-Stanton B., Heřmánková P., Laurence R. *LatEpig* (version 2.0). GitHub. URL: <https://github.com/mqAncientHistory/Lat-Epig/> DOI: [10.5281/zenodo.5211341](https://doi.org/10.5281/zenodo.5211341)**
+**Ballsun-Stanton B., Heřmánková P., Laurence R. *LatEpig* (version 2.0). GitHub. URL: <https://github.com/mqAncientHistory/Lat-Epig/> DOI: [10.5281/zenodo.12036539](https://zenodo.org/doi/10.5281/zenodo.12036539)**
 
 **License**: [GNU General Public License v3.0](https://github.com/mqAncientHistory/Lat-Epig/blob/main/LICENSE)
 
