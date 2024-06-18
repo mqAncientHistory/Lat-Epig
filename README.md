@@ -1,5 +1,7 @@
 # Welcome to the Latin Epigraphy Scraper (*LatEpig*) v2.0
 
+[![DOI](https://zenodo.org/badge/169682084.svg)](https://zenodo.org/doi/10.5281/zenodo.12036539)
+
 ![Project_status](https://img.shields.io/badge/status-finalised%20development-brightgreen%20%22Project%20status%20logo%22 "Project status logo")
 ![Version](https://img.shields.io/badge/version-2.0-blue "Version")
 
